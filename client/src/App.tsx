@@ -29,6 +29,7 @@ function Router() {
           <Route path="/checkout" component={Checkout} />
           <Route path="/balance" component={Balance} />
           <Route path="/success" component={Success} />
+          <Route path="/oauth-callback" component={OAuthCallback} />
           <Route path="/admin/*" component={AdminRouter} />
           <Route component={NotFound} />
         </Switch>
@@ -39,14 +40,23 @@ function Router() {
 }
 
 function App() {
+  const fusionAuthConfig = {
+    clientId: import.meta.env.VITE_FUSIONAUTH_CLIENT_ID || 'demo-client-id',
+    serverUrl: import.meta.env.VITE_FUSIONAUTH_SERVER_URL || 'http://localhost:9011',
+    redirectUri: `${window.location.origin}/oauth-callback`,
+    scope: 'openid profile email'
+  };
+
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider defaultTheme="dark" storageKey="peter-digital-shop-theme">
-        <TooltipProvider>
-          <Toaster />
-          <Router />
-        </TooltipProvider>
-      </ThemeProvider>
+      <FusionAuthProvider {...fusionAuthConfig}>
+        <ThemeProvider defaultTheme="dark" storageKey="peter-digital-shop-theme">
+          <TooltipProvider>
+            <Toaster />
+            <Router />
+          </TooltipProvider>
+        </ThemeProvider>
+      </FusionAuthProvider>
     </QueryClientProvider>
   );
 }

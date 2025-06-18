@@ -5,6 +5,8 @@ import { insertGiftCardSchema, insertOrderSchema, insertRedemptionSchema } from 
 import { z } from "zod";
 import { GiftCardController } from "./controllers/GiftCardController";
 import { GiftCardAdminController } from "./controllers/GiftCardAdminController";
+import { AuthController } from "./controllers/AuthController";
+import { fusionAuthService } from "./services/FusionAuthService";
 
 const purchaseSchema = insertGiftCardSchema.extend({
   deliveryType: z.enum(["instant", "scheduled"]),
@@ -21,6 +23,13 @@ const balanceCheckSchema = z.object({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Authentication Routes
+  app.post("/api/auth/token", AuthController.tokenExchange);
+  app.post("/api/auth/refresh", AuthController.refreshToken);
+  app.get("/api/auth/user", AuthController.userInfo);
+  app.post("/api/auth/logout", AuthController.logout);
+  app.get("/api/auth/status", AuthController.status);
+
   // Square Gift Card API Routes
   app.post("/api/gift-cards/issue", GiftCardController.issue);
   app.post("/api/gift-cards/reload", GiftCardController.reload);
