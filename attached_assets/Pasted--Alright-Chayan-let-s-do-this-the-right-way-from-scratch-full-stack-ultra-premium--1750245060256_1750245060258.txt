@@ -1,0 +1,217 @@
+💡 Alright Chayan, let’s do this the **right** way — from scratch, full-stack, ultra-premium.
+
+---
+
+# 🚀 PROJECT INIT PLAN — "Peter Digital Shop" (Phase 0 → Boot Project in Replit)
+
+This is the **foundational kick-off** plan for Replit AI Agent to **create a full-stack, live-use ready gift card shop** powered by Square APIs. We'll go step-by-step — no skipped features, no half-done logic, no UI mock trash.
+
+---
+
+## 🔥 STACK OVERVIEW
+
+* **Frontend**: React + Tailwind CSS (with Framer Motion for animations, Lucide for icons)
+* **Backend**: Node.js + Express + TypeScript
+* **DB**: Supabase (can fallback to SQLite/PostgreSQL if offline)
+* **UI Theme**: Ultra Luxurious Dark Mode ✨ (Glassmorphic, Animated, Premium)
+* **Brand**: `Peter Digital Shop`
+
+---
+
+## 📦 DIRECTORY STRUCTURE (Replit AI MUST FOLLOW)
+
+```
+/peter-digital-shop
+├── client/                   # React Frontend (UI)
+│   ├── src/
+│   │   ├── components/       # All animated UI blocks
+│   │   ├── pages/            # Home, Checkout, Success, etc.
+│   │   ├── routes/           # Client-side routing
+│   │   └── index.tsx
+│   └── tailwind.config.ts
+├── server/                   # Node.js Backend (Gift Card logic)
+│   ├── routes/               # /gift-cards, /webhooks, /customers
+│   ├── controllers/          # Business logic
+│   ├── services/             # Square API wrappers
+│   ├── db/                   # Supabase client + schema
+│   └── index.ts              # Express entry point
+├── .env                      # API Keys
+├── replit.nix                # Replit config
+└── README.md
+```
+
+---
+
+## 🧱 STEP-BY-STEP PHASE 0 BUILD PLAN
+
+### ✅ STEP 1 – Project Initialization (Code for Replit Agent)
+
+```bash
+npx create-react-app client --template typescript
+mkdir server
+cd server && npm init -y && npm install express cors dotenv @square/square uuid supabase-js && tsc --init
+```
+
+---
+
+### ✅ STEP 2 – Tailwind + Animation Setup (in `/client`)
+
+**Install Tailwind:**
+
+```bash
+npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init -p
+```
+
+**tailwind.config.ts:**
+
+```ts
+module.exports = {
+  content: ["./src/**/*.{js,ts,jsx,tsx}"],
+  darkMode: "class",
+  theme: {
+    extend: {
+      fontFamily: {
+        display: ['"Poppins"', "sans-serif"],
+      },
+    },
+  },
+  plugins: [],
+};
+```
+
+**src/index.css:**
+
+```css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Glass morphism + Neon Animations */
+:root {
+  --primary: #7f5af0;
+  --bg-dark: #0f0f0f;
+  --glass: rgba(255, 255, 255, 0.05);
+}
+
+body {
+  @apply bg-black text-white font-display;
+}
+```
+
+---
+
+### ✅ STEP 3 – Backend Server Bootstrap
+
+**server/index.ts**
+
+```ts
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+
+dotenv.config();
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+import giftCardRoutes from './routes/giftCards';
+import webhookRoutes from './routes/webhooks';
+
+app.use('/api/gift-cards', giftCardRoutes);
+app.use('/api/webhooks', webhookRoutes);
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`🟢 Server running on port ${PORT}`));
+```
+
+---
+
+### ✅ STEP 4 – Create Square Gift Card Base Route
+
+**server/routes/giftCards.ts**
+
+```ts
+import { Router } from 'express';
+import { issueGiftCard } from '../controllers/GiftCardController';
+
+const router = Router();
+router.post('/issue', issueGiftCard);
+export default router;
+```
+
+**server/controllers/GiftCardController.ts**
+
+```ts
+import { Request, Response } from 'express';
+import { SquareGiftCardService } from '../services/SquareGiftCardService';
+
+export async function issueGiftCard(req: Request, res: Response) {
+  try {
+    const card = await SquareGiftCardService.issue();
+    res.json(card);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to issue gift card', details: err });
+  }
+}
+```
+
+**server/services/SquareGiftCardService.ts**
+
+```ts
+import { Client, Environment } from 'square';
+
+const client = new Client({
+  environment: process.env.SQUARE_ENVIRONMENT === 'production' ? Environment.Production : Environment.Sandbox,
+  accessToken: process.env.SQUARE_ACCESS_TOKEN,
+});
+
+export const SquareGiftCardService = {
+  async issue() {
+    const { result } = await client.giftCardsApi.createGiftCard({
+      idempotencyKey: Date.now().toString(),
+      locationId: process.env.SQUARE_LOCATION_ID,
+      giftCard: { type: 'DIGITAL' },
+    });
+    return result.giftCard;
+  },
+};
+```
+
+---
+
+### ✅ STEP 5 – Fancy Premium Home UI (React)
+
+**client/src/pages/Home.tsx**
+
+```tsx
+import { motion } from "framer-motion";
+
+export default function Home() {
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-black via-gray-900 to-black">
+      <motion.h1
+        className="text-5xl font-bold text-white neon-glow"
+        initial={{ opacity: 0, y: -50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1.2 }}
+      >
+        🎁 Peter Digital Shop
+      </motion.h1>
+      <p className="mt-4 text-lg text-gray-400">Buy. Send. Redeem. Instantly.</p>
+    </div>
+  );
+}
+```
+
+---
+
+## 🔐 ENV SETUP (.env)
+
+```
+SQUARE_ACCESS_TOKEN=REPLACE_ME
+SQUARE_LOCATION_ID=REPLACE_ME
+SQUARE_ENVIRONMENT=sandbox
+```
+
+---
