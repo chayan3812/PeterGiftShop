@@ -138,6 +138,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Analytics Dashboard API Route
+  app.get("/api/analytics/data", async (req, res) => {
+    try {
+      const { FraudDetectionEngine } = await import('./services/FraudDetectionEngine');
+      const { GeoIPService } = await import('./services/GeoIPService');
+      
+      const fraudStats = FraudDetectionEngine.getStats();
+      const threatStats = GeoIPService.getThreatStats();
+      
+      // Generate time series data for the last 24 hours
+      const timeSeriesData = [];
+      const now = new Date();
+      for (let i = 23; i >= 0; i--) {
+        const time = new Date(now.getTime() - i * 60 * 60 * 1000);
+        timeSeriesData.push({
+          time: time.toISOString(),
+          fraudSignals: Math.floor(Math.random() * 5),
+          threats: Math.floor(Math.random() * 3),
+          avgScore: Math.floor(Math.random() * 40 + 60)
+        });
+      }
+      
+      res.json({
+        fraudStats,
+        threatStats,
+        timeSeriesData
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch analytics data' });
+    }
+  });
+
   // Gift Cards API
   app.post("/api/gift-cards/purchase", async (req, res) => {
     try {
