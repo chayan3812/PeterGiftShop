@@ -1,4 +1,4 @@
-import { SquareClient, SquareEnvironment } from 'square';
+import { Client, Environment } from 'square';
 import { v4 as uuidv4 } from 'uuid';
 import { activityLogger } from '../db/activity-log';
 
@@ -7,8 +7,8 @@ const hasSquareCredentials = () => {
   return !!(process.env.SQUARE_ACCESS_TOKEN && process.env.SQUARE_LOCATION_ID);
 };
 
-const client = hasSquareCredentials() ? new SquareClient({
-  environment: process.env.SQUARE_ENVIRONMENT === 'production' ? SquareEnvironment.Production : SquareEnvironment.Sandbox,
+const client = hasSquareCredentials() ? new Client({
+  environment: process.env.SQUARE_ENVIRONMENT === 'production' ? Environment.Production : Environment.Sandbox,
   accessToken: process.env.SQUARE_ACCESS_TOKEN!,
 }) : null;
 
@@ -23,7 +23,7 @@ export const SquareGiftCardService = {
     const idempotencyKey = uuidv4();
     
     try {
-      const { result } = await client.giftCards.createGiftCard({
+      const { result } = await client.giftCardsApi.createGiftCard({
         idempotencyKey,
         locationId,
         giftCard: { type: 'DIGITAL' },

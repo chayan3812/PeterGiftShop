@@ -28,15 +28,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Square API Status Check
   app.get("/api/square/status", (req, res) => {
-    const hasCredentials = !!(process.env.SQUARE_ACCESS_TOKEN && process.env.SQUARE_LOCATION_ID);
-    const environment = process.env.SQUARE_ENVIRONMENT || 'sandbox';
+    const { squareApiService } = require('./services/SquareApiService');
+    const status = squareApiService.getStatus();
     
     res.json({
-      configured: hasCredentials,
-      environment,
-      locationId: hasCredentials ? process.env.SQUARE_LOCATION_ID : null,
-      accessTokenSet: !!process.env.SQUARE_ACCESS_TOKEN,
-      message: hasCredentials 
+      ...status,
+      message: status.configured 
         ? 'Square API is properly configured' 
         : 'Square API credentials not found. Please set SQUARE_ACCESS_TOKEN and SQUARE_LOCATION_ID environment variables.'
     });
