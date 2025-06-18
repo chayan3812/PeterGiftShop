@@ -17,25 +17,29 @@ export class SquareService {
     this.isConfigured = !!(process.env.SQUARE_ACCESS_TOKEN && process.env.SQUARE_LOCATION_ID);
     
     if (this.isConfigured) {
-      try {
-        const square = require('square');
-        this.client = new square.Client({
-          accessToken: process.env.SQUARE_ACCESS_TOKEN,
-          environment: this.environment === 'production' ? square.Environment.Production : square.Environment.Sandbox,
-        });
-        
-        activityLogger.log('gift_card_activity', {
-          action: 'square_client_initialized',
-          environment: this.environment,
-          locationId: this.locationId
-        }, 'square_service');
-      } catch (error: any) {
-        activityLogger.log('error', {
-          action: 'square_client_init_failed',
-          error: error.message
-        }, 'square_service');
-        this.isConfigured = false;
-      }
+      this.initializeClient();
+    }
+  }
+
+  private async initializeClient() {
+    try {
+      const { Client, Environment } = await import('square');
+      this.client = new Client({
+        accessToken: process.env.SQUARE_ACCESS_TOKEN,
+        environment: this.environment === 'production' ? Environment.Production : Environment.Sandbox,
+      });
+      
+      activityLogger.log('gift_card_activity', {
+        action: 'square_client_initialized',
+        environment: this.environment,
+        locationId: this.locationId
+      }, 'square_service');
+    } catch (error: any) {
+      activityLogger.log('error', {
+        action: 'square_client_init_failed',
+        error: error.message
+      }, 'square_service');
+      this.isConfigured = false;
     }
   }
 
