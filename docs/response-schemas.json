@@ -1,0 +1,164 @@
+{
+  "schemas": {
+    "health": {
+      "type": "object",
+      "required": ["status", "timestamp"],
+      "properties": {
+        "status": { "type": "string", "enum": ["ok"] },
+        "timestamp": { "type": "string", "format": "date-time" }
+      }
+    },
+    "squareStatus": {
+      "type": "object",
+      "required": ["configured", "environment", "hasAccessToken", "clientInitialized", "message"],
+      "properties": {
+        "configured": { "type": "boolean" },
+        "environment": { "type": "string" },
+        "locationId": { "type": ["string", "null"] },
+        "hasAccessToken": { "type": "boolean" },
+        "clientInitialized": { "type": "boolean" },
+        "message": { "type": "string" }
+      }
+    },
+    "giftCardPurchase": {
+      "type": "object",
+      "required": ["success", "giftCard", "order"],
+      "properties": {
+        "success": { "type": "boolean" },
+        "giftCard": {
+          "type": "object",
+          "required": ["id", "code", "amount", "recipientEmail"],
+          "properties": {
+            "id": { "type": "number" },
+            "code": { "type": "string" },
+            "amount": { "type": "string" },
+            "recipientEmail": { "type": "string", "format": "email" }
+          }
+        },
+        "order": {
+          "type": "object",
+          "required": ["id", "status"],
+          "properties": {
+            "id": { "type": "number" },
+            "status": { "type": "string" }
+          }
+        }
+      }
+    },
+    "fraudStats": {
+      "type": "object",
+      "required": ["total", "lastHour", "last24Hours", "byType", "bySeverity", "avgScore"],
+      "properties": {
+        "total": { "type": "number" },
+        "lastHour": { "type": "number" },
+        "last24Hours": { "type": "number" },
+        "byType": { "type": "object" },
+        "bySeverity": { "type": "object" },
+        "avgScore": { "type": "number", "minimum": 0, "maximum": 100 }
+      }
+    },
+    "threatReplay": {
+      "type": "object",
+      "required": ["id", "scenarioId", "triggeredAt", "adminTriggered", "status"],
+      "properties": {
+        "id": { "type": "string" },
+        "scenarioId": { "type": "string" },
+        "triggeredAt": { "type": "string", "format": "date-time" },
+        "adminTriggered": { "type": "boolean" },
+        "sourceType": { "type": "string" },
+        "impactScore": { "type": "number", "minimum": 0, "maximum": 100 },
+        "status": { "type": "string", "enum": ["success", "failed", "pending"] },
+        "outcomes": { "type": "array" },
+        "learningData": { "type": "object" }
+      }
+    },
+    "aiDigest": {
+      "type": "object",
+      "required": ["id", "title", "period", "generatedAt", "summary", "keyFindings", "recommendations"],
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "period": { "type": "string", "enum": ["daily", "weekly"] },
+        "generatedAt": { "type": "string", "format": "date-time" },
+        "summary": { "type": "string" },
+        "keyFindings": { "type": "array", "items": { "type": "string" } },
+        "recommendations": { "type": "array", "items": { "type": "string" } },
+        "rawData": { "type": "object" },
+        "aiGenerated": { "type": "boolean" }
+      }
+    },
+    "autoResponderRules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "enabled", "conditions", "actions"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "enabled": { "type": "boolean" },
+          "conditions": { "type": "object" },
+          "actions": { "type": "array" },
+          "triggerCount": { "type": "number" },
+          "successRate": { "type": "number", "minimum": 0, "maximum": 100 }
+        }
+      }
+    },
+    "webhookStats": {
+      "type": "object",
+      "required": ["total", "lastHour", "last24Hours", "byType"],
+      "properties": {
+        "total": { "type": "number" },
+        "lastHour": { "type": "number" },
+        "last24Hours": { "type": "number" },
+        "byType": { "type": "object" },
+        "avgProcessingTime": { "type": "number" }
+      }
+    },
+    "analyticsData": {
+      "type": "object",
+      "required": ["fraudStats", "threatStats", "timeSeriesData"],
+      "properties": {
+        "fraudStats": { "$ref": "#/schemas/fraudStats" },
+        "threatStats": {
+          "type": "object",
+          "required": ["total", "lastHour", "avgRiskScore"],
+          "properties": {
+            "total": { "type": "number" },
+            "lastHour": { "type": "number" },
+            "byCountry": { "type": "object" },
+            "avgRiskScore": { "type": "number", "minimum": 0, "maximum": 100 }
+          }
+        },
+        "timeSeriesData": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["time", "fraudSignals", "threats", "avgScore"],
+            "properties": {
+              "time": { "type": "string", "format": "date-time" },
+              "fraudSignals": { "type": "number" },
+              "threats": { "type": "number" },
+              "avgScore": { "type": "number", "minimum": 0, "maximum": 100 }
+            }
+          }
+        }
+      }
+    },
+    "errorResponse": {
+      "type": "object",
+      "required": ["success", "error"],
+      "properties": {
+        "success": { "type": "boolean", "enum": [false] },
+        "error": { "type": "string" }
+      }
+    },
+    "successResponse": {
+      "type": "object",
+      "required": ["success"],
+      "properties": {
+        "success": { "type": "boolean", "enum": [true] },
+        "message": { "type": "string" }
+      }
+    }
+  }
+}

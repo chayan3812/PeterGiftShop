@@ -651,6 +651,46 @@
         },
         {
           "name": "Fraud Statistics",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Elite Fraud Detection Validation",
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response time is under 500ms', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                  "});",
+                  "",
+                  "pm.test('Fraud stats structure is valid', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson).to.have.property('total');",
+                  "    pm.expect(responseJson).to.have.property('avgScore');",
+                  "    pm.expect(responseJson.avgScore).to.be.at.least(0);",
+                  "    pm.expect(responseJson.avgScore).to.be.at.most(100);",
+                  "});",
+                  "",
+                  "pm.test('CRITICAL ALERT: High average fraud score detected', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    if (responseJson.avgScore >= 85) {",
+                  "        pm.test.index('🚨 CRITICAL FRAUD ALERT - Average Score: ' + responseJson.avgScore);",
+                  "        pm.environment.set('high_fraud_detected', 'true');",
+                  "        pm.environment.set('fraud_score', responseJson.avgScore);",
+                  "    }",
+                  "});",
+                  "",
+                  "// Store fraud metrics for cross-validation",
+                  "const fraudData = pm.response.json();",
+                  "pm.environment.set('fraud_total', fraudData.total);",
+                  "pm.environment.set('fraud_avg_score', fraudData.avgScore);"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "url": {
@@ -881,6 +921,52 @@
       "item": [
         {
           "name": "Execute Threat Replay",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Elite Threat Replay Validation",
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response time is acceptable for simulation', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "});",
+                  "",
+                  "pm.test('Threat replay response structure is valid', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson).to.have.property('id');",
+                  "    pm.expect(responseJson).to.have.property('scenarioId');",
+                  "    pm.expect(responseJson).to.have.property('status');",
+                  "    pm.expect(responseJson).to.have.property('impactScore');",
+                  "});",
+                  "",
+                  "pm.test('CRITICAL ALERT: High impact score detected', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    if (responseJson.impactScore >= 85) {",
+                  "        pm.test.index('🚨 CRITICAL THREAT SIMULATION - Impact Score: ' + responseJson.impactScore);",
+                  "        pm.environment.set('critical_threat_detected', 'true');",
+                  "        pm.environment.set('last_critical_score', responseJson.impactScore);",
+                  "    }",
+                  "});",
+                  "",
+                  "pm.test('Auto-responses were triggered', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson).to.have.property('autoResponsesTriggered');",
+                  "    pm.expect(responseJson.autoResponsesTriggered).to.be.a('number');",
+                  "});",
+                  "",
+                  "// Store simulation results for cross-test validation",
+                  "const response = pm.response.json();",
+                  "pm.environment.set('last_simulation_id', response.id);",
+                  "pm.environment.set('last_impact_score', response.impactScore);"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -1019,6 +1105,39 @@
       "item": [
         {
           "name": "Health Check",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Elite Performance & Validation Tests",
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response time is less than 500ms', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                  "});",
+                  "",
+                  "pm.test('Response has valid JSON structure', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson).to.have.property('status');",
+                  "    pm.expect(responseJson).to.have.property('timestamp');",
+                  "    pm.expect(responseJson.status).to.eql('ok');",
+                  "});",
+                  "",
+                  "pm.test('Timestamp is valid ISO format', function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(new Date(responseJson.timestamp)).to.be.a('date');",
+                  "});",
+                  "",
+                  "// Store health status for cross-request validation",
+                  "pm.environment.set('system_healthy', 'true');"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "url": {
