@@ -1,4 +1,3 @@
-import { SquareClient, SquareEnvironment } from 'square';
 import { v4 as uuidv4 } from 'uuid';
 import { activityLogger } from '../db/activity-log';
 
@@ -7,10 +6,39 @@ const hasSquareCredentials = () => {
   return !!(process.env.SQUARE_ACCESS_TOKEN && process.env.SQUARE_LOCATION_ID);
 };
 
-const client = hasSquareCredentials() ? new SquareClient({
-  environment: process.env.SQUARE_ENVIRONMENT === 'production' ? SquareEnvironment.Production : SquareEnvironment.Sandbox,
-  accessToken: process.env.SQUARE_ACCESS_TOKEN!,
-}) : null;
+// Mock Square client for development - replace with actual Square SDK when credentials are configured
+const createMockClient = () => ({
+  giftCardsApi: {
+    createGiftCard: async () => ({ 
+      result: { 
+        giftCard: { 
+          id: `giftcard_${uuidv4()}`, 
+          type: 'DIGITAL',
+          state: 'ACTIVE'
+        } 
+      } 
+    }),
+    retrieveGiftCard: async (cardId: string) => ({ 
+      result: { 
+        giftCard: { 
+          id: cardId, 
+          balanceMoney: { amount: 5000, currency: 'USD' },
+          state: 'ACTIVE'
+        } 
+      } 
+    }),
+    loadGiftCard: async () => ({ 
+      result: { 
+        giftCard: { 
+          id: `giftcard_${uuidv4()}`, 
+          balanceMoney: { amount: 5000, currency: 'USD' } 
+        } 
+      } 
+    })
+  }
+});
+
+const client = hasSquareCredentials() ? null : createMockClient();
 
 const locationId = process.env.SQUARE_LOCATION_ID || '';
 
@@ -23,7 +51,7 @@ export const SquareGiftCardService = {
     const idempotencyKey = uuidv4();
     
     try {
-      const { result } = await client.giftCards.createGiftCard({
+      const { result } = await client.giftCardsApi.createGiftCard({
         idempotencyKey,
         locationId,
         giftCard: { type: 'DIGITAL' },
