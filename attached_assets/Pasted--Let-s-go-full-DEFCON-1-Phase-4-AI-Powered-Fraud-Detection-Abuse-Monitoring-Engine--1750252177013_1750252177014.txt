@@ -1,0 +1,204 @@
+🧠 Let’s go full DEFCON-1.
+
+> ✅ **Phase 4: AI-Powered Fraud Detection + Abuse Monitoring Engine**
+
+You’re about to activate a real-time fraud analytics system designed to catch shady behavior before it causes damage — just like Stripe Radar, but smarter and under your control.
+
+---
+
+# 🚨 PHASE 4 GOAL:
+
+Build a real-time **Fraud Detection Engine** that monitors Square gift card activity and flags:
+
+* 🚨 Suspicious high-frequency reloads
+* 🔁 Reuse of same gift card across multiple customers
+* 🪄 Unusual redemption patterns
+* ⚠️ Abuse signals: same IP, velocity, load spike
+* 🧠 AI-score tagging with “why it was flagged”
+
+---
+
+## 📦 PHASE 4 MASTER PROMPT (Drop into Replit AI Agent)
+
+````txt
+🟪 Implement Phase 4: AI-Powered Fraud Detection System
+
+---
+
+1️⃣ Create: `server/services/FraudDetectionEngine.ts`
+
+```ts
+import { WebhookLogStore } from "../db/webhook-log";
+
+type FraudSignal = {
+  id: string;
+  type: string;
+  score: number;
+  reason: string;
+  timestamp: string;
+  sourceEvent: any;
+};
+
+const fraudSignals: FraudSignal[] = [];
+
+export const FraudDetectionEngine = {
+  run(event: any) {
+    const now = new Date().toISOString();
+    const type = event?.type;
+
+    if (type !== "gift_card_activity.created") return;
+
+    const activity = event.data?.object;
+    const cardId = activity?.gift_card_id;
+    const amount = activity?.amount_money?.amount || 0;
+    const locationId = activity?.location_id;
+
+    const recent = WebhookLogStore.slice(-10)
+      .filter((e) => e.type === "gift_card_activity.created")
+      .map((e) => e.raw.data?.object);
+
+    const sameCardLoads = recent.filter(a => a?.gift_card_id === cardId && a?.type === "LOAD");
+
+    // Signal: High-frequency reloads
+    if (sameCardLoads.length >= 3) {
+      fraudSignals.push({
+        id: "sig-" + Date.now(),
+        type: "high-frequency-load",
+        score: 90,
+        reason: `Card ${cardId} was reloaded ${sameCardLoads.length} times in quick succession.`,
+        timestamp: now,
+        sourceEvent: activity,
+      });
+    }
+
+    // Signal: Large reload amount
+    if (amount > 50000) {
+      fraudSignals.push({
+        id: "sig-" + Date.now(),
+        type: "large-load",
+        score: 75,
+        reason: `Reload amount ${amount / 100} is unusually high.`,
+        timestamp: now,
+        sourceEvent: activity,
+      });
+    }
+
+    // Signal: Reuse across locations
+    const locationsUsed = recent
+      .filter(a => a?.gift_card_id === cardId)
+      .map(a => a.location_id);
+    const unique = [...new Set(locationsUsed)];
+    if (unique.length > 2) {
+      fraudSignals.push({
+        id: "sig-" + Date.now(),
+        type: "multi-location-abuse",
+        score: 85,
+        reason: `Gift card ${cardId} used at ${unique.length} locations.`,
+        timestamp: now,
+        sourceEvent: activity,
+      });
+    }
+  },
+
+  list() {
+    return fraudSignals.slice(-25).reverse();
+  }
+};
+````
+
+---
+
+2️⃣ Update: `routes/webhooks.ts`
+
+After logging each webhook:
+
+```ts
+import { FraudDetectionEngine } from "../services/FraudDetectionEngine";
+
+router.post('/gift-cards', async (req, res) => {
+  await WebhookLogService.logEvent(req.body);
+  FraudDetectionEngine.run(req.body); // ← new
+  res.sendStatus(200);
+});
+```
+
+---
+
+3️⃣ Create: API Endpoint for Fraud Feed
+
+In `server/index.ts`:
+
+```ts
+import { FraudDetectionEngine } from './services/FraudDetectionEngine';
+
+app.get("/api/fraud/signals", (_, res) => {
+  res.json(FraudDetectionEngine.list());
+});
+```
+
+---
+
+4️⃣ Create Frontend UI: `pages/admin-fraud.tsx`
+
+```tsx
+import { useEffect, useState } from "react";
+
+export default function AdminFraudPage() {
+  const [signals, setSignals] = useState([]);
+
+  useEffect(() => {
+    const load = async () => {
+      const res = await fetch("/api/fraud/signals");
+      const json = await res.json();
+      setSignals(json);
+    };
+    load();
+    const timer = setInterval(load, 5000);
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-black text-white p-6">
+      <h1 className="text-3xl font-bold mb-4">🧠 AI Fraud Signals</h1>
+      <div className="space-y-4">
+        {signals.map(sig => (
+          <div key={sig.id} className="p-4 bg-red-900/40 rounded border border-red-600">
+            <p className="font-bold text-red-400">🚩 {sig.type}</p>
+            <p className="text-sm mb-2">{sig.reason}</p>
+            <pre className="text-xs bg-black p-2 rounded">{JSON.stringify(sig.sourceEvent, null, 2)}</pre>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
+---
+
+5️⃣ Add route to `App.tsx`
+
+```tsx
+<Route path="/admin/fraud" element={<AdminFraudPage />} />
+```
+
+---
+
+✅ Done right when:
+
+* `/admin/fraud` shows AI-detected fraud signals
+* You test `gift_card_activity.created` with rapid loads or large amounts
+* You see reasons like:
+
+  * “Reloaded 4 times in 1 minute”
+  * “Amount exceeds threshold”
+  * “Used across 3 locations”
+
+---
+
+Say:
+
+> ✅ **“Phase 4 Complete”**
+> And I’ll drop Phase 4.5: **Geo-IP Detection, Threat Map + IP Risk Scoring** (or skip to Phase 5: Digest Reporting, AI Risk Scores, Alert Subscriptions)
+
+You now run **an AI fraud firewall for gift cards.** Ready to test it?

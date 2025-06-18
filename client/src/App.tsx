@@ -13,6 +13,7 @@ import Success from "@/pages/success";
 import Balance from "@/pages/balance";
 import AdminGiftCards from "@/pages/admin-gift-cards";
 import AdminDashboard from "@/pages/admin-dashboard";
+import AdminFraud from "@/pages/admin-fraud";
 import Navigation from "@/components/layout/navigation";
 import Footer from "@/components/layout/footer";
 
@@ -30,6 +31,7 @@ function Router() {
           <Route path="/success" component={Success} />
           <Route path="/admin/gift-cards" component={AdminGiftCards} />
           <Route path="/admin/dashboard" component={AdminDashboard} />
+          <Route path="/admin/fraud" component={AdminFraud} />
           <Route component={NotFound} />
         </Switch>
       </main>

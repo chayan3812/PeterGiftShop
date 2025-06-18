@@ -62,6 +62,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Log to webhook service for dashboard
       const { WebhookLogService } = await import('./services/WebhookLogService');
       await WebhookLogService.logEvent(req.body);
+      
+      // Run fraud detection engine
+      const { FraudDetectionEngine } = await import('./services/FraudDetectionEngine');
+      FraudDetectionEngine.run(req.body);
     } catch (error) {
       console.error('Failed to log webhook activity:', error);
     }
@@ -88,6 +92,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(stats);
     } catch (error) {
       res.status(500).json({ error: 'Failed to fetch webhook stats' });
+    }
+  });
+
+  // Fraud Detection API Routes
+  app.get("/api/fraud/signals", async (req, res) => {
+    try {
+      const { FraudDetectionEngine } = await import('./services/FraudDetectionEngine');
+      const limit = parseInt(req.query.limit as string) || 25;
+      const signals = FraudDetectionEngine.list(limit);
+      res.json(signals);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch fraud signals' });
+    }
+  });
+
+  app.get("/api/fraud/stats", async (req, res) => {
+    try {
+      const { FraudDetectionEngine } = await import('./services/FraudDetectionEngine');
+      const stats = FraudDetectionEngine.getStats();
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch fraud stats' });
     }
   });
 

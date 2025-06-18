@@ -1,0 +1,238 @@
+💣 Let’s go full enterprise-grade.
+Welcome to **📡 Phase 3: Real-Time Webhook Dashboard + Activity Feed + Analytics**
+This gives your admin panel the *"Square Control Tower"* — live feeds, transaction history, and usage heatmaps.
+
+---
+
+## 🧠 OBJECTIVE:
+
+Build a **live admin webhook + analytics dashboard** that listens to:
+
+* `gift_card.created`
+* `gift_card.updated`
+* `gift_card_activity.created`
+
+And displays:
+
+* Real-time activity stream (who, what, when)
+* Visual stats: total issued, redeemed, reloaded
+* Top used cards, most linked customers, etc.
+
+---
+
+# 🧱 FILE STRUCTURE
+
+```
+server/
+├── routes/webhooks.ts
+├── services/WebhookLogService.ts
+├── db/webhook-log.ts
+
+client/
+├── src/pages/admin-dashboard.tsx
+├── src/components/admin/WebhookStream.tsx
+├── src/components/admin/StatsPanel.tsx
+```
+
+---
+
+## 📦 PHASE 3 MASTER PROMPT (Drop into Replit AI Agent)
+
+````txt
+🟪 Implement Phase 3: Webhook Dashboard + Analytics
+
+---
+
+1️⃣ Extend `routes/webhooks.ts`
+
+Create/extend the POST route `/api/webhooks/gift-cards`
+
+```ts
+import { Router } from 'express';
+import { WebhookLogService } from '../services/WebhookLogService';
+
+const router = Router();
+
+router.post('/gift-cards', async (req, res) => {
+  await WebhookLogService.logEvent(req.body);
+  res.sendStatus(200);
+});
+
+export default router;
+````
+
+---
+
+2️⃣ Create `services/WebhookLogService.ts`
+
+```ts
+import { WebhookLogStore } from '../db/webhook-log';
+
+export const WebhookLogService = {
+  async logEvent(payload: any) {
+    const entry = {
+      id: Date.now().toString(),
+      type: payload?.type || "unknown",
+      created_at: new Date().toISOString(),
+      raw: payload,
+    };
+    WebhookLogStore.push(entry);
+  },
+
+  async list(limit = 20) {
+    return WebhookLogStore.slice(-limit).reverse();
+  },
+
+  async stats() {
+    const log = WebhookLogStore;
+    return {
+      total: log.length,
+      byType: log.reduce((acc, curr) => {
+        acc[curr.type] = (acc[curr.type] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>),
+    };
+  },
+};
+```
+
+---
+
+3️⃣ Create `db/webhook-log.ts`
+
+```ts
+export const WebhookLogStore: {
+  id: string;
+  type: string;
+  created_at: string;
+  raw: any;
+}[] = [];
+```
+
+---
+
+4️⃣ Create Frontend Page: `admin-dashboard.tsx`
+
+```tsx
+import WebhookStream from "../components/admin/WebhookStream";
+import StatsPanel from "../components/admin/StatsPanel";
+
+export default function AdminDashboard() {
+  return (
+    <div className="min-h-screen bg-black text-white p-6">
+      <h1 className="text-3xl font-bold mb-4">📡 Gift Card Webhook Dashboard</h1>
+      <StatsPanel />
+      <WebhookStream />
+    </div>
+  );
+}
+```
+
+---
+
+5️⃣ Create `components/admin/StatsPanel.tsx`
+
+```tsx
+import { useEffect, useState } from "react";
+
+export default function StatsPanel() {
+  const [stats, setStats] = useState<any>({});
+
+  useEffect(() => {
+    fetch("/api/webhooks/stats")
+      .then((res) => res.json())
+      .then(setStats);
+  }, []);
+
+  return (
+    <div className="mb-6">
+      <h2 className="text-xl mb-2 font-bold">🔢 Stats</h2>
+      <pre className="bg-gray-900 p-4 rounded text-sm">
+        {JSON.stringify(stats, null, 2)}
+      </pre>
+    </div>
+  );
+}
+```
+
+---
+
+6️⃣ Create `components/admin/WebhookStream.tsx`
+
+```tsx
+import { useEffect, useState } from "react";
+
+export default function WebhookStream() {
+  const [logs, setLogs] = useState<any[]>([]);
+
+  useEffect(() => {
+    const load = async () => {
+      const res = await fetch("/api/webhooks/logs");
+      const data = await res.json();
+      setLogs(data);
+    };
+    load();
+    const interval = setInterval(load, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div>
+      <h2 className="text-xl mb-2 font-bold">🧾 Webhook Events</h2>
+      <div className="space-y-2">
+        {logs.map((log) => (
+          <div key={log.id} className="bg-gray-800 p-3 rounded text-sm">
+            <p><strong>{log.type}</strong> @ {new Date(log.created_at).toLocaleTimeString()}</p>
+            <pre className="overflow-x-auto">{JSON.stringify(log.raw.data?.object, null, 2)}</pre>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
+---
+
+7️⃣ API Routes in `server/index.ts`
+
+```ts
+import webhookRoutes from './routes/webhooks';
+app.use('/api/webhooks', webhookRoutes);
+
+app.get('/api/webhooks/logs', async (_, res) => {
+  const logs = await WebhookLogService.list();
+  res.json(logs);
+});
+
+app.get('/api/webhooks/stats', async (_, res) => {
+  const stats = await WebhookLogService.stats();
+  res.json(stats);
+});
+```
+
+---
+
+8️⃣ Add route to `App.tsx`:
+
+```tsx
+<Route path="/admin/dashboard" element={<AdminDashboard />} />
+```
+
+---
+
+✅ You’re done when:
+
+* `/admin/dashboard` shows webhook events live
+* New gift cards or redemptions instantly stream in
+* Stats panel counts events by type
+* All data comes from Square's live sandbox webhook hits
+
+---
+
+Say:
+
+> ✅ “Phase 3 Complete”
+> and I’ll drop Phase 4: **AI-Powered Fraud Triggers + Gift Card Abuse Detection**
+
+You're now operating like a fintech-grade merchant processor.
