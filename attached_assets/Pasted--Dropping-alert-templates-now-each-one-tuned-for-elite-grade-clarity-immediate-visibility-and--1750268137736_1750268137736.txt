@@ -1,0 +1,101 @@
+🔥 Dropping alert templates now — each one tuned for elite-grade clarity, immediate visibility, and DevOps-readiness.
+
+---
+
+## 📬 **Mailgun Email Alert Template** (`templates/email-alert.html`)
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f9f9f9; padding: 20px; }
+    .container { background: #fff; padding: 20px; border-radius: 8px; border: 1px solid #ddd; }
+    h2 { color: #d9534f; }
+    ul { list-style: none; padding: 0; }
+    li { margin-bottom: 10px; }
+    code { background: #f2f2f2; padding: 2px 4px; border-radius: 4px; }
+    .footer { margin-top: 20px; font-size: 12px; color: #888; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🚨 API Test Failure Detected</h2>
+    <p>The following issues were identified during automated Postman testing:</p>
+    <ul>
+      {{FAILURE_LIST}}
+    </ul>
+    <div class="footer">
+      Sent by PeterDigital AI Testing System — <i>{{TIMESTAMP}}</i>
+    </div>
+  </div>
+</body>
+</html>
+```
+
+---
+
+## 💬 **Slack Alert Message Template** (`templates/slack-alert.txt`)
+
+```text
+🚨 *API Test Failure Detected*
+
+*Failed Tests:* {{FAIL_COUNT}}
+*Time:* {{TIMESTAMP}}
+
+*Top Failing Endpoint:*
+`{{TOP_ENDPOINT}}` → *{{STATUS}}*
+
+_Please check the Postman report or failure analysis:_
+📄 docs/elite-summary.json  
+🧠 docs/failure-analysis-report.md
+```
+
+---
+
+## 📱 **Telegram Alert Format** (Raw Text)
+
+```text
+🚨 Postman API Test Failure
+
+🔴 Failed Tests: {{FAIL_COUNT}}
+⏱️ Time: {{TIMESTAMP}}
+🧪 Example Fail: /api/{{ENDPOINT}} → {{STATUS_CODE}}
+
+📄 Report: elite-summary.json
+🧠 Analysis: failure-analysis-report.md
+```
+
+---
+
+## 🧠 **AI Failure Report Template** (`docs/failure-analysis-report-template.md`)
+
+```markdown
+# 🧠 AI Failure Analysis Report
+
+**Date:** {{TIMESTAMP}}  
+**Total Failures:** {{FAIL_COUNT}}
+
+---
+
+## 🔍 Key Failures
+{{FAILURE_ENTRIES}}
+
+---
+
+## 🧠 Suggested Fixes
+
+| Endpoint | Error | Suggested Fix |
+|----------|-------|----------------|
+{{SUGGESTED_FIX_ROWS}}
+
+---
+
+_This report was auto-generated using your Postman test logs._
+```
+
+---
+
+Say:
+✅ **“Trigger Full Alert Test Now”** if you want to simulate a failed test and verify all alerts.
+📡 **“Add Discord / WhatsApp Alert Support”** if you want additional channels.

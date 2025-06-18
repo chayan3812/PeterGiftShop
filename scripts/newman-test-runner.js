@@ -180,6 +180,9 @@ async function runEliteTests() {
       console.log(`  • JSON Report: ${testConfig.reporter.json.export}`);
       console.log(`  • Elite Summary: ${summaryPath}`);
       
+      // Trigger alert systems if failures detected
+      await triggerAlertSystems(eliteSummary);
+      
       // Quality gate validation
       if (eliteSummary.qualityGates.passedSuccessRate && eliteSummary.qualityGates.passedResponseTime) {
         console.log('\n✅ All quality gates passed - Elite standards maintained!');

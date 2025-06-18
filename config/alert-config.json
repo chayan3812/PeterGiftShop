@@ -1,0 +1,29 @@
+{
+  "slackEnabled": true,
+  "emailEnabled": true,
+  "telegramEnabled": false,
+  "aiAnalyzerEnabled": true,
+  "thresholds": {
+    "failureRate": 0.05,
+    "responseTime": 500,
+    "criticalAlerts": 1
+  },
+  "templates": {
+    "slack": {
+      "channel": "#alerts",
+      "username": "Peter Digital API Monitor",
+      "icon_emoji": ":warning:"
+    },
+    "email": {
+      "subject": "Peter Digital API Test Failure Alert",
+      "priority": "high"
+    },
+    "telegram": {
+      "parseMode": "HTML"
+    }
+  },
+  "retryConfig": {
+    "maxRetries": 3,
+    "retryDelay": 5000
+  }
+}

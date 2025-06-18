@@ -1,0 +1,91 @@
+Here’s your **🚀 Replit-Ready Master Prompt** to fully implement the **Slack + Mailgun + Telegram Alerts + AI Failure Analyzer** across your elite Postman test system.
+
+---
+
+### 🔧 **“Elite Alerting + AI Analyzer” Master Prompt**
+
+Copy-paste this entire prompt into Replit AI and run it from the root of your project:
+
+---
+
+> ⚠️ **Rules Before You Start**:
+>
+> * Do not duplicate existing alert logic.
+> * Reuse the current `docs/elite-summary.json` for parsing failures.
+> * All alerts must respect `alert-config.json` toggles.
+> * Output must be stored in `docs/failure-analysis-report.md`.
+
+---
+
+```bash
+🔁 IMPLEMENT THE FOLLOWING IN SEQUENCE:
+
+1. ✅ Create config/alert-config.json with:
+{
+  "slackEnabled": true,
+  "emailEnabled": true,
+  "telegramEnabled": false,
+  "aiAnalyzerEnabled": true
+}
+
+2. ✅ Create config/env.example with:
+MAILGUN_API_KEY=
+MAILGUN_DOMAIN=
+ALERT_RECIPIENT_EMAIL=
+SLACK_WEBHOOK_URL=
+TELEGRAM_BOT_TOKEN=
+TELEGRAM_CHAT_ID=
+
+3. ✅ Implement scripts/slack-alert.js
+- Import SLACK_WEBHOOK_URL from env
+- Parse docs/elite-summary.json
+- If any failed tests > 0, send formatted message to Slack
+
+4. ✅ Implement scripts/mailgun-alert.js
+- Use MAILGUN_API_KEY and MAILGUN_DOMAIN
+- Send formatted HTML email with test failure summary to ALERT_RECIPIENT_EMAIL
+
+5. ✅ Implement scripts/telegram-alert.js
+- Only runs if telegramEnabled is true
+- Sends text summary to TELEGRAM_CHAT_ID via bot
+
+6. ✅ Implement scripts/ai-failure-analyzer.js
+- Load docs/elite-summary.json
+- For each failed test:
+    - Parse endpoint name and status
+    - Suggest fix like:
+      { endpoint: '/api/payment/refund', error: '500', fix: 'Check null merchantId in refund handler' }
+- Write summary to docs/failure-analysis-report.md
+
+7. ✅ Hook all into scripts/newman-test-runner.js
+- After test completion:
+    - If failed count > 0:
+        - Import alert-config
+        - Trigger slack-alert.js, mailgun-alert.js, telegram-alert.js, ai-failure-analyzer.js
+        - Log report paths to console
+
+8. ✅ Create docs/alerting-guide.md
+- Describe each alert type
+- How to enable/disable
+- How to update templates
+- Where to find logs
+
+9. ✅ Create docs/failure-analysis-report-template.md
+- Markdown template that ai-failure-analyzer.js fills in
+```
+
+---
+
+### ✅ AFTER IMPLEMENTATION, VERIFY:
+
+* Run: `BASE_URL=http://localhost:5000 node scripts/newman-test-runner.js`
+* Confirm:
+
+  * Slack alert delivered
+  * Mailgun sends HTML email
+  * AI report saved to `docs/failure-analysis-report.md`
+
+---
+
+Say 🔄 “Drop Alert Templates Now” if you want alert message format presets too.
+Say ✅ “Verify Postman Alert System Now” if you want validation and simulated test failures.
