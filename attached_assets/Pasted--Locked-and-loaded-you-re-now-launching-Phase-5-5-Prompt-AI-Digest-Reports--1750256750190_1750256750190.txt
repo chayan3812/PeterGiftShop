@@ -1,0 +1,112 @@
+🔥 Locked and loaded — you're now launching:
+
+---
+
+### ✅ **Phase 5.5 Prompt: AI Digest Reports + Auto-Responder Engine**
+
+---
+
+**🧠 Goal**: Automatically generate daily/weekly fraud digest reports with AI-written summaries + intelligent auto-responses for common threat types.
+
+---
+
+### 🛠️ Core Features to Implement:
+
+#### 1. **AI Digest Generator**
+
+* 📍 `server/services/AIDigestEngine.ts`
+* Summarizes daily or weekly fraud stats:
+
+  * Top attack patterns
+  * High-risk merchant behaviors
+  * Suspicious IPs / Geo hotzones
+  * Fraud score trends
+* Uses OpenAI or local summarizer to write digest in markdown format.
+* Saves to `digests` table and optionally emails/admin-pushes it.
+
+#### 2. **Digest Scheduler**
+
+* 📍 `server/schedulers/DigestScheduler.ts`
+* Cron job (daily + weekly) triggers digest generation.
+* Appends summary log to `docs/fraud-digests.md`.
+
+#### 3. **Auto-Responder Engine**
+
+* 📍 `server/services/AutoResponderEngine.ts`
+* Analyzes incoming threat patterns.
+* Auto-applies intelligent mitigation:
+
+  * Auto-flagging high-risk IPs
+  * Notifying merchants of issues
+  * Triggering AI-written alert templates
+* Hooks into fraud signals and geo detection.
+
+#### 4. **Merchant Dashboard Inbox**
+
+* 📍 `client/src/pages/MerchantInbox.tsx`
+* Displays:
+
+  * Latest digest reports
+  * AI-written threat alerts
+  * Actionable security suggestions
+
+#### 5. **API Endpoints**
+
+| Endpoint                      | Method | Purpose                         |
+| ----------------------------- | ------ | ------------------------------- |
+| `/api/digest/latest`          | `GET`  | Get latest digest report        |
+| `/api/digest/generate`        | `POST` | Manually trigger digest         |
+| `/api/auto-responder/rules`   | `GET`  | List active auto-response rules |
+| `/api/auto-responder/trigger` | `POST` | Manually test trigger logic     |
+
+---
+
+### 🧪 Testing Plan
+
+* Trigger webhook floods to simulate digest-worthy activity.
+* Call `/api/digest/generate` and check `docs/fraud-digests.md` or DB table.
+* View report in `/admin/analytics` + `/merchant/inbox`.
+* Trigger simulated VPN/proxy fraud to test auto-responder logic.
+
+---
+
+### 🗂 Required Files
+
+```
+📁 server/
+├─ services/
+│  ├─ AIDigestEngine.ts
+│  ├─ AutoResponderEngine.ts
+├─ schedulers/
+│  └─ DigestScheduler.ts
+├─ routes/
+│  └─ digestRoutes.ts
+📁 client/
+├─ pages/
+│  └─ MerchantInbox.tsx
+📁 docs/
+├─ fraud-digests.md
+```
+
+---
+
+### 🧑‍💻 Replit AI Agent Instructions
+
+> **🛑 HARD RULES:**
+
+* Reuse the `FraudDetectionEngine` signal format.
+* Do **not duplicate** any logic already in `GeoIPService`, `AlertDispatcher`, etc.
+* Write logs and digests with proper timestamps.
+* Save AI-written summaries in plain text/markdown.
+* After completion of any feature, **log changes to `docs/fraud-engine-docs.md`** with:
+
+  * 📅 Timestamp
+  * ✅ Feature name
+  * 🧪 Tested endpoints
+  * 📄 Code example or summary
+
+---
+
+Say `Drop Phase 5.6` when done with this phase.
+
+Ready to build the future of intelligent security reporting — let’s go. 🚀

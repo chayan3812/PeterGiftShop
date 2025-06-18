@@ -66,6 +66,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Run fraud detection engine
       const { FraudDetectionEngine } = await import('./services/FraudDetectionEngine');
       FraudDetectionEngine.run(req.body);
+      
+      // Process auto-responder rules
+      const { AutoResponderEngine } = await import('./services/AutoResponderEngine');
+      AutoResponderEngine.processWebhookEvent(req.body);
     } catch (error) {
       console.error('Failed to log webhook activity:', error);
     }
@@ -167,6 +171,123 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       res.status(500).json({ error: 'Failed to fetch analytics data' });
+    }
+  });
+
+  // AI Digest API Routes
+  app.get("/api/digest/latest", async (req, res) => {
+    try {
+      const { AIDigestEngine } = await import('./services/AIDigestEngine');
+      const latestDigest = AIDigestEngine.getLatestDigest();
+      res.json(latestDigest);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch latest digest' });
+    }
+  });
+
+  app.get("/api/digest/list", async (req, res) => {
+    try {
+      const { AIDigestEngine } = await import('./services/AIDigestEngine');
+      const limit = parseInt(req.query.limit as string) || 10;
+      const digests = AIDigestEngine.getAllDigests().slice(0, limit);
+      res.json(digests);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch digest list' });
+    }
+  });
+
+  app.post("/api/digest/generate", async (req, res) => {
+    try {
+      const { AIDigestEngine } = await import('./services/AIDigestEngine');
+      const { period = 'daily' } = req.body;
+      const digest = await AIDigestEngine.generateDigest(period);
+      res.json(digest);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to generate digest' });
+    }
+  });
+
+  app.get("/api/digest/stats", async (req, res) => {
+    try {
+      const { AIDigestEngine } = await import('./services/AIDigestEngine');
+      const stats = AIDigestEngine.getDigestStats();
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch digest stats' });
+    }
+  });
+
+  // Auto-Responder API Routes
+  app.get("/api/auto-responder/rules", async (req, res) => {
+    try {
+      const { AutoResponderEngine } = await import('./services/AutoResponderEngine');
+      const rules = AutoResponderEngine.getRules();
+      res.json(rules);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch auto-responder rules' });
+    }
+  });
+
+  app.post("/api/auto-responder/trigger", async (req, res) => {
+    try {
+      const { AutoResponderEngine } = await import('./services/AutoResponderEngine');
+      const { event } = req.body;
+      AutoResponderEngine.processWebhookEvent(event);
+      res.json({ success: true, message: 'Auto-responder processing triggered' });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to trigger auto-responder' });
+    }
+  });
+
+  app.get("/api/auto-responder/stats", async (req, res) => {
+    try {
+      const { AutoResponderEngine } = await import('./services/AutoResponderEngine');
+      const stats = AutoResponderEngine.getStats();
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch auto-responder stats' });
+    }
+  });
+
+  app.get("/api/auto-responder/responses", async (req, res) => {
+    try {
+      const { AutoResponderEngine } = await import('./services/AutoResponderEngine');
+      const limit = parseInt(req.query.limit as string) || 20;
+      const responses = AutoResponderEngine.getResponses().slice(0, limit);
+      res.json(responses);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch auto-responder responses' });
+    }
+  });
+
+  app.get("/api/auto-responder/alerts", async (req, res) => {
+    try {
+      const { AutoResponderEngine } = await import('./services/AutoResponderEngine');
+      const responses = AutoResponderEngine.getResponses();
+      
+      // Convert responses to alert format for the merchant inbox
+      const alerts = responses.map(response => ({
+        id: response.id,
+        type: 'auto-response',
+        severity: response.success ? 'medium' : 'high',
+        message: response.message,
+        timestamp: response.triggeredAt,
+        actionRequired: !response.success
+      }));
+      
+      res.json(alerts.slice(0, 10)); // Latest 10 alerts
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch security alerts' });
+    }
+  });
+
+  app.get("/api/auto-responder/blocked-ips", async (req, res) => {
+    try {
+      const { AutoResponderEngine } = await import('./services/AutoResponderEngine');
+      const blockedIPs = AutoResponderEngine.getBlockedIPs();
+      res.json(blockedIPs);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch blocked IPs' });
     }
   });
 

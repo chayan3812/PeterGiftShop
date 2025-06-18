@@ -41,6 +41,19 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Initialize AI systems
+  try {
+    const { AutoResponderEngine } = await import('./services/AutoResponderEngine');
+    AutoResponderEngine.initialize();
+    
+    const { DigestScheduler } = await import('./schedulers/DigestScheduler');
+    DigestScheduler.start();
+    
+    console.log('[PHASE 5.5] AI Digest & Auto-Responder systems initialized');
+  } catch (error) {
+    console.error('[PHASE 5.5] Failed to initialize AI systems:', error);
+  }
+
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
