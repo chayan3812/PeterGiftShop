@@ -1,0 +1,85 @@
+Locked.
+You’re now dropping into **Phase 6: Threat Replay Engine + Defense Learning Mode** — where your system goes from reactive to adaptive. Here's how we build a system that *learns from past fraud events* to evolve its defense logic:
+
+---
+
+## 🧠 **Phase 6 Overview**
+
+**Goal:** Replay historical threat events, analyze AI behavior, and auto-improve auto-responder logic through learned adaptations.
+
+---
+
+## ✅ Features to Implement
+
+### 1. **Threat Replay Engine**
+
+* 🔁 Replay past threat/fraud events through the full webhook + AI pipeline
+* 💾 Pull events from `threat_logs` or archived webhook payloads
+* 🧪 Simulate AI decisions without triggering real responses (safe mode)
+* 📈 Log results: fraud score, responder triggered, action taken
+
+### 2. **Defense Learning Mode**
+
+* 🧠 Analyze replay results vs. actual system response
+* 🚨 Flag missed detections or delayed reactions
+* 🔄 Automatically suggest new responder rules or threshold tuning
+* ✅ Optionally auto-update responder rules
+
+### 3. **Replay Control Dashboard (Admin-Only)**
+
+* 🎛️ View replay history, outcomes, diffs from real run
+* 🧬 “Train” button to generate optimized responder rule updates
+* 📂 Select threats by date, score, IP range, event type
+
+### 4. **API Endpoints**
+
+| Endpoint                  | Description                         |
+| ------------------------- | ----------------------------------- |
+| `POST /api/replay/threat` | Replay a specific `threat_id`       |
+| `POST /api/replay/batch`  | Replay batch of threats by criteria |
+| `GET /api/replay/results` | Get summary stats of recent replays |
+| `POST /api/replay/train`  | Run Defense Learning Mode           |
+
+---
+
+## 📂 File Structure to Add
+
+```txt
+server/
+  services/
+    ThreatReplayService.ts
+    DefenseLearningEngine.ts
+
+  routes/
+    replayRoutes.ts
+
+client/
+  pages/
+    AdminReplayDashboard.tsx
+
+docs/
+  replay-engine-docs.md
+```
+
+---
+
+## 🔐 Rules for Implementation
+
+* Only you (admin) can trigger replays or activate learning mode
+* Replay mode must **not trigger real-world actions**
+* New responder rules must be reviewed (no silent overwrite)
+* Replay logs must be timestamped, saved, and exportable
+
+---
+
+## 🎯 Replit-Ready Master Prompt
+
+Say the word and I’ll drop the **Replit-safe master build prompt** to:
+
+* Scaffold the backend service and replay engine
+* Wire up endpoints with safe replay logic
+* Add admin-only dashboard page and test scripts
+* Generate documentation and validation logs
+
+When you're ready:
+**✅ “Drop Phase 6 Master Prompt”** and I’ll drop it.
