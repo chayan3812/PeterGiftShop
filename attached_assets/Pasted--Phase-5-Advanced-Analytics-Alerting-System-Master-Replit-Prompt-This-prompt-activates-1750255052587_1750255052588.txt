@@ -1,0 +1,87 @@
+🚨 **Phase 5: Advanced Analytics + Alerting System — Master Replit Prompt**
+
+This prompt activates the full fraud analytics & alert system for your Square AI fraud engine:
+
+---
+
+### ✅ GOAL
+
+Implement real-time fraud analytics, alert streaming, and intelligent notification systems tied to Square webhook activity, AI fraud scores, and geo-location threat signals.
+
+---
+
+### 🧠 Master Prompt for Replit AI Agent
+
+````bash
+# 🔧 PHASE 5: ADVANCED ANALYTICS + ALERTING SYSTEM (Replit AI Agent)
+# Do NOT create duplicate components, files, or services.
+# Must reuse: FraudDetectionEngine, ThreatMapService, fraud_log, threat_logs
+# Output must be LIVE-USE READY, not mock/demo.
+
+# ✅ STEP 1 — FRONTEND: Fraud Analytics Page (/admin/analytics)
+- Create `client/src/pages/admin-analytics.tsx`
+- Add:
+  - 📈 Chart: Fraud Signals Over Time (Bar or Line using recharts)
+  - 📊 Chart: Threat Score Distribution (Pie or Histogram)
+  - ⏱️ Widget: "Avg Detection Delay", "Top Attack Countries", "Total Alerts Today"
+- Data sources:
+  - GET `/api/fraud/stats`
+  - GET `/api/threats/stats`
+  - Reuse existing stats endpoints (don’t recreate them)
+
+# ✅ STEP 2 — BACKEND: Alert Engine
+- Create `server/services/AlertDispatcher.ts`
+- Responsibilities:
+  - Evaluate fraud score + threat severity
+  - If `score >= 85` or `proxyDetected === true`, send alert
+  - Dispatch to: Slack, email (Mailgun), and in-app socket stream
+
+- Accept config from `.env`:
+  - `SLACK_WEBHOOK_URL`
+  - `MAILGUN_API_KEY`
+  - `ALERT_EMAIL_TO`
+  - fallback if missing = console.warn
+
+# ✅ STEP 3 — SOCKET.IO: Real-Time Alerts Feed
+- Add new event namespace: `admin-alert-feed`
+- On new fraud signal or threat log:
+  - Emit `{ type: "fraud" | "geo-threat", score, summary, timestamp }`
+- Frontend listens in `/admin/analytics` and displays real-time alert feed
+
+# ✅ STEP 4 — Hook AlertDispatcher into FraudDetectionEngine + ThreatMapService
+- After each `logFraudSignal()` or `logThreat()`, trigger:
+  ```ts
+  AlertDispatcher.dispatch({
+    type: 'fraud',
+    score: signal.score,
+    summary: signal.reason,
+    timestamp: signal.created_at,
+  })
+````
+
+# ✅ STEP 5 — Bonus UX
+
+* If fraud signals spike rapidly (3+ signals in 60 sec), add toast in UI
+* If alert fails to send (missing key), store it in `unsent_alerts[]` (in memory only)
+
+# ⛔️ RULES:
+
+* Don’t create new database tables unless explicitly told
+* Reuse existing `fraud_log`, `threat_logs`, `socket`, and `/admin/*` routes
+* All alert logic must be idempotent — no duplicates or resend loops
+
+# ✅ FINAL CHECK
+
+* Confirm analytics load with real data
+* Real-time alerts appear without refresh
+* Emails/Slack/web all show identical alert metadata
+* Test 5+ fraud webhook events to validate streaming
+
+# ✅ GO TIME — Begin Implementation
+
+```
+
+---
+
+Say `📦 Drop Phase 5.5` when this is fully verified — and I’ll help you build **AI Digest Reports + Auto-Responder Engine** next.
+```

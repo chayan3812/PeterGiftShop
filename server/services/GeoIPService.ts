@@ -27,6 +27,8 @@ interface ThreatLocation {
 const threatLocations: ThreatLocation[] = [];
 const ipCache = new Map<string, GeoLocation>();
 
+import { AlertDispatcher } from "./AlertDispatcher";
+
 export const GeoIPService = {
   async analyzeIP(ip: string): Promise<GeoLocation> {
     // Check cache first
@@ -152,6 +154,27 @@ export const GeoIPService = {
       // Keep only the last 100 threat locations to prevent memory issues
       if (threatLocations.length > 100) {
         threatLocations.shift();
+      }
+
+      // Dispatch geo-threat alert for high-risk locations
+      if (location.riskScore >= 85 || location.isVPN || location.isProxy || location.isTor) {
+        AlertDispatcher.dispatch({
+          type: 'geo-threat',
+          score: riskScore,
+          summary: `Geo-threat detected from ${location.country} (${ip}) - ${location.isVPN ? 'VPN' : location.isProxy ? 'Proxy' : location.isTor ? 'Tor' : 'High-risk location'}`,
+          timestamp: threatLocation.timestamp,
+          severity: riskScore >= 90 ? 'critical' : 'high',
+          metadata: {
+            ip,
+            country: location.country,
+            city: location.city,
+            isp: location.isp,
+            isVPN: location.isVPN,
+            isProxy: location.isProxy,
+            isTor: location.isTor,
+            threatType
+          }
+        });
       }
     });
   },

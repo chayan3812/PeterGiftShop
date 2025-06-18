@@ -1,6 +1,7 @@
 import { WebhookLogStore } from "../db/webhook-log";
 import { activityLogger } from "../db/activity-log";
 import { GeoIPService } from "./GeoIPService";
+import { AlertDispatcher } from "./AlertDispatcher";
 
 type FraudSignal = {
   id: string;
@@ -165,6 +166,22 @@ export const FraudDetectionEngine = {
         card_id: cardId,
         source_ip: simulatedIP
       }, 'fraud_engine');
+
+      // Dispatch alert for high-risk signals
+      if (latestSignal.score >= 85 || latestSignal.severity === 'critical') {
+        AlertDispatcher.dispatch({
+          type: 'fraud',
+          score: latestSignal.score,
+          summary: latestSignal.reason,
+          timestamp: latestSignal.timestamp,
+          severity: latestSignal.severity,
+          metadata: {
+            cardId,
+            activityType,
+            sourceIP: simulatedIP
+          }
+        });
+      }
     }
   },
 

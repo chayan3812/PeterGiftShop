@@ -15,6 +15,7 @@ import AdminGiftCards from "@/pages/admin-gift-cards";
 import AdminDashboard from "@/pages/admin-dashboard";
 import AdminFraud from "@/pages/admin-fraud";
 import AdminThreatMap from "@/pages/admin-threat-map";
+import AdminAnalytics from "@/pages/admin-analytics";
 import Navigation from "@/components/layout/navigation";
 import Footer from "@/components/layout/footer";
 
@@ -34,6 +35,7 @@ function Router() {
           <Route path="/admin/dashboard" component={AdminDashboard} />
           <Route path="/admin/fraud" component={AdminFraud} />
           <Route path="/admin/threat-map" component={AdminThreatMap} />
+          <Route path="/admin/analytics" component={AdminAnalytics} />
           <Route component={NotFound} />
         </Switch>
       </main>
