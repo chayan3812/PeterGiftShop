@@ -28,24 +28,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Square API Status Check
   app.get("/api/square/status", (req, res) => {
-    const { squareService } = require('./services/SquareService');
-    const status = squareService.getStatus();
-    
-    res.json({
-      ...status,
-      message: status.configured 
-        ? 'Square API is properly configured' 
-        : 'Square API credentials not found. Please set SQUARE_ACCESS_TOKEN and SQUARE_LOCATION_ID environment variables.'
+    import('./services/SquareService').then(({ squareService }) => {
+      const status = squareService.getStatus();
+      
+      res.json({
+        ...status,
+        message: status.configured 
+          ? 'Square API is properly configured' 
+          : 'Square API credentials not found. Please set SQUARE_ACCESS_TOKEN and SQUARE_LOCATION_ID environment variables.'
+      });
+    }).catch((error) => {
+      res.status(500).json({ error: 'Failed to load Square service' });
     });
   });
 
   // Webhook Routes
-  app.post("/api/webhooks/gift-cards", (req, res) => {
+  app.post("/api/webhooks/gift-cards", async (req, res) => {
     console.log('🎯 Webhook received:', req.body);
     
-    // Import activity logger here to avoid circular dependencies
-    const { activityLogger } = require('./db/activity-log');
-    activityLogger.log('webhook', req.body, 'square_webhook');
+    try {
+      const { activityLogger } = await import('./db/activity-log');
+      activityLogger.log('webhook', req.body, 'square_webhook');
+    } catch (error) {
+      console.error('Failed to log webhook activity:', error);
+    }
     
     res.sendStatus(200);
   });
