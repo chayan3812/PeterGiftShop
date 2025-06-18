@@ -1,0 +1,291 @@
+{
+  "passed": 31,
+  "failed": 0,
+  "tests": [
+    {
+      "name": "Health Check",
+      "method": "GET",
+      "path": "/api/health",
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "responseSize": 55
+    },
+    {
+      "name": "Square Status",
+      "method": "GET",
+      "path": "/api/square/status",
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "responseSize": 242
+    },
+    {
+      "name": "Auth Status",
+      "method": "GET",
+      "path": "/api/auth/status",
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "responseSize": 89
+    },
+    {
+      "name": "Purchase Gift Card",
+      "method": "POST",
+      "path": "/api/gift-cards/purchase",
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "responseSize": 142
+    },
+    {
+      "name": "Check Balance (Invalid)",
+      "method": "POST",
+      "path": "/api/gift-cards/check-balance",
+      "status": 404,
+      "expected": 404,
+      "passed": true,
+      "responseSize": 43
+    },
+    {
+      "name": "Process Webhook",
+      "method": "POST",
+      "path": "/api/webhooks/gift-cards",
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "responseSize": 2
+    },
+    {
+      "name": "Webhook Logs",
+      "method": "GET",
+      "path": "/api/webhooks/logs",
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "responseSize": 345
+    },
+    {
+      "name": "Webhook Stats",
+      "method": "GET",
+      "path": "/api/webhooks/stats",
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "responseSize": 98
+    },
+    {
+      "name": "Fraud Signals",
+      "method": "GET",
+      "path": "/api/fraud/signals",
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "responseSize": 2
+    },
+    {
+      "name": "Fraud Statistics",
+      "method": "GET",
+      "path": "/api/fraud/stats",
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "responseSize": 86
+    },
+    {
+      "name": "Threat Map",
+      "method": "GET",
+      "path": "/api/threats/map",
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "responseSize": 2
+    },
+    {
+      "name": "Threat Statistics",
+      "method": "GET",
+      "path": "/api/threats/stats",
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "responseSize": 129
+    },
+    {
+      "name": "Analytics Data",
+      "method": "GET",
+      "path": "/api/analytics/data",
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "responseSize": 1847
+    },
+    {
+      "name": "Latest Digest",
+      "method": "GET",
+      "path": "/api/digest/latest",
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "responseSize": 2289
+    },
+    {
+      "name": "Digest List",
+      "method": "GET",
+      "path": "/api/digest/list",
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "responseSize": 2
+    },
+    {
+      "name": "Generate Digest",
+      "method": "POST",
+      "path": "/api/digest/generate",
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "responseSize": 2289
+    },
+    {
+      "name": "Digest Stats",
+      "method": "GET",
+      "path": "/api/digest/stats",
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "responseSize": 94
+    },
+    {
+      "name": "Auto-Responder Rules",
+      "method": "GET",
+      "path": "/api/auto-responder/rules",
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "responseSize": 2845
+    },
+    {
+      "name": "Trigger Auto-Responder",
+      "method": "POST",
+      "path": "/api/auto-responder/trigger",
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "responseSize": 62
+    },
+    {
+      "name": "Auto-Responder Stats",
+      "method": "GET",
+      "path": "/api/auto-responder/stats",
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "responseSize": 134
+    },
+    {
+      "name": "Response History",
+      "method": "GET",
+      "path": "/api/auto-responder/responses",
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "responseSize": 2
+    },
+    {
+      "name": "Security Alerts",
+      "method": "GET",
+      "path": "/api/auto-responder/alerts",
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "responseSize": 2
+    },
+    {
+      "name": "Blocked IPs",
+      "method": "GET",
+      "path": "/api/auto-responder/blocked-ips",
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "responseSize": 2
+    },
+    {
+      "name": "Execute Threat Replay",
+      "method": "POST",
+      "path": "/api/threats/replay",
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "responseSize": 1456
+    },
+    {
+      "name": "Replay History",
+      "method": "GET",
+      "path": "/api/threats/replay-history",
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "responseSize": 1534
+    },
+    {
+      "name": "Replay Scenarios",
+      "method": "GET",
+      "path": "/api/threats/replay-scenarios",
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "responseSize": 2567
+    },
+    {
+      "name": "Replay Stats",
+      "method": "GET",
+      "path": "/api/threats/replay-stats",
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "responseSize": 156
+    },
+    {
+      "name": "Learning Updates",
+      "method": "GET",
+      "path": "/api/threats/learning-updates",
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "responseSize": 345
+    },
+    {
+      "name": "Audit Log",
+      "method": "GET",
+      "path": "/api/threats/audit-log",
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "responseSize": 289
+    },
+    {
+      "name": "Toggle Learning",
+      "method": "POST",
+      "path": "/api/threats/learning/toggle",
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "responseSize": 49
+    },
+    {
+      "name": "Update Threshold",
+      "method": "POST",
+      "path": "/api/threats/learning/threshold",
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "responseSize": 69
+    }
+  ],
+  "testSuite": "Peter Digital API - Enterprise Security Platform",
+  "executedAt": "2025-06-18T17:21:08Z",
+  "successRate": "100.0%",
+  "totalEndpoints": 62,
+  "testedEndpoints": 31,
+  "coverage": "50.0%"
+}
