@@ -66,6 +66,8 @@ export const insertOrderSchema = createInsertSchema(orders).omit({
 export const insertRedemptionSchema = createInsertSchema(redemptions).omit({
   id: true,
   redeemedAt: true,
+}).extend({
+  giftCardId: z.number().nullable(),
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;

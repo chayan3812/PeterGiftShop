@@ -90,12 +90,16 @@ export class MemStorage implements IStorage {
     const id = this.currentGiftCardId++;
     const code = this.generateGiftCardCode();
     const giftCard: GiftCard = {
-      ...insertGiftCard,
       id,
       code,
+      amount: insertGiftCard.amount,
       balance: insertGiftCard.amount,
       isActive: true,
+      recipientEmail: insertGiftCard.recipientEmail,
+      senderName: insertGiftCard.senderName,
+      message: insertGiftCard.message || null,
       createdAt: new Date(),
+      expiresAt: insertGiftCard.expiresAt || null,
       squareGiftCardId: null,
     };
     this.giftCards.set(id, giftCard);
@@ -130,8 +134,10 @@ export class MemStorage implements IStorage {
   async createOrder(insertOrder: InsertOrder): Promise<Order> {
     const id = this.currentOrderId++;
     const order: Order = {
-      ...insertOrder,
       id,
+      amount: insertOrder.amount,
+      purchaserEmail: insertOrder.purchaserEmail,
+      giftCardId: insertOrder.giftCardId || null,
       status: "pending",
       createdAt: new Date(),
       squareOrderId: null,
@@ -166,8 +172,10 @@ export class MemStorage implements IStorage {
   async createRedemption(insertRedemption: InsertRedemption): Promise<Redemption> {
     const id = this.currentRedemptionId++;
     const redemption: Redemption = {
-      ...insertRedemption,
       id,
+      amount: insertRedemption.amount,
+      giftCardId: insertRedemption.giftCardId || null,
+      description: insertRedemption.description || null,
       redeemedAt: new Date(),
     };
     this.redemptions.set(id, redemption);
