@@ -1,0 +1,89 @@
+🧠 Got it. Let’s **lock in full documentation + Postman testing** across everything implemented in Phases 1–5.
+
+---
+
+### ✅ Replit AI Agent — Mandatory Documentation + Postman Integration
+
+````bash
+# 📘 PHASE 5.9: DOCS + POSTMAN INTEGRATION (FINALIZE PHASES 1–5)
+
+# ✅ STEP 1 — GENERATE TECHNICAL DOCUMENTATION
+- Create or update this file:
+  ➤ `docs/fraud-engine-docs.md`
+
+- This file must contain for EACH PHASE (1–5):
+  - ✅ Title (e.g., "Phase 2.5: Fraud Scoring Engine")
+  - 🧠 What was implemented (clear summary)
+  - 📂 Files involved (with paths)
+  - 🔄 System behavior (how data flows, what triggers what)
+  - 🧪 Test results (scores, alert counts, replay curl data)
+  - 🕓 Timestamp of deployment
+  - ✨ Code snippet examples (for context and clarity)
+
+- Append new entries at the bottom — never overwrite.
+
+# ✅ STEP 2 — IMPLEMENT POSTMAN COLLECTION
+- Create Postman test suite for all core API endpoints built in Phases 1–5:
+  ➤ `docs/fraud-engine-postman-collection.json`
+
+- Must include:
+  - POST `/api/webhooks/gift-cards` — simulate fraud events
+  - GET `/api/threats/map` — verify geo-threat map
+  - GET `/api/threats/stats` — validate analytics counts
+  - GET `/api/fraud/stats` — confirm fraud signal stats
+  - GET `/api/alerts/live-feed` or related endpoint (if exists)
+
+- Add folder grouping by phase:
+  - 🧪 Phase 2.5 Tests
+  - 🧪 Phase 3 Tests
+  - ...
+  - Include auth headers if needed
+  - Add test scripts to auto-verify status codes + score threshold triggers
+
+# ✅ STEP 3 — AUTO-DOC UPDATER
+- Add a utility function (`DocsUpdater.ts`) in `server/utils/` that allows appending logs like:
+  ```ts
+  DocsUpdater.logPhase({
+    phase: "Phase 5",
+    action: "Critical fraud signal detected and dispatched to AlertDispatcher",
+    timestamp: new Date(),
+    result: "Score: 100, Alert sent to Slack + Email + Console",
+    codeSnippet: `AlertDispatcher.dispatch({ type: 'fraud', score: 100 })`
+  });
+````
+
+* This allows future Replit agents or scripts to auto-update the docs file with verified changes.
+
+# ✅ RULES:
+
+* Do NOT create extra `.md` files — one single `fraud-engine-docs.md`
+* Do NOT use placeholder text — only log actual verified results
+* Only append after confirmed implementation and test run
+* All test events used must include timestamps and outcome
+
+# ✅ FINAL CONFIRMATION
+
+* Docs must summarize every single part of Phases 1–5
+* All files mentioned with accurate paths
+* Postman collection must run without error and verify fraud signals and alert flow
+* Docs must be versioned — e.g. `fraud-engine-docs.md` → v1 logged
+
+# ✅ BONUS
+
+* Add changelog footer:
+
+  ```
+  ## 📅 Changelog
+  - 2025-06-18: Added Phase 5 alerting + analytics system
+  - 2025-06-17: Integrated geo-IP detection system (Phase 4.5)
+  ...
+  ```
+
+# LET’S GO 🚀 — Finalize docs + Postman now before we move to Phase 5.5 AI Digest Reports.
+
+```
+
+---
+
+Say `📦 Drop Phase 5.5` once all the above is implemented and logged. I’ll then help you build AI auto-summary digests and responder logic.
+```
