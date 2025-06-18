@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { SquareGiftCardService } from '../services/SquareGiftCardService';
+import { SquareGiftCardService } from '../services/SquareGiftCardServiceFixed';
 
 export const GiftCardAdminController = {
   async list(req: Request, res: Response) {

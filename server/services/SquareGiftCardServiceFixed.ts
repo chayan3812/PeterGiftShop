@@ -1,4 +1,3 @@
-import { SquareClient, SquareEnvironment } from 'square';
 import { v4 as uuidv4 } from 'uuid';
 import { activityLogger } from '../db/activity-log';
 
@@ -7,23 +6,37 @@ const hasSquareCredentials = () => {
   return !!(process.env.SQUARE_ACCESS_TOKEN && process.env.SQUARE_LOCATION_ID);
 };
 
-const client = hasSquareCredentials() ? new SquareClient({
-  environment: process.env.SQUARE_ENVIRONMENT === 'production' ? SquareEnvironment.Production : SquareEnvironment.Sandbox,
-  accessToken: process.env.SQUARE_ACCESS_TOKEN!,
-}) : null;
+let client: any = null;
+
+const initializeClient = async () => {
+  if (!hasSquareCredentials() || client) return client;
+  
+  try {
+    const { SquareClient, SquareEnvironment } = await import('square');
+    client = new SquareClient({
+      environment: process.env.SQUARE_ENVIRONMENT === 'production' ? SquareEnvironment.Production : SquareEnvironment.Sandbox,
+      accessToken: process.env.SQUARE_ACCESS_TOKEN!,
+    });
+    return client;
+  } catch (error) {
+    console.error('Failed to initialize Square client:', error);
+    return null;
+  }
+};
 
 const locationId = process.env.SQUARE_LOCATION_ID || '';
 
 export const SquareGiftCardService = {
   async issueGiftCard() {
-    if (!hasSquareCredentials() || !client) {
+    const squareClient = await initializeClient();
+    if (!hasSquareCredentials() || !squareClient) {
       throw new Error('Square API credentials not configured. Please set SQUARE_ACCESS_TOKEN and SQUARE_LOCATION_ID environment variables.');
     }
 
     const idempotencyKey = uuidv4();
     
     try {
-      const { result } = await client.giftCards.createGiftCard({
+      const { result } = await squareClient.giftCards.createGiftCard({
         idempotencyKey,
         locationId,
         giftCard: { type: 'DIGITAL' },
@@ -46,14 +59,15 @@ export const SquareGiftCardService = {
   },
 
   async reloadGiftCard(giftCardId: string, amountCents: number) {
-    if (!hasSquareCredentials() || !client) {
+    const squareClient = await initializeClient();
+    if (!hasSquareCredentials() || !squareClient) {
       throw new Error('Square API credentials not configured. Please set SQUARE_ACCESS_TOKEN and SQUARE_LOCATION_ID environment variables.');
     }
 
     const idempotencyKey = uuidv4();
     
     try {
-      const { result } = await client.giftCardsApi.createGiftCardActivity({
+      const { result } = await squareClient.giftCardActivities.createGiftCardActivity({
         idempotencyKey,
         giftCardActivity: {
           type: 'LOAD',
@@ -83,14 +97,15 @@ export const SquareGiftCardService = {
   },
 
   async redeemGiftCard(giftCardId: string, amountCents: number) {
-    if (!hasSquareCredentials() || !client) {
+    const squareClient = await initializeClient();
+    if (!hasSquareCredentials() || !squareClient) {
       throw new Error('Square API credentials not configured. Please set SQUARE_ACCESS_TOKEN and SQUARE_LOCATION_ID environment variables.');
     }
 
     const idempotencyKey = uuidv4();
     
     try {
-      const { result } = await client.giftCardsApi.createGiftCardActivity({
+      const { result } = await squareClient.giftCardActivities.createGiftCardActivity({
         idempotencyKey,
         giftCardActivity: {
           type: 'REDEEM',
@@ -120,12 +135,13 @@ export const SquareGiftCardService = {
   },
 
   async checkBalance(giftCardId: string) {
-    if (!hasSquareCredentials() || !client) {
+    const squareClient = await initializeClient();
+    if (!hasSquareCredentials() || !squareClient) {
       throw new Error('Square API credentials not configured. Please set SQUARE_ACCESS_TOKEN and SQUARE_LOCATION_ID environment variables.');
     }
 
     try {
-      const { result } = await client.giftCardsApi.retrieveGiftCardFromGAN({ gan: giftCardId });
+      const { result } = await squareClient.giftCards.retrieveGiftCardFromGAN({ gan: giftCardId });
       
       activityLogger.log('gift_card_activity', { 
         action: 'check_balance', 
@@ -146,12 +162,13 @@ export const SquareGiftCardService = {
 
   // Phase 2.5: Admin Toolkit Methods
   async listGiftCards(filters = {}) {
-    if (!hasSquareCredentials() || !client) {
+    const squareClient = await initializeClient();
+    if (!hasSquareCredentials() || !squareClient) {
       throw new Error('Square API credentials not configured. Please set SQUARE_ACCESS_TOKEN and SQUARE_LOCATION_ID environment variables.');
     }
 
     try {
-      const { result } = await client.giftCardsApi.listGiftCards(filters);
+      const { result } = await squareClient.giftCards.listGiftCards(filters);
       
       activityLogger.log('gift_card_activity', { 
         action: 'list_gift_cards', 
@@ -171,12 +188,13 @@ export const SquareGiftCardService = {
   },
 
   async retrieveFromGAN(gan: string) {
-    if (!hasSquareCredentials() || !client) {
+    const squareClient = await initializeClient();
+    if (!hasSquareCredentials() || !squareClient) {
       throw new Error('Square API credentials not configured. Please set SQUARE_ACCESS_TOKEN and SQUARE_LOCATION_ID environment variables.');
     }
 
     try {
-      const { result } = await client.giftCardsApi.retrieveGiftCardFromGAN({ gan });
+      const { result } = await squareClient.giftCards.retrieveGiftCardFromGAN({ gan });
       
       activityLogger.log('gift_card_activity', { 
         action: 'retrieve_from_gan', 
@@ -196,12 +214,13 @@ export const SquareGiftCardService = {
   },
 
   async retrieveFromNonce(nonce: string) {
-    if (!hasSquareCredentials() || !client) {
+    const squareClient = await initializeClient();
+    if (!hasSquareCredentials() || !squareClient) {
       throw new Error('Square API credentials not configured. Please set SQUARE_ACCESS_TOKEN and SQUARE_LOCATION_ID environment variables.');
     }
 
     try {
-      const { result } = await client.giftCardsApi.retrieveGiftCardFromNonce({ nonce });
+      const { result } = await squareClient.giftCards.retrieveGiftCardFromNonce({ nonce });
       
       activityLogger.log('gift_card_activity', { 
         action: 'retrieve_from_nonce', 
@@ -221,12 +240,13 @@ export const SquareGiftCardService = {
   },
 
   async linkCustomer(giftCardId: string, customerId: string) {
-    if (!hasSquareCredentials() || !client) {
+    const squareClient = await initializeClient();
+    if (!hasSquareCredentials() || !squareClient) {
       throw new Error('Square API credentials not configured. Please set SQUARE_ACCESS_TOKEN and SQUARE_LOCATION_ID environment variables.');
     }
 
     try {
-      const { result } = await client.giftCardsApi.linkCustomerToGiftCard(giftCardId, { customerId });
+      const { result } = await squareClient.giftCards.linkCustomerToGiftCard(giftCardId, { customerId });
       
       activityLogger.log('gift_card_activity', { 
         action: 'link_customer', 
@@ -247,12 +267,13 @@ export const SquareGiftCardService = {
   },
 
   async unlinkCustomer(giftCardId: string, customerId: string) {
-    if (!hasSquareCredentials() || !client) {
+    const squareClient = await initializeClient();
+    if (!hasSquareCredentials() || !squareClient) {
       throw new Error('Square API credentials not configured. Please set SQUARE_ACCESS_TOKEN and SQUARE_LOCATION_ID environment variables.');
     }
 
     try {
-      const { result } = await client.giftCardsApi.unlinkCustomerFromGiftCard(giftCardId, { customerId });
+      const { result } = await squareClient.giftCards.unlinkCustomerFromGiftCard(giftCardId, { customerId });
       
       activityLogger.log('gift_card_activity', { 
         action: 'unlink_customer', 
@@ -273,14 +294,15 @@ export const SquareGiftCardService = {
   },
 
   async issuePhysicalOrDigital(type: "PHYSICAL" | "DIGITAL") {
-    if (!hasSquareCredentials() || !client) {
+    const squareClient = await initializeClient();
+    if (!hasSquareCredentials() || !squareClient) {
       throw new Error('Square API credentials not configured. Please set SQUARE_ACCESS_TOKEN and SQUARE_LOCATION_ID environment variables.');
     }
 
     const idempotencyKey = uuidv4();
     
     try {
-      const { result } = await client.giftCardsApi.createGiftCard({
+      const { result } = await squareClient.giftCards.createGiftCard({
         idempotencyKey,
         locationId,
         giftCard: {
