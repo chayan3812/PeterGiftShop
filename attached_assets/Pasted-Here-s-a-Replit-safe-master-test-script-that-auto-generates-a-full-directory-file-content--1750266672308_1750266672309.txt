@@ -1,0 +1,103 @@
+Here’s a **Replit-safe master test script** that auto-generates a full **directory → file → content summary** across your entire project. It will:
+
+✅ Recursively walk your entire project
+✅ Output a JSON + Markdown report
+✅ Save it inside `docs/structure-report.md` and `docs/structure-report.json`
+✅ Include filename, path, size, and brief contents preview
+✅ Be used later to detect orphaned, duplicate, or missing features
+
+---
+
+### ✅ Full Replit Master Script: `scripts/generateStructureReport.ts`
+
+```ts
+// scripts/generateStructureReport.ts
+
+import fs from 'fs';
+import path from 'path';
+
+const outputDir = path.join(process.cwd(), 'docs');
+const mdPath = path.join(outputDir, 'structure-report.md');
+const jsonPath = path.join(outputDir, 'structure-report.json');
+
+const ignoredDirs = ['node_modules', '.git', '.vercel', 'dist', '.next'];
+const ignoredExts = ['.lock', '.map', '.png', '.jpg', '.jpeg', '.webp'];
+
+const result: any[] = [];
+
+function walk(dir: string, base = '') {
+  const entries = fs.readdirSync(dir);
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry);
+    const relPath = path.relative(process.cwd(), fullPath);
+    const stat = fs.statSync(fullPath);
+
+    if (stat.isDirectory()) {
+      if (ignoredDirs.includes(entry)) continue;
+      walk(fullPath, path.join(base, entry));
+    } else {
+      const ext = path.extname(entry);
+      if (ignoredExts.includes(ext)) continue;
+
+      const preview = fs.readFileSync(fullPath, 'utf-8').split('\n').slice(0, 10).join('\n');
+
+      result.push({
+        name: entry,
+        path: relPath,
+        size: stat.size,
+        preview: preview.trim()
+      });
+    }
+  }
+}
+
+function generateMarkdownReport() {
+  let md = `# 📁 Project Structure Report\n\n`;
+
+  for (const file of result) {
+    md += `## 📄 ${file.name}\n`;
+    md += `**Path**: \`${file.path}\`  \n`;
+    md += `**Size**: ${file.size} bytes\n`;
+    md += `**Preview:**\n\n\`\`\`\n${file.preview}\n\`\`\`\n\n---\n`;
+  }
+
+  fs.writeFileSync(mdPath, md);
+  fs.writeFileSync(jsonPath, JSON.stringify(result, null, 2));
+}
+
+function main() {
+  if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir);
+  walk(process.cwd());
+  generateMarkdownReport();
+  console.log(`✅ Structure report generated at:\n→ ${mdPath}\n→ ${jsonPath}`);
+}
+
+main();
+```
+
+---
+
+### ✅ How to Use in Replit:
+
+1. 🔹 Create file at `scripts/generateStructureReport.ts`
+2. 🔹 Run it with:
+
+```bash
+npx tsx scripts/generateStructureReport.ts
+```
+
+3. 🔍 Check the output in:
+
+* `docs/structure-report.md`
+* `docs/structure-report.json`
+
+---
+
+### 🧠 Use This Report To:
+
+* Detect orphaned pages or services
+* Cross-check frontend routes with backend controllers
+* Ensure AI agents don’t delete important files
+* Build Postman test coverage per file
+
+---
