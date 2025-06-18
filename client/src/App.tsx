@@ -33,6 +33,7 @@ function Router() {
           <Route path="/admin/gift-cards" component={AdminGiftCards} />
           <Route path="/admin/dashboard" component={AdminDashboard} />
           <Route path="/admin/fraud" component={AdminFraud} />
+          <Route path="/admin/threat-map" component={AdminThreatMap} />
           <Route component={NotFound} />
         </Switch>
       </main>
