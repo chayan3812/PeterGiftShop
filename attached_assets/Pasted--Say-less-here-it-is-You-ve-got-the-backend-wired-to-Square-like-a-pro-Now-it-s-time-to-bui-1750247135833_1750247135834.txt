@@ -1,0 +1,269 @@
+💎 Say less — here it is.
+
+You’ve got the backend wired to Square like a pro. Now it’s time to build the **interactive frontend gift card experience** worthy of a luxury fintech brand. This is **PHASE 2: Checkout, Balance Check, Redemption, Success UX** — ultra-premium, fully animated, and tied directly to your live backend.
+
+---
+
+# 🧠 PHASE 2 – Replit Master Prompt: Gift Card Checkout UX + Square API Frontend Integration
+
+## 🎯 Goal:
+
+Create a smooth, ultra-luxurious frontend experience that:
+
+* Issues gift cards
+* Shows balance
+* Redeems value
+* Animates success
+* Feels like a dark fintech dream
+
+---
+
+## 📦 Files to Modify or Create
+
+```
+client/
+├── src/pages/checkout.tsx
+├── src/pages/redeem.tsx
+├── src/pages/balance.tsx
+├── src/pages/success.tsx
+├── src/components/gift-card/CardForm.tsx
+├── src/components/ui/GlowCard.tsx
+├── src/lib/api.ts
+```
+
+---
+
+## 🧩 FULL REPLIT PROMPT (DROP INTO REPLIT AI AGENT)
+
+````txt
+🟪 Implement Phase 2: Gift Card Checkout, Redemption & Balance UI using Square API
+
+1️⃣ Create: `src/lib/api.ts`
+Handles backend communication
+
+```ts
+export const issueGiftCard = async () => {
+  const res = await fetch("/api/gift-cards/issue", { method: "POST" });
+  return res.json();
+};
+
+export const redeemGiftCard = async (giftCardId: string, amount: number) => {
+  const res = await fetch("/api/gift-cards/redeem", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ giftCardId, amount }),
+  });
+  return res.json();
+};
+
+export const checkBalance = async (giftCardId: string) => {
+  const res = await fetch(`/api/gift-cards/balance/${giftCardId}`);
+  return res.json();
+};
+````
+
+---
+
+2️⃣ Create: `components/ui/GlowCard.tsx`
+Animated display wrapper (Framer Motion + Tailwind)
+
+```tsx
+import { motion } from "framer-motion";
+
+export default function GlowCard({ children }: { children: React.ReactNode }) {
+  return (
+    <motion.div
+      className="rounded-2xl bg-glass backdrop-blur-md border border-white/10 p-6 shadow-lg hover:scale-[1.01] transition-all"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 20 }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+```
+
+Add glass class in `index.css`:
+
+```css
+.bg-glass {
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(7px);
+}
+```
+
+---
+
+3️⃣ Create: `pages/checkout.tsx`
+Gift card issuing frontend
+
+```tsx
+import { useState } from "react";
+import GlowCard from "../components/ui/GlowCard";
+import { issueGiftCard } from "../lib/api";
+import { useNavigate } from "react-router-dom";
+
+export default function CheckoutPage() {
+  const [loading, setLoading] = useState(false);
+  const [cardId, setCardId] = useState("");
+  const navigate = useNavigate();
+
+  const handleIssue = async () => {
+    setLoading(true);
+    const res = await issueGiftCard();
+    if (res.card?.id) {
+      setCardId(res.card.id);
+      setTimeout(() => navigate(`/success?cardId=${res.card.id}`), 1500);
+    }
+    setLoading(false);
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-black text-white">
+      <GlowCard>
+        <h1 className="text-2xl font-bold mb-4">🎁 Issue a Gift Card</h1>
+        <button
+          className="bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded"
+          onClick={handleIssue}
+          disabled={loading}
+        >
+          {loading ? "Issuing..." : "Issue Gift Card"}
+        </button>
+      </GlowCard>
+    </div>
+  );
+}
+```
+
+---
+
+4️⃣ Create: `pages/redeem.tsx`
+
+```tsx
+import { useState } from "react";
+import GlowCard from "../components/ui/GlowCard";
+import { redeemGiftCard } from "../lib/api";
+
+export default function RedeemPage() {
+  const [giftCardId, setGiftCardId] = useState("");
+  const [amount, setAmount] = useState("");
+  const [msg, setMsg] = useState("");
+
+  const handleRedeem = async () => {
+    const cents = parseFloat(amount) * 100;
+    const res = await redeemGiftCard(giftCardId, cents);
+    setMsg(res.success ? "Redeemed ✅" : `Error: ${res.error}`);
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-black text-white">
+      <GlowCard>
+        <h1 className="text-xl font-bold mb-4">💸 Redeem Gift Card</h1>
+        <input
+          className="bg-black border p-2 w-full mb-2"
+          placeholder="Gift Card ID"
+          value={giftCardId}
+          onChange={(e) => setGiftCardId(e.target.value)}
+        />
+        <input
+          className="bg-black border p-2 w-full mb-2"
+          placeholder="Amount (e.g. 10.00)"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+        />
+        <button className="bg-green-600 text-white p-2 w-full" onClick={handleRedeem}>
+          Redeem
+        </button>
+        {msg && <p className="mt-2 text-sm">{msg}</p>}
+      </GlowCard>
+    </div>
+  );
+}
+```
+
+---
+
+5️⃣ Create: `pages/balance.tsx`
+
+```tsx
+import { useState } from "react";
+import GlowCard from "../components/ui/GlowCard";
+import { checkBalance } from "../lib/api";
+
+export default function BalancePage() {
+  const [giftCardId, setGiftCardId] = useState("");
+  const [balance, setBalance] = useState("");
+
+  const handleCheck = async () => {
+    const res = await checkBalance(giftCardId);
+    const money = res.balance?.amount ? (res.balance.amount / 100).toFixed(2) : "N/A";
+    setBalance(`$${money}`);
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-black text-white">
+      <GlowCard>
+        <h1 className="text-xl font-bold mb-4">🔍 Check Balance</h1>
+        <input
+          className="bg-black border p-2 w-full mb-2"
+          placeholder="Gift Card ID"
+          value={giftCardId}
+          onChange={(e) => setGiftCardId(e.target.value)}
+        />
+        <button className="bg-blue-600 text-white p-2 w-full" onClick={handleCheck}>
+          Check Balance
+        </button>
+        {balance && <p className="mt-2 text-sm">Balance: {balance}</p>}
+      </GlowCard>
+    </div>
+  );
+}
+```
+
+---
+
+6️⃣ Create: `pages/success.tsx`
+
+```tsx
+import { useSearchParams } from "react-router-dom";
+import GlowCard from "../components/ui/GlowCard";
+
+export default function SuccessPage() {
+  const [params] = useSearchParams();
+  const cardId = params.get("cardId");
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-black text-white">
+      <GlowCard>
+        <h1 className="text-2xl font-bold mb-2">🎉 Gift Card Created!</h1>
+        <p className="text-sm">Card ID:</p>
+        <p className="text-green-400 break-all">{cardId}</p>
+      </GlowCard>
+    </div>
+  );
+}
+```
+
+---
+
+✅ Hook up routes in `src/App.tsx`:
+
+```tsx
+<Route path="/checkout" element={<CheckoutPage />} />
+<Route path="/redeem" element={<RedeemPage />} />
+<Route path="/balance" element={<BalancePage />} />
+<Route path="/success" element={<SuccessPage />} />
+```
+
+---
+
+## ✅ Done Right When:
+
+* You can issue → view ID → check balance → redeem → see animations
+* Neon-glow and luxury glassmorphism looks stunning
+* Square API actually powers everything (no mocks)
+* Errors show gracefully if input or card is invalid
+
+---

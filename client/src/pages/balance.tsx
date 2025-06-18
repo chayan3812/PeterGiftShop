@@ -1,19 +1,18 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Gift, CreditCard, AlertCircle } from "lucide-react";
+import { Search, CreditCard, AlertCircle } from "lucide-react";
 import GlowCard from "@/components/ui/GlowCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { redeemGiftCard, getSquareStatus } from "@/lib/api";
+import { checkBalance, getSquareStatus } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 
-export default function Redeem() {
+export default function Balance() {
   const [giftCardId, setGiftCardId] = useState("");
-  const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<any>(null);
+  const [balance, setBalance] = useState<any>(null);
   const { toast } = useToast();
 
   const { data: squareStatus } = useQuery({
@@ -21,11 +20,11 @@ export default function Redeem() {
     queryFn: getSquareStatus,
   });
 
-  const handleRedeem = async () => {
-    if (!giftCardId || !amount) {
+  const handleCheck = async () => {
+    if (!giftCardId) {
       toast({
         title: "Missing Information",
-        description: "Please enter both gift card ID and amount to redeem.",
+        description: "Please enter a gift card ID to check balance.",
         variant: "destructive",
       });
       return;
@@ -33,24 +32,25 @@ export default function Redeem() {
 
     setLoading(true);
     try {
-      const cents = Math.round(parseFloat(amount) * 100);
-      const res = await redeemGiftCard(giftCardId, cents);
+      const res = await checkBalance(giftCardId);
       
       if (res.success) {
-        setResult(res);
+        setBalance(res.balance);
+        const amount = res.balance?.amount ? (res.balance.amount / 100).toFixed(2) : "0.00";
         toast({
-          title: "Redemption Successful",
-          description: `Successfully redeemed $${amount} from gift card.`,
+          title: "Balance Retrieved",
+          description: `Gift card balance: $${amount}`,
         });
       } else {
-        throw new Error(res.error || "Failed to redeem gift card");
+        throw new Error(res.error || "Failed to check balance");
       }
     } catch (error: any) {
       toast({
-        title: "Redemption Failed",
+        title: "Balance Check Failed",
         description: error.message,
         variant: "destructive",
       });
+      setBalance(null);
     }
     setLoading(false);
   };
@@ -64,11 +64,11 @@ export default function Redeem() {
           transition={{ duration: 0.6 }}
           className="text-center mb-8"
         >
-          <div className="mx-auto w-20 h-20 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center mb-4">
-            <Gift className="w-10 h-10 text-white" />
+          <div className="mx-auto w-20 h-20 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center mb-4">
+            <Search className="w-10 h-10 text-white" />
           </div>
-          <h1 className="text-4xl font-bold text-white mb-2">Redeem Gift Card</h1>
-          <p className="text-slate-300">Use your gift card value with Square API</p>
+          <h1 className="text-4xl font-bold text-white mb-2">Check Balance</h1>
+          <p className="text-slate-300">Verify your gift card balance with Square API</p>
         </motion.div>
 
         <GlowCard>
@@ -79,17 +79,17 @@ export default function Redeem() {
                 <span className="font-medium">Square API Not Configured</span>
               </div>
               <p className="text-amber-300 text-sm">
-                Square API credentials are required for real gift card redemption.
+                Square API credentials are required for real gift card balance checking.
               </p>
             </div>
           )}
 
           <div className="space-y-6">
             <div className="text-center">
-              <h2 className="text-2xl font-bold text-white mb-2">Redeem Value</h2>
+              <h2 className="text-2xl font-bold text-white mb-2">Balance Inquiry</h2>
               <p className="text-slate-300">
                 {squareStatus?.configured 
-                  ? "Enter your gift card details to redeem value" 
+                  ? "Enter your gift card ID to check available balance" 
                   : "Demo mode - requires Square credentials for live operation"
                 }
               </p>
@@ -104,20 +104,6 @@ export default function Redeem() {
                   placeholder="Enter gift card ID"
                   value={giftCardId}
                   onChange={(e) => setGiftCardId(e.target.value)}
-                  className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-400"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="amount" className="text-white">Amount to Redeem ($)</Label>
-                <Input
-                  id="amount"
-                  type="number"
-                  placeholder="e.g. 10.00"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  step="0.01"
-                  min="0.01"
                   className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-400"
                 />
               </div>
@@ -139,9 +125,9 @@ export default function Redeem() {
                 whileTap={{ scale: 0.98 }}
               >
                 <Button
-                  onClick={handleRedeem}
-                  disabled={loading || !giftCardId || !amount}
-                  className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white py-4 text-lg font-semibold shadow-lg hover:shadow-green-500/25 transition-all duration-300"
+                  onClick={handleCheck}
+                  disabled={loading || !giftCardId}
+                  className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white py-4 text-lg font-semibold shadow-lg hover:shadow-blue-500/25 transition-all duration-300"
                 >
                   {loading ? (
                     <motion.div
@@ -150,33 +136,38 @@ export default function Redeem() {
                       animate={{ opacity: 1 }}
                     >
                       <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      Redeeming...
+                      Checking Balance...
                     </motion.div>
                   ) : (
                     <>
                       <CreditCard className="w-5 h-5 mr-2" />
-                      Redeem Gift Card
+                      Check Balance
                     </>
                   )}
                 </Button>
               </motion.div>
 
-              {result && (
+              {balance && (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="p-4 bg-green-500/10 border border-green-500/20 rounded-lg"
+                  className="p-6 bg-blue-500/10 border border-blue-500/20 rounded-lg"
                 >
-                  <h3 className="text-green-400 font-medium mb-2">Redemption Successful!</h3>
-                  <p className="text-green-300 text-sm">
-                    Activity ID: {result.activity?.id || 'N/A'}
-                  </p>
+                  <h3 className="text-blue-400 font-medium mb-3">Balance Information</h3>
+                  <div className="space-y-2">
+                    <p className="text-blue-300 text-lg font-semibold">
+                      Available Balance: ${balance.amount ? (balance.amount / 100).toFixed(2) : '0.00'}
+                    </p>
+                    <p className="text-blue-300 text-sm">
+                      Currency: {balance.currency || 'USD'}
+                    </p>
+                  </div>
                 </motion.div>
               )}
 
               <p className="text-slate-400 text-xs text-center">
                 {squareStatus?.configured 
-                  ? "This will redeem value from a real gift card using Square's API"
+                  ? "This will check the real balance using Square's API"
                   : "This will demonstrate the API call structure (requires Square credentials for live operation)"
                 }
               </p>
