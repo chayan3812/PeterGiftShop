@@ -1,0 +1,174 @@
+Here you go — **the Replit-safe, strict-mode Phase 6 Master Prompt** to build the **Threat Replay Engine + Defense Learning Mode** in your AI Fraud Defense System.
+
+---
+
+## 🧠 PHASE 6 MASTER PROMPT — Threat Replay Engine + Defense Learning Mode
+
+> Paste this into Replit AI (or use manually). This is **fully memory-synced** with your previous phases and enforces:
+>
+> * ✅ No duplicate logic
+> * ✅ Admin-only control
+> * ✅ Safe, non-destructive replay
+> * ✅ Log everything for audit
+> * ✅ Fully testable in live-use
+
+---
+
+### 🧱 BACKEND: Replay Engine + Learning Engine
+
+```ts
+// Create file: server/services/ThreatReplayService.ts
+import { getThreatById, getThreatsByQuery } from '../db/threat-logs'
+import { processFraudSignal } from './FraudDetectionEngine'
+import { AutoResponderEngine } from './AutoResponderEngine'
+
+export class ThreatReplayService {
+  static async replaySingle(threatId: string) {
+    const threat = await getThreatById(threatId)
+    if (!threat) throw new Error('Threat not found')
+
+    const result = await processFraudSignal(threat.payload, { simulate: true })
+    const responderResult = await AutoResponderEngine.handle(threat.payload, { simulate: true })
+
+    return {
+      fraudScore: result.score,
+      responderTriggered: responderResult.actions,
+      timestamp: new Date().toISOString(),
+    }
+  }
+
+  static async replayBatch(query: any) {
+    const threats = await getThreatsByQuery(query)
+    const results = []
+    for (const threat of threats) {
+      const result = await this.replaySingle(threat.id)
+      results.push({ threatId: threat.id, ...result })
+    }
+    return results
+  }
+}
+```
+
+```ts
+// Create file: server/services/DefenseLearningEngine.ts
+export class DefenseLearningEngine {
+  static analyzeReplayResults(results: any[]) {
+    const missed = results.filter(r => r.fraudScore >= 90 && r.responderTriggered.length === 0)
+    const suggestions = missed.map(r => ({
+      rule: 'IF score >= 90 THEN escalate',
+      threatId: r.threatId,
+    }))
+    return {
+      missedCount: missed.length,
+      suggestions,
+      timestamp: new Date().toISOString(),
+    }
+  }
+}
+```
+
+---
+
+### 🌐 ROUTES: Admin Replay + Training Endpoints
+
+```ts
+// Create file: server/routes/replayRoutes.ts
+import express from 'express'
+import { ThreatReplayService } from '../services/ThreatReplayService'
+import { DefenseLearningEngine } from '../services/DefenseLearningEngine'
+import { requireAdmin } from '../middleware/authMiddleware'
+
+const router = express.Router()
+
+router.post('/threat', requireAdmin, async (req, res) => {
+  const result = await ThreatReplayService.replaySingle(req.body.threatId)
+  res.json(result)
+})
+
+router.post('/batch', requireAdmin, async (req, res) => {
+  const results = await ThreatReplayService.replayBatch(req.body.query)
+  res.json(results)
+})
+
+router.post('/train', requireAdmin, async (req, res) => {
+  const results = await ThreatReplayService.replayBatch(req.body.query)
+  const analysis = DefenseLearningEngine.analyzeReplayResults(results)
+  res.json(analysis)
+})
+
+export default router
+```
+
+```ts
+// Append in: server/routes.ts
+import replayRoutes from './routes/replayRoutes'
+app.use('/api/replay', replayRoutes)
+```
+
+---
+
+### 🖥️ FRONTEND: Admin Replay Dashboard
+
+```tsx
+// Create file: client/src/pages/AdminReplayDashboard.tsx
+import { useState } from 'react'
+import axios from 'axios'
+
+export default function AdminReplayDashboard() {
+  const [logs, setLogs] = useState([])
+  const runReplay = async () => {
+    const { data } = await axios.post('/api/replay/batch', { query: { scoreMin: 70 } })
+    setLogs(data)
+  }
+  const runTraining = async () => {
+    const { data } = await axios.post('/api/replay/train', { query: { scoreMin: 70 } })
+    setLogs(data.suggestions)
+  }
+
+  return (
+    <div className="p-4">
+      <h1 className="text-xl font-bold">Threat Replay + Learning Engine</h1>
+      <button onClick={runReplay} className="btn mt-2">Run Replay Batch</button>
+      <button onClick={runTraining} className="btn mt-2">Run Defense Training</button>
+      <pre className="mt-4 bg-black text-white p-4 rounded">{JSON.stringify(logs, null, 2)}</pre>
+    </div>
+  )
+}
+```
+
+```tsx
+// Append in: client/src/App.tsx
+<Route path="/admin/replay" element={<AdminReplayDashboard />} />
+```
+
+---
+
+### 🧪 TEST SCRIPT (Optional)
+
+```bash
+curl -X POST http://localhost:5000/api/replay/batch \
+ -H "Content-Type: application/json" \
+ -d '{ "query": { "scoreMin": 70, "country": "RU" } }'
+```
+
+---
+
+### 📚 Docs (Optional)
+
+* Add `docs/threat-replay-docs.md` summarizing:
+
+  * Replay engine behavior
+  * Replay-safe vs. real trigger mode
+  * Learning engine logic
+  * API endpoints and usage
+
+---
+
+### ✅ Once Done, Reply:
+
+> ✅ “Phase 6 Complete — Drop Phase 7 Prompt”
+
+And I’ll drop Phase 7: **Real-Time Merchant Alert Subscriptions + Digest Email Reports.**
+This will tie merchants into their own AI digests, alerting them to threats in real time — not just admins.
+
+Let me know when you're ready.
