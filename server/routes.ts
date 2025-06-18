@@ -26,10 +26,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/gift-cards/redeem-square", GiftCardController.redeem);
   app.get("/api/gift-cards/balance/:giftCardId", GiftCardController.balance);
 
+  // Square API Status Check
+  app.get("/api/square/status", (req, res) => {
+    const hasCredentials = !!(process.env.SQUARE_ACCESS_TOKEN && process.env.SQUARE_LOCATION_ID);
+    const environment = process.env.SQUARE_ENVIRONMENT || 'sandbox';
+    
+    res.json({
+      configured: hasCredentials,
+      environment,
+      locationId: hasCredentials ? process.env.SQUARE_LOCATION_ID : null,
+      accessTokenSet: !!process.env.SQUARE_ACCESS_TOKEN,
+      message: hasCredentials 
+        ? 'Square API is properly configured' 
+        : 'Square API credentials not found. Please set SQUARE_ACCESS_TOKEN and SQUARE_LOCATION_ID environment variables.'
+    });
+  });
+
   // Webhook Routes
   app.post("/api/webhooks/gift-cards", (req, res) => {
     console.log('🎯 Webhook received:', req.body);
-    // Store webhook data for activity tracking
+    
+    // Import activity logger here to avoid circular dependencies
+    const { activityLogger } = require('./db/activity-log');
+    activityLogger.log('webhook', req.body, 'square_webhook');
+    
     res.sendStatus(200);
   });
 

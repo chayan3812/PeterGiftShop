@@ -8,7 +8,6 @@ const hasSquareCredentials = () => {
 };
 
 const client = hasSquareCredentials() ? new SquareClient({
-  squareVersion: '2023-10-18',
   environment: process.env.SQUARE_ENVIRONMENT === 'production' ? SquareEnvironment.Production : SquareEnvironment.Sandbox,
   accessToken: process.env.SQUARE_ACCESS_TOKEN!,
 }) : null;
@@ -24,7 +23,7 @@ export const SquareGiftCardService = {
     const idempotencyKey = uuidv4();
     
     try {
-      const { result } = await client.giftCardsApi.createGiftCard({
+      const { result } = await client.giftCards.createGiftCard({
         idempotencyKey,
         locationId,
         giftCard: { type: 'DIGITAL' },
