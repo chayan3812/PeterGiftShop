@@ -1,0 +1,74 @@
+https://developer.squareup.com/reference/square/gift-cards-api
+https://developer.squareup.com/reference/square/gift-card-activities-api
+https://developer.squareup.com/reference/square/gift-cards-api/webhooks
+https://developer.squareup.com/reference/square/gift-card-activities-api/webhooks
+curl https://connect.squareupsandbox.com/v2/gift-cards \
+  -X POST \
+  -H 'Square-Version: 2025-05-21' \
+  -H 'Authorization: Bearer EAAAl0Snd3FPJJgMVGUk_p2baYvbA3SBoNzIhAKmXydIZ0vu6di7o_kqjsiZzquw' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "idempotency_key": "b3fd3698-5de2-428b-a747-b64d1af3a123",
+    "gift_card": {
+      "type": "DIGITAL",
+      "gan": "",
+      "gan_source": "SQUARE"
+    },
+    "location_id": "L386DG19SEC3V"
+  }'
+curl https://connect.squareupsandbox.com/v2/gift-cards \
+  -X POST \
+  -H 'Square-Version: 2025-05-21' \
+  -H 'Authorization: Bearer EAAAl0Snd3FPJJgMVGUk_p2baYvbA3SBoNzIhAKmXydIZ0vu6di7o_kqjsiZzquw' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "idempotency_key": "b3fd3698-5de2-428b-a747-b64d1af3a123",
+    "gift_card": {
+      "type": "PHYSICAL",
+      "gan": "",
+      "gan_source": "SQUARE"
+    },
+    "location_id": "L386DG19SEC3V"
+  }'
+curl https://connect.squareupsandbox.com/v2/gift-cards/from-gan \
+  -X POST \
+  -H 'Square-Version: 2025-05-21' \
+  -H 'Authorization: Bearer EAAAl0Snd3FPJJgMVGUk_p2baYvbA3SBoNzIhAKmXydIZ0vu6di7o_kqjsiZzquw' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "gan": ""
+  }'
+curl https://connect.squareupsandbox.com/v2/gift-cards//link-customer \
+  -X POST \
+  -H 'Square-Version: 2025-05-21' \
+  -H 'Authorization: Bearer EAAAl0Snd3FPJJgMVGUk_p2baYvbA3SBoNzIhAKmXydIZ0vu6di7o_kqjsiZzquw' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "customer_id": ""
+  }'
+curl https://connect.squareupsandbox.com/v2/gift-cards//unlink-customer \
+  -X POST \
+  -H 'Square-Version: 2025-05-21' \
+  -H 'Authorization: Bearer EAAAl0Snd3FPJJgMVGUk_p2baYvbA3SBoNzIhAKmXydIZ0vu6di7o_kqjsiZzquw' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "customer_id": ""
+  }'
+https://developer.squareup.com/explorer/square/gift-cards-api/unlink-customer-from-gift-card
+
+https://developer.squareup.com/explorer/square/gift-cards-api/retrieve-gift-card
+https://developer.squareup.com/explorer/square/gift-cards-api/retrieve-gift-card-from-nonce
+curl https://connect.squareupsandbox.com/v2/gift-cards/from-nonce \
+  -X POST \
+  -H 'Square-Version: 2025-05-21' \
+  -H 'Authorization: Bearer EAAAl0Snd3FPJJgMVGUk_p2baYvbA3SBoNzIhAKmXydIZ0vu6di7o_kqjsiZzquw' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "nonce": ""
+  }'
+https://developer.squareup.com/explorer/square/gift-cards-api/list-gift-cards
+curl https://connect.squareupsandbox.com/v2/gift-cards?state=&type=&cursor=&customer_id= \
+  -H 'Square-Version: 2025-05-21' \
+  -H 'Authorization: Bearer EAAAl0Snd3FPJJgMVGUk_p2baYvbA3SBoNzIhAKmXydIZ0vu6di7o_kqjsiZzquw' \
+  -H 'Content-Type: application/json'
+https://developer.squareup.com/reference/square/gift-cards-api/create-gift-card
