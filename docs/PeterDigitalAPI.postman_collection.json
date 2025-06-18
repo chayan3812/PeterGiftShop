@@ -1,0 +1,1035 @@
+{
+  "info": {
+    "name": "Peter Digital API - Enterprise Security Platform",
+    "description": "Comprehensive API collection for testing the enterprise gift card management system with advanced security features",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Set base URL if not already set",
+          "if (!pm.environment.get('BASE_URL')) {",
+          "    pm.environment.set('BASE_URL', 'http://localhost:5000');",
+          "}"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "BASE_URL",
+      "value": "{{BASE_URL}}",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "description": "FusionAuth OAuth and session management endpoints",
+      "item": [
+        {
+          "name": "Token Exchange",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"{{authorization_code}}\",\n  \"state\": \"{{oauth_state}}\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/auth/token",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "auth", "token"]
+            },
+            "description": "Exchange OAuth authorization code for access token"
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh_token\": \"{{refresh_token}}\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/auth/refresh",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "auth", "refresh"]
+            },
+            "description": "Refresh expired access token"
+          }
+        },
+        {
+          "name": "User Info",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/auth/user",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "auth", "user"]
+            },
+            "description": "Get authenticated user information"
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/auth/logout",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "auth", "logout"]
+            },
+            "description": "Logout and invalidate session"
+          }
+        },
+        {
+          "name": "Auth Status",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/auth/status",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "auth", "status"]
+            },
+            "description": "Check authentication status"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin Management",
+      "description": "Admin-only endpoints for user and system management",
+      "item": [
+        {
+          "name": "List Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/admin/users",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "admin", "users"]
+            },
+            "description": "Get list of all users (Admin only)"
+          }
+        },
+        {
+          "name": "User Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/admin/users/stats",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "admin", "users", "stats"]
+            },
+            "description": "Get user statistics and metrics (Admin only)"
+          }
+        },
+        {
+          "name": "System Logs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/admin/logs?limit=50&filter=all",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "admin", "logs"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "50"
+                },
+                {
+                  "key": "filter",
+                  "value": "all"
+                }
+              ]
+            },
+            "description": "Get system activity logs (Admin only)"
+          }
+        },
+        {
+          "name": "Log Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/admin/logs/stats",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "admin", "logs", "stats"]
+            },
+            "description": "Get log statistics and breakdown (Admin only)"
+          }
+        },
+        {
+          "name": "Export Logs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/admin/logs/export",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "admin", "logs", "export"]
+            },
+            "description": "Export system logs as JSON file (Admin only)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Gift Cards - Square API",
+      "description": "Square-integrated gift card operations",
+      "item": [
+        {
+          "name": "Issue Gift Card",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": \"50.00\",\n  \"recipientEmail\": \"customer@example.com\",\n  \"senderName\": \"John Doe\",\n  \"message\": \"Happy Birthday!\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/gift-cards/issue",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "gift-cards", "issue"]
+            },
+            "description": "Issue a new gift card via Square API"
+          }
+        },
+        {
+          "name": "Reload Gift Card",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"giftCardId\": \"{{square_gift_card_id}}\",\n  \"amount\": \"25.00\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/gift-cards/reload",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "gift-cards", "reload"]
+            },
+            "description": "Add funds to existing gift card"
+          }
+        },
+        {
+          "name": "Redeem Gift Card (Square)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"giftCardId\": \"{{square_gift_card_id}}\",\n  \"amount\": \"15.00\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/gift-cards/redeem-square",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "gift-cards", "redeem-square"]
+            },
+            "description": "Redeem gift card via Square API"
+          }
+        },
+        {
+          "name": "Check Balance (Square)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/gift-cards/balance/{{square_gift_card_id}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "gift-cards", "balance", "{{square_gift_card_id}}"]
+            },
+            "description": "Get gift card balance from Square"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Gift Cards - Admin Management",
+      "description": "Administrative gift card management functions",
+      "item": [
+        {
+          "name": "List Gift Cards",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/gift-card-admin/list",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "gift-card-admin", "list"]
+            },
+            "description": "List all gift cards (Admin only)"
+          }
+        },
+        {
+          "name": "Get Card from GAN",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"gan\": \"{{gift_card_gan}}\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/gift-card-admin/from-gan",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "gift-card-admin", "from-gan"]
+            },
+            "description": "Retrieve gift card by GAN (Admin only)"
+          }
+        },
+        {
+          "name": "Get Card from Nonce",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nonce\": \"{{payment_nonce}}\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/gift-card-admin/from-nonce",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "gift-card-admin", "from-nonce"]
+            },
+            "description": "Retrieve gift card by payment nonce (Admin only)"
+          }
+        },
+        {
+          "name": "Link Customer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"giftCardId\": \"{{square_gift_card_id}}\",\n  \"customerId\": \"{{customer_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/gift-card-admin/link",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "gift-card-admin", "link"]
+            },
+            "description": "Link gift card to customer (Admin only)"
+          }
+        },
+        {
+          "name": "Unlink Customer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"giftCardId\": \"{{square_gift_card_id}}\",\n  \"customerId\": \"{{customer_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/gift-card-admin/unlink",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "gift-card-admin", "unlink"]
+            },
+            "description": "Unlink gift card from customer (Admin only)"
+          }
+        },
+        {
+          "name": "Issue Gift Card (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": \"100.00\",\n  \"recipientEmail\": \"admin-issued@example.com\",\n  \"senderName\": \"Admin\",\n  \"message\": \"Admin issued gift card\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/gift-card-admin/issue",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "gift-card-admin", "issue"]
+            },
+            "description": "Issue gift card with admin privileges"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Gift Cards - Customer Operations",
+      "description": "Customer-facing gift card operations",
+      "item": [
+        {
+          "name": "Purchase Gift Card",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": \"75.00\",\n  \"recipientEmail\": \"recipient@example.com\",\n  \"senderName\": \"Gift Giver\",\n  \"message\": \"Enjoy your gift!\",\n  \"deliveryType\": \"instant\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/gift-cards/purchase",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "gift-cards", "purchase"]
+            },
+            "description": "Purchase a new gift card"
+          }
+        },
+        {
+          "name": "Check Balance",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"{{gift_card_code}}\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/gift-cards/check-balance",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "gift-cards", "check-balance"]
+            },
+            "description": "Check gift card balance and history"
+          }
+        },
+        {
+          "name": "Redeem Gift Card",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"{{gift_card_code}}\",\n  \"amount\": \"20.00\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/gift-cards/redeem",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "gift-cards", "redeem"]
+            },
+            "description": "Redeem gift card for purchase"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Square Integration",
+      "description": "Square API integration and status endpoints",
+      "item": [
+        {
+          "name": "Square Status",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/square/status",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "square", "status"]
+            },
+            "description": "Check Square API configuration status"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Webhooks",
+      "description": "Webhook handling and monitoring endpoints",
+      "item": [
+        {
+          "name": "Square Gift Card Webhook",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"merchant_id\": \"{{merchant_id}}\",\n  \"type\": \"gift_card.updated\",\n  \"event_id\": \"{{event_id}}\",\n  \"created_at\": \"{{timestamp}}\",\n  \"data\": {\n    \"type\": \"gift_card\",\n    \"id\": \"{{gift_card_id}}\",\n    \"object\": {\n      \"gift_card\": {\n        \"id\": \"{{gift_card_id}}\",\n        \"type\": \"DIGITAL\",\n        \"gan_source\": \"SQUARE\",\n        \"state\": \"ACTIVE\",\n        \"balance_money\": {\n          \"amount\": 5000,\n          \"currency\": \"USD\"\n        }\n      }\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/webhooks/gift-cards",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "webhooks", "gift-cards"]
+            },
+            "description": "Simulate Square gift card webhook event"
+          }
+        },
+        {
+          "name": "Webhook Logs",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/webhooks/logs?limit=20",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "webhooks", "logs"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            },
+            "description": "Get recent webhook activity logs"
+          }
+        },
+        {
+          "name": "Webhook Statistics",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/webhooks/stats",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "webhooks", "stats"]
+            },
+            "description": "Get webhook processing statistics"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Fraud Detection",
+      "description": "AI-powered fraud detection and monitoring",
+      "item": [
+        {
+          "name": "Fraud Signals",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/fraud/signals?limit=25",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "fraud", "signals"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "25"
+                }
+              ]
+            },
+            "description": "Get recent fraud detection signals"
+          }
+        },
+        {
+          "name": "Fraud Statistics",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/fraud/stats",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "fraud", "stats"]
+            },
+            "description": "Get fraud detection statistics and metrics"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Threat Intelligence",
+      "description": "Geographic threat mapping and intelligence",
+      "item": [
+        {
+          "name": "Threat Map Data",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/threats/map",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "threats", "map"]
+            },
+            "description": "Get geographic threat map data"
+          }
+        },
+        {
+          "name": "Threat Statistics",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/threats/stats",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "threats", "stats"]
+            },
+            "description": "Get threat intelligence statistics"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Analytics Dashboard",
+      "description": "Enterprise analytics and reporting",
+      "item": [
+        {
+          "name": "Analytics Data",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/analytics/data",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "analytics", "data"]
+            },
+            "description": "Get comprehensive analytics dashboard data"
+          }
+        }
+      ]
+    },
+    {
+      "name": "AI Digest Reports",
+      "description": "AI-generated digest reports and insights",
+      "item": [
+        {
+          "name": "Latest Digest",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/digest/latest",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "digest", "latest"]
+            },
+            "description": "Get the most recent AI digest report"
+          }
+        },
+        {
+          "name": "Digest List",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/digest/list?limit=10",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "digest", "list"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Get list of digest reports"
+          }
+        },
+        {
+          "name": "Generate Digest",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"period\": \"daily\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/digest/generate",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "digest", "generate"]
+            },
+            "description": "Generate new AI digest report"
+          }
+        },
+        {
+          "name": "Digest Statistics",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/digest/stats",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "digest", "stats"]
+            },
+            "description": "Get digest generation statistics"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auto-Responder Engine",
+      "description": "Automated response system for security events",
+      "item": [
+        {
+          "name": "Auto-Responder Rules",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/auto-responder/rules",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "auto-responder", "rules"]
+            },
+            "description": "Get all auto-responder rules"
+          }
+        },
+        {
+          "name": "Trigger Auto-Responder",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"event\": {\n    \"type\": \"fraud_detected\",\n    \"score\": 85,\n    \"ip_address\": \"192.168.1.100\",\n    \"transaction_amount\": 250.00,\n    \"timestamp\": \"{{timestamp}}\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/auto-responder/trigger",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "auto-responder", "trigger"]
+            },
+            "description": "Manually trigger auto-responder processing"
+          }
+        },
+        {
+          "name": "Auto-Responder Statistics",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/auto-responder/stats",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "auto-responder", "stats"]
+            },
+            "description": "Get auto-responder engine statistics"
+          }
+        },
+        {
+          "name": "Response History",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/auto-responder/responses?limit=20",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "auto-responder", "responses"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            },
+            "description": "Get auto-responder action history"
+          }
+        },
+        {
+          "name": "Security Alerts",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/auto-responder/alerts",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "auto-responder", "alerts"]
+            },
+            "description": "Get security alerts from auto-responder"
+          }
+        },
+        {
+          "name": "Blocked IPs",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/auto-responder/blocked-ips",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "auto-responder", "blocked-ips"]
+            },
+            "description": "Get list of blocked IP addresses"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Threat Replay Engine",
+      "description": "Threat simulation and defense learning system",
+      "item": [
+        {
+          "name": "Execute Threat Replay",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"scenario\": \"high_fraud_score\",\n  \"merchantId\": \"test_merchant_001\",\n  \"simulateScore\": 95,\n  \"geoLocation\": \"Nigeria\",\n  \"transactionAmount\": 500.00,\n  \"fraudType\": \"synthetic_identity\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/threats/replay",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "threats", "replay"]
+            },
+            "description": "Execute threat replay simulation"
+          }
+        },
+        {
+          "name": "Replay History",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/threats/replay-history?limit=20",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "threats", "replay-history"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            },
+            "description": "Get threat replay execution history"
+          }
+        },
+        {
+          "name": "Replay Scenarios",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/threats/replay-scenarios",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "threats", "replay-scenarios"]
+            },
+            "description": "Get available replay scenarios"
+          }
+        },
+        {
+          "name": "Replay Statistics",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/threats/replay-stats",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "threats", "replay-stats"]
+            },
+            "description": "Get replay engine statistics"
+          }
+        },
+        {
+          "name": "Learning Updates",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/threats/learning-updates",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "threats", "learning-updates"]
+            },
+            "description": "Get defense learning updates"
+          }
+        },
+        {
+          "name": "Audit Log",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/threats/audit-log",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "threats", "audit-log"]
+            },
+            "description": "Get replay engine audit log"
+          }
+        },
+        {
+          "name": "Toggle Learning Mode",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"enabled\": true\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/threats/learning/toggle",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "threats", "learning", "toggle"]
+            },
+            "description": "Enable or disable learning mode"
+          }
+        },
+        {
+          "name": "Update Threshold",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"thresholdType\": \"fraud_threshold\",\n  \"value\": 80\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/threats/learning/threshold",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "threats", "learning", "threshold"]
+            },
+            "description": "Update learning threshold values"
+          }
+        }
+      ]
+    },
+    {
+      "name": "System Health",
+      "description": "System health and status monitoring",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/health",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "health"]
+            },
+            "description": "Basic system health check"
+          }
+        }
+      ]
+    }
+  ]
+}
