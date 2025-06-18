@@ -12,6 +12,7 @@ export default function Navigation() {
     { name: "Home", href: "/" },
     { name: "Gift Cards", href: "/gift-cards" },
     { name: "Redeem", href: "/redeem" },
+    { name: "Admin", href: "/admin" },
   ];
 
   const isActive = (href: string) => {

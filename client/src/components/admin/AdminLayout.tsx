@@ -14,7 +14,9 @@ import {
   PlayCircle,
   Target,
   Menu,
-  X
+  X,
+  FileText,
+  Users
 } from "lucide-react";
 
 interface AdminLayoutProps {

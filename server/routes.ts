@@ -30,6 +30,105 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/auth/logout", AuthController.logout);
   app.get("/api/auth/status", AuthController.status);
 
+  // Admin API Routes (require admin authentication)
+  app.get("/api/admin/users", fusionAuthService.requireAdmin(), async (req, res) => {
+    try {
+      // Mock user data for development - replace with actual user management system
+      const users = [
+        {
+          id: "1",
+          email: "admin@petershop.com",
+          firstName: "Peter",
+          lastName: "Admin",
+          role: "admin",
+          status: "active",
+          lastLogin: new Date().toISOString(),
+          createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+          registrations: [{ applicationId: "app1", roles: ["admin"] }]
+        },
+        {
+          id: "2", 
+          email: "customer@example.com",
+          firstName: "John",
+          lastName: "Customer", 
+          role: "customer",
+          status: "active",
+          lastLogin: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+          createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
+          registrations: [{ applicationId: "app1", roles: ["customer"] }]
+        }
+      ];
+      res.json(users);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch users' });
+    }
+  });
+
+  app.get("/api/admin/users/stats", fusionAuthService.requireAdmin(), async (req, res) => {
+    try {
+      const stats = {
+        total: 2,
+        active: 2,
+        admins: 1,
+        suspended: 0,
+        newThisMonth: 1
+      };
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch user stats' });
+    }
+  });
+
+  app.get("/api/admin/logs", fusionAuthService.requireAdmin(), async (req, res) => {
+    try {
+      const { activityLogger } = await import('./db/activity-log');
+      const limit = parseInt(req.query.limit as string) || 50;
+      const filter = req.query.filter as string || 'all';
+      
+      let logs = activityLogger.getRecentLogs(limit);
+      
+      if (filter !== 'all') {
+        logs = logs.filter(log => log.type === filter);
+      }
+      
+      res.json(logs);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch logs' });
+    }
+  });
+
+  app.get("/api/admin/logs/stats", fusionAuthService.requireAdmin(), async (req, res) => {
+    try {
+      const { activityLogger } = await import('./db/activity-log');
+      const logs = activityLogger.getRecentLogs(1000);
+      
+      const stats = {
+        total: logs.length,
+        errors: logs.filter(log => log.type === 'error').length,
+        webhooks: logs.filter(log => log.type === 'webhook').length,
+        payments: logs.filter(log => log.type === 'payment').length,
+        giftCards: logs.filter(log => log.type === 'gift_card_activity').length
+      };
+      
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch log stats' });
+    }
+  });
+
+  app.get("/api/admin/logs/export", fusionAuthService.requireAdmin(), async (req, res) => {
+    try {
+      const { activityLogger } = await import('./db/activity-log');
+      const logs = activityLogger.getRecentLogs(1000);
+      
+      res.setHeader('Content-Type', 'application/json');
+      res.setHeader('Content-Disposition', 'attachment; filename=system-logs.json');
+      res.json(logs);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to export logs' });
+    }
+  });
+
   // Square Gift Card API Routes
   app.post("/api/gift-cards/issue", GiftCardController.issue);
   app.post("/api/gift-cards/reload", GiftCardController.reload);
