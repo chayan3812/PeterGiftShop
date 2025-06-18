@@ -1,73 +1,82 @@
 {
-  "reportGeneratedAt": "2025-06-18T17:48:03.144Z",
+  "reportGeneratedAt": "2025-06-18T19:13:58.142Z",
+  "testName": "Gift Card Balance Check Failure Simulation",
   "executionSummary": {
     "totalRequests": 51,
-    "failCount": 8,
-    "successRate": 84.31,
-    "avgResponseTime": 12.4,
-    "totalTime": 8532,
-    "criticalAlerts": 3
+    "failCount": 3,
+    "successRate": 94.12,
+    "avgResponseTime": 15.8,
+    "totalTime": 9420,
+    "criticalAlerts": 1,
+    "passedSuccessRate": false,
+    "passedResponseTime": false
   },
   "failures": [
     {
-      "name": "POST /api/auth/token",
-      "error": "400 Bad Request - Invalid credentials",
-      "responseTime": 45,
-      "statusCode": 400
+      "name": "GET /api/gift-cards/check-balance",
+      "error": "500 Internal Server Error - Square API timeout during balance lookup",
+      "responseTime": 30000,
+      "statusCode": 500,
+      "details": {
+        "endpoint": "/api/gift-cards/check-balance",
+        "method": "GET",
+        "expectedStatus": 200,
+        "actualStatus": 500,
+        "errorType": "TIMEOUT_ERROR",
+        "squareApiError": "Connection timeout after 30s",
+        "giftCardCode": "GC_TEST_INVALID_123"
+      }
     },
     {
       "name": "POST /api/gift-cards/issue",
-      "error": "500 Internal Server Error - Square API connection failed",
-      "responseTime": 5000,
-      "statusCode": 500
+      "error": "422 Unprocessable Entity - Invalid amount parameter",
+      "responseTime": 125,
+      "statusCode": 422,
+      "details": {
+        "endpoint": "/api/gift-cards/issue",
+        "method": "POST",
+        "expectedStatus": 201,
+        "actualStatus": 422,
+        "errorType": "VALIDATION_ERROR",
+        "validationErrors": [
+          "Amount must be between $1 and $2000"
+        ]
+      }
     },
     {
       "name": "GET /api/admin/users",
-      "error": "401 Unauthorized - Missing authentication token",
+      "error": "401 Unauthorized - Authentication token expired",
       "responseTime": 8,
-      "statusCode": 401
-    },
-    {
-      "name": "POST /api/gift-card-admin/link",
-      "error": "500 Internal Server Error - Database connection timeout",
-      "responseTime": 30000,
-      "statusCode": 500
-    },
-    {
-      "name": "GET /api/fraud/signals",
-      "error": "503 Service Unavailable - AI service overloaded",
-      "responseTime": 15000,
-      "statusCode": 503
-    },
-    {
-      "name": "POST /api/threats/replay",
-      "error": "422 Unprocessable Entity - Invalid scenario data",
-      "responseTime": 250,
-      "statusCode": 422
-    },
-    {
-      "name": "GET /api/digest/latest",
-      "error": "504 Gateway Timeout - OpenAI API timeout",
-      "responseTime": 60000,
-      "statusCode": 504
-    },
-    {
-      "name": "POST /api/webhooks/gift-cards",
-      "error": "400 Bad Request - Malformed webhook payload",
-      "responseTime": 12,
-      "statusCode": 400
+      "statusCode": 401,
+      "details": {
+        "endpoint": "/api/admin/users",
+        "method": "GET",
+        "expectedStatus": 200,
+        "actualStatus": 401,
+        "errorType": "AUTH_ERROR",
+        "tokenExpired": true
+      }
     }
   ],
   "performanceMetrics": {
-    "p95ResponseTime": 15000,
-    "p99ResponseTime": 60000,
-    "errorRate": 15.69,
-    "throughput": 5.98
+    "p95ResponseTime": 30000,
+    "p99ResponseTime": 30000,
+    "errorRate": 5.88,
+    "throughput": 5.41,
+    "criticalEndpoints": [
+      "/api/gift-cards/check-balance"
+    ]
   },
   "securityMetrics": {
-    "authFailures": 3,
-    "suspiciousRequests": 2,
-    "rateLimitHits": 1,
-    "securityScore": 7.2
+    "authFailures": 1,
+    "suspiciousRequests": 0,
+    "rateLimitHits": 0,
+    "securityScore": 8.5
+  },
+  "alertTriggers": {
+    "successRateBelow95": true,
+    "responseTimeAbove1000ms": true,
+    "criticalEndpointFailure": true,
+    "squareApiTimeout": true
   }
 }
