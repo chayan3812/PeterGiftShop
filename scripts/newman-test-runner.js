@@ -10,8 +10,8 @@ import fs from 'fs';
 import path from 'path';
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
-const COLLECTION_PATH = 'docs/PeterDigitalAPI.postman_collection.json';
-const REPORTS_DIR = 'docs/reports';
+const COLLECTION_PATH = '../docs/PeterDigitalAPI.postman_collection.json';
+const REPORTS_DIR = '../docs/reports';
 
 // Elite test configuration
 const testConfig = {
@@ -33,28 +33,16 @@ const testConfig = {
   reporter: {
     htmlextra: {
       export: path.join(REPORTS_DIR, 'elite-api-report.html'),
-      template: 'dashboard',
       logs: true,
       debug: false,
       verboseScripts: true,
-      skipHeaders: 'User-Agent',
-      skipRequestBodies: [],
-      skipResponseBodies: [],
-      hideRequestBody: [],
-      hideResponseBody: [],
       showOnlyFails: false,
       testPaging: true,
       browserTitle: 'Peter Digital API - Elite Test Report',
       title: 'Enterprise Security Platform API Validation',
       titleSize: 4,
-      omitHeaders: false,
       skipSensitiveData: true,
       showEnvironmentData: true,
-      skipGlobalVars: false,
-      omitRequestBodies: false,
-      omitResponseBodies: false,
-      hideRequestBody: [],
-      hideResponseBody: [],
       showMarkdownLinks: true,
       showFolderDescription: true,
       timezone: 'UTC'
@@ -158,7 +146,7 @@ async function runEliteTests() {
           ...securityMetrics
         },
         coverageAnalysis: {
-          endpointsCovered: summary.collection.item.length,
+          endpointsCovered: summary.run.executions.length,
           authenticationTested: true,
           fraudDetectionTested: true,
           threatIntelligenceTested: true,
