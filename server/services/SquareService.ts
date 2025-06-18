@@ -23,10 +23,10 @@ export class SquareService {
 
   private async initializeClient() {
     try {
-      const { Client, Environment } = await import('square');
-      this.client = new Client({
+      const squareModule = await import('square');
+      this.client = new squareModule.Client({
         accessToken: process.env.SQUARE_ACCESS_TOKEN,
-        environment: this.environment === 'production' ? Environment.Production : Environment.Sandbox,
+        environment: this.environment === 'production' ? squareModule.Environment.Production : squareModule.Environment.Sandbox,
       });
       
       activityLogger.log('gift_card_activity', {

@@ -117,6 +117,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Geo-IP Threat Map API Routes
+  app.get("/api/threats/map", async (req, res) => {
+    try {
+      const { GeoIPService } = await import('./services/GeoIPService');
+      const threatMap = GeoIPService.getThreatMap();
+      res.json(threatMap);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch threat map data' });
+    }
+  });
+
+  app.get("/api/threats/stats", async (req, res) => {
+    try {
+      const { GeoIPService } = await import('./services/GeoIPService');
+      const stats = GeoIPService.getThreatStats();
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch threat stats' });
+    }
+  });
+
   // Gift Cards API
   app.post("/api/gift-cards/purchase", async (req, res) => {
     try {

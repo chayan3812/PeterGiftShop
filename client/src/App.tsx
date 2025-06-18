@@ -14,6 +14,7 @@ import Balance from "@/pages/balance";
 import AdminGiftCards from "@/pages/admin-gift-cards";
 import AdminDashboard from "@/pages/admin-dashboard";
 import AdminFraud from "@/pages/admin-fraud";
+import AdminThreatMap from "@/pages/admin-threat-map";
 import Navigation from "@/components/layout/navigation";
 import Footer from "@/components/layout/footer";
 

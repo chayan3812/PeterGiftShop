@@ -1,5 +1,6 @@
 import { WebhookLogStore } from "../db/webhook-log";
 import { activityLogger } from "../db/activity-log";
+import { GeoIPService } from "./GeoIPService";
 
 type FraudSignal = {
   id: string;
@@ -135,15 +136,34 @@ export const FraudDetectionEngine = {
       }
     }
 
-    // Log fraud detection activity
+    // Log fraud detection activity and geo-location threats
     if (fraudSignals.length > 0) {
       const latestSignal = fraudSignals[fraudSignals.length - 1];
+      
+      // Simulate IP extraction from webhook (in production, get from request headers)
+      const simulatedIP = FraudDetectionEngine.generateSimulatedIP(latestSignal.type, latestSignal.severity);
+      
+      // Log geo-location threat
+      GeoIPService.logThreatLocation(
+        simulatedIP,
+        latestSignal.type,
+        latestSignal.score,
+        latestSignal.id,
+        {
+          cardId,
+          amount: amount / 100,
+          activityType,
+          timestamp: now
+        }
+      );
+
       activityLogger.log('webhook', {
         action: 'fraud_signal_detected',
         signal_type: latestSignal.type,
         score: latestSignal.score,
         severity: latestSignal.severity,
-        card_id: cardId
+        card_id: cardId,
+        source_ip: simulatedIP
       }, 'fraud_engine');
     }
   },
@@ -183,6 +203,30 @@ export const FraudDetectionEngine = {
       bySeverity,
       avgScore: Math.round(avgScore)
     };
+  },
+
+  generateSimulatedIP(signalType: string, severity: string): string {
+    // Generate realistic IP addresses based on fraud patterns
+    const highRiskIPs = [
+      '185.220.101.', // Tor exit nodes
+      '197.210.84.',   // Nigeria
+      '46.229.168.',   // Romania
+      '222.186.42.',   // China
+      '91.205.173.',   // Russia
+    ];
+    
+    const lowRiskIPs = [
+      '8.8.8.',        // Google DNS
+      '1.1.1.',        // Cloudflare
+      '208.67.222.',   // OpenDNS
+    ];
+    
+    const ipPrefix = severity === 'critical' || severity === 'high' 
+      ? highRiskIPs[Math.floor(Math.random() * highRiskIPs.length)]
+      : lowRiskIPs[Math.floor(Math.random() * lowRiskIPs.length)];
+    
+    const lastOctet = Math.floor(Math.random() * 254) + 1;
+    return ipPrefix + lastOctet;
   },
 
   clearSignals() {
