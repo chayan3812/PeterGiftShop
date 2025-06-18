@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { insertGiftCardSchema, insertOrderSchema, insertRedemptionSchema } from "@shared/schema";
 import { z } from "zod";
 import { GiftCardController } from "./controllers/GiftCardController";
+import { GiftCardAdminController } from "./controllers/GiftCardAdminController";
 
 const purchaseSchema = insertGiftCardSchema.extend({
   deliveryType: z.enum(["instant", "scheduled"]),
@@ -25,6 +26,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/gift-cards/reload", GiftCardController.reload);
   app.post("/api/gift-cards/redeem-square", GiftCardController.redeem);
   app.get("/api/gift-cards/balance/:giftCardId", GiftCardController.balance);
+
+  // Admin Gift Card API Routes
+  app.get("/api/gift-card-admin/list", GiftCardAdminController.list);
+  app.post("/api/gift-card-admin/from-gan", GiftCardAdminController.gan);
+  app.post("/api/gift-card-admin/from-nonce", GiftCardAdminController.nonce);
+  app.post("/api/gift-card-admin/link", GiftCardAdminController.link);
+  app.post("/api/gift-card-admin/unlink", GiftCardAdminController.unlink);
+  app.post("/api/gift-card-admin/issue", GiftCardAdminController.issue);
 
   // Square API Status Check
   app.get("/api/square/status", (req, res) => {

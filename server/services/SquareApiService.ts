@@ -24,11 +24,11 @@ export class SquareApiService {
   private async initializeSquareClient() {
     try {
       // Dynamically import Square SDK when credentials are available
-      const { SquareClient, SquareEnvironment } = await import('square');
+      const square = await import('square');
       
-      this.client = new SquareClient({
+      this.client = new square.SquareClient({
         accessToken: process.env.SQUARE_ACCESS_TOKEN,
-        environment: this.environment === 'production' ? SquareEnvironment.Production : SquareEnvironment.Sandbox,
+        environment: this.environment === 'production' ? square.SquareEnvironment.Production : square.SquareEnvironment.Sandbox,
       });
       
       activityLogger.log('gift_card_activity', {

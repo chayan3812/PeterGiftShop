@@ -1,4 +1,4 @@
-import { Client, Environment } from 'square';
+import { SquareClient, SquareEnvironment } from 'square';
 import { v4 as uuidv4 } from 'uuid';
 import { activityLogger } from '../db/activity-log';
 
@@ -7,9 +7,9 @@ const hasSquareCredentials = () => {
   return !!(process.env.SQUARE_ACCESS_TOKEN && process.env.SQUARE_LOCATION_ID);
 };
 
-const client = hasSquareCredentials() ? new Client({
-  environment: process.env.SQUARE_ENVIRONMENT === 'production' ? Environment.Production : Environment.Sandbox,
-  accessToken: process.env.SQUARE_ACCESS_TOKEN!,
+const client = hasSquareCredentials() ? new SquareClient({
+  environment: process.env.SQUARE_ENVIRONMENT === 'production' ? SquareEnvironment.Production : SquareEnvironment.Sandbox,
+  squareVersion: '2025-05-21',
 }) : null;
 
 const locationId = process.env.SQUARE_LOCATION_ID || '';
@@ -138,6 +138,169 @@ export const SquareGiftCardService = {
       activityLogger.log('error', { 
         action: 'check_balance', 
         giftCardId, 
+        error: error.message 
+      }, 'square_api');
+      throw error;
+    }
+  },
+
+  // Phase 2.5: Admin Toolkit Methods
+  async listGiftCards(filters = {}) {
+    if (!hasSquareCredentials() || !client) {
+      throw new Error('Square API credentials not configured. Please set SQUARE_ACCESS_TOKEN and SQUARE_LOCATION_ID environment variables.');
+    }
+
+    try {
+      const { result } = await client.giftCardsApi.listGiftCards(filters);
+      
+      activityLogger.log('gift_card_activity', { 
+        action: 'list_gift_cards', 
+        filters,
+        count: result.giftCards?.length || 0
+      }, 'square_api');
+      
+      return result.giftCards;
+    } catch (error: any) {
+      activityLogger.log('error', { 
+        action: 'list_gift_cards', 
+        filters,
+        error: error.message 
+      }, 'square_api');
+      throw error;
+    }
+  },
+
+  async retrieveFromGAN(gan: string) {
+    if (!hasSquareCredentials() || !client) {
+      throw new Error('Square API credentials not configured. Please set SQUARE_ACCESS_TOKEN and SQUARE_LOCATION_ID environment variables.');
+    }
+
+    try {
+      const { result } = await client.giftCardsApi.retrieveGiftCardFromGAN({ gan });
+      
+      activityLogger.log('gift_card_activity', { 
+        action: 'retrieve_from_gan', 
+        gan,
+        giftCardId: result.giftCard?.id
+      }, 'square_api');
+      
+      return result.giftCard;
+    } catch (error: any) {
+      activityLogger.log('error', { 
+        action: 'retrieve_from_gan', 
+        gan,
+        error: error.message 
+      }, 'square_api');
+      throw error;
+    }
+  },
+
+  async retrieveFromNonce(nonce: string) {
+    if (!hasSquareCredentials() || !client) {
+      throw new Error('Square API credentials not configured. Please set SQUARE_ACCESS_TOKEN and SQUARE_LOCATION_ID environment variables.');
+    }
+
+    try {
+      const { result } = await client.giftCardsApi.retrieveGiftCardFromNonce({ nonce });
+      
+      activityLogger.log('gift_card_activity', { 
+        action: 'retrieve_from_nonce', 
+        nonce,
+        giftCardId: result.giftCard?.id
+      }, 'square_api');
+      
+      return result.giftCard;
+    } catch (error: any) {
+      activityLogger.log('error', { 
+        action: 'retrieve_from_nonce', 
+        nonce,
+        error: error.message 
+      }, 'square_api');
+      throw error;
+    }
+  },
+
+  async linkCustomer(giftCardId: string, customerId: string) {
+    if (!hasSquareCredentials() || !client) {
+      throw new Error('Square API credentials not configured. Please set SQUARE_ACCESS_TOKEN and SQUARE_LOCATION_ID environment variables.');
+    }
+
+    try {
+      const { result } = await client.giftCardsApi.linkCustomerToGiftCard(giftCardId, { customerId });
+      
+      activityLogger.log('gift_card_activity', { 
+        action: 'link_customer', 
+        giftCardId,
+        customerId
+      }, 'square_api');
+      
+      return result.giftCard;
+    } catch (error: any) {
+      activityLogger.log('error', { 
+        action: 'link_customer', 
+        giftCardId,
+        customerId,
+        error: error.message 
+      }, 'square_api');
+      throw error;
+    }
+  },
+
+  async unlinkCustomer(giftCardId: string, customerId: string) {
+    if (!hasSquareCredentials() || !client) {
+      throw new Error('Square API credentials not configured. Please set SQUARE_ACCESS_TOKEN and SQUARE_LOCATION_ID environment variables.');
+    }
+
+    try {
+      const { result } = await client.giftCardsApi.unlinkCustomerFromGiftCard(giftCardId, { customerId });
+      
+      activityLogger.log('gift_card_activity', { 
+        action: 'unlink_customer', 
+        giftCardId,
+        customerId
+      }, 'square_api');
+      
+      return result.giftCard;
+    } catch (error: any) {
+      activityLogger.log('error', { 
+        action: 'unlink_customer', 
+        giftCardId,
+        customerId,
+        error: error.message 
+      }, 'square_api');
+      throw error;
+    }
+  },
+
+  async issuePhysicalOrDigital(type: "PHYSICAL" | "DIGITAL") {
+    if (!hasSquareCredentials() || !client) {
+      throw new Error('Square API credentials not configured. Please set SQUARE_ACCESS_TOKEN and SQUARE_LOCATION_ID environment variables.');
+    }
+
+    const idempotencyKey = uuidv4();
+    
+    try {
+      const { result } = await client.giftCardsApi.createGiftCard({
+        idempotencyKey,
+        locationId,
+        giftCard: {
+          type,
+          ganSource: "SQUARE",
+        },
+      });
+      
+      activityLogger.log('gift_card_activity', { 
+        action: 'issue_physical_or_digital', 
+        type,
+        idempotencyKey,
+        giftCardId: result.giftCard?.id
+      }, 'square_api');
+      
+      return result.giftCard;
+    } catch (error: any) {
+      activityLogger.log('error', { 
+        action: 'issue_physical_or_digital', 
+        type,
         error: error.message 
       }, 'square_api');
       throw error;
