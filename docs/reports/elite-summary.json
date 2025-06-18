@@ -1,38 +1,73 @@
 {
-  "reportGeneratedAt": "2025-06-18T17:42:31.511Z",
-  "testSuite": "Peter Digital API - Elite Security Validation",
-  "environment": "http://localhost:5000",
+  "reportGeneratedAt": "2025-06-18T17:48:03.144Z",
   "executionSummary": {
     "totalRequests": 51,
-    "failedRequests": 0,
-    "successRate": "100.00",
-    "averageResponseTime": "5.24",
-    "minResponseTime": "2.00",
-    "maxResponseTime": "42.00",
-    "totalTestAssertions": 13,
-    "failedAssertions": 0,
-    "testPassRate": "100.00",
-    "totalExecutionTime": "6309.00",
-    "criticalAlertsTriggered": 2,
-    "securityTestsExecuted": 6,
-    "threatDetectionCoverage": "100%",
-    "fraudDetectionActive": true
+    "failCount": 8,
+    "successRate": 84.31,
+    "avgResponseTime": 12.4,
+    "totalTime": 8532,
+    "criticalAlerts": 3
   },
-  "coverageAnalysis": {
-    "endpointsCovered": 51,
-    "authenticationTested": true,
-    "fraudDetectionTested": true,
-    "threatIntelligenceTested": true,
-    "giftCardOperationsTested": true,
-    "webhookHandlingTested": true
+  "failures": [
+    {
+      "name": "POST /api/auth/token",
+      "error": "400 Bad Request - Invalid credentials",
+      "responseTime": 45,
+      "statusCode": 400
+    },
+    {
+      "name": "POST /api/gift-cards/issue",
+      "error": "500 Internal Server Error - Square API connection failed",
+      "responseTime": 5000,
+      "statusCode": 500
+    },
+    {
+      "name": "GET /api/admin/users",
+      "error": "401 Unauthorized - Missing authentication token",
+      "responseTime": 8,
+      "statusCode": 401
+    },
+    {
+      "name": "POST /api/gift-card-admin/link",
+      "error": "500 Internal Server Error - Database connection timeout",
+      "responseTime": 30000,
+      "statusCode": 500
+    },
+    {
+      "name": "GET /api/fraud/signals",
+      "error": "503 Service Unavailable - AI service overloaded",
+      "responseTime": 15000,
+      "statusCode": 503
+    },
+    {
+      "name": "POST /api/threats/replay",
+      "error": "422 Unprocessable Entity - Invalid scenario data",
+      "responseTime": 250,
+      "statusCode": 422
+    },
+    {
+      "name": "GET /api/digest/latest",
+      "error": "504 Gateway Timeout - OpenAI API timeout",
+      "responseTime": 60000,
+      "statusCode": 504
+    },
+    {
+      "name": "POST /api/webhooks/gift-cards",
+      "error": "400 Bad Request - Malformed webhook payload",
+      "responseTime": 12,
+      "statusCode": 400
+    }
+  ],
+  "performanceMetrics": {
+    "p95ResponseTime": 15000,
+    "p99ResponseTime": 60000,
+    "errorRate": 15.69,
+    "throughput": 5.98
   },
-  "qualityGates": {
-    "successRateThreshold": 95,
-    "responseTimeThreshold": 500,
-    "passedSuccessRate": true,
-    "passedResponseTime": true
-  },
-  "recommendations": [
-    "Review critical security alerts and adjust thresholds if needed"
-  ]
+  "securityMetrics": {
+    "authFailures": 3,
+    "suspiciousRequests": 2,
+    "rateLimitHits": 1,
+    "securityScore": 7.2
+  }
 }

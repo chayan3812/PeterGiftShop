@@ -3,8 +3,13 @@
  * Simulates API test failures to validate the complete alerting infrastructure
  */
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { spawn } from 'child_process';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Paths
 const REPORTS_DIR = path.join(__dirname, '../docs/reports');
@@ -118,7 +123,6 @@ function writeSimulatedData(summary) {
 async function triggerAllAlerts() {
   console.log('🚨 Triggering Alert Systems...');
   
-  const { spawn } = require('child_process');
   const alertScripts = [
     'ai-failure-analyzer.js',
     'slack-alert.js',
@@ -206,11 +210,11 @@ async function runAlertTest() {
 /**
  * Execute if run directly
  */
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   runAlertTest().catch(error => {
     console.error('Fatal error during alert test:', error);
     process.exit(1);
   });
 }
 
-module.exports = { runAlertTest, generateSimulatedFailures, triggerAllAlerts };
+export { runAlertTest, generateSimulatedFailures, triggerAllAlerts };
