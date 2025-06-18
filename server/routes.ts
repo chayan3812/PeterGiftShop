@@ -28,8 +28,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Square API Status Check
   app.get("/api/square/status", (req, res) => {
-    const { squareApiService } = require('./services/SquareApiService');
-    const status = squareApiService.getStatus();
+    const { squareService } = require('./services/SquareService');
+    const status = squareService.getStatus();
     
     res.json({
       ...status,
