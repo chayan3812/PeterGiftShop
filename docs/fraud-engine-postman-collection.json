@@ -1,798 +1,1048 @@
 {
-	"info": {
-		"_postman_id": "fraud-engine-2025-01-18",
-		"name": "Enterprise Fraud Detection & Analytics System",
-		"description": "Comprehensive API testing collection for Phases 1-5 of the fraud detection system",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-	},
-	"item": [
-		{
-			"name": "Phase 1: Core Gift Card Operations",
-			"item": [
-				{
-					"name": "Issue Gift Card",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{base_url}}/api/gift-cards/issue",
-							"host": ["{{base_url}}"],
-							"path": ["api", "gift-cards", "issue"]
-						}
-					},
-					"response": [],
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Status code is 200', function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test('Response has gift card data', function () {",
-									"    const responseJson = pm.response.json();",
-									"    pm.expect(responseJson).to.have.property('gift_card');",
-									"    pm.expect(responseJson.gift_card).to.have.property('id');",
-									"    pm.expect(responseJson.gift_card).to.have.property('gan');",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					]
-				},
-				{
-					"name": "Check Gift Card Balance",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/api/gift-cards/balance/test_card_id",
-							"host": ["{{base_url}}"],
-							"path": ["api", "gift-cards", "balance", "test_card_id"]
-						}
-					},
-					"response": [],
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Status code is 200', function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test('Response has balance data', function () {",
-									"    const responseJson = pm.response.json();",
-									"    pm.expect(responseJson).to.have.property('balance_money');",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					]
-				},
-				{
-					"name": "Reload Gift Card",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"giftCardId\": \"test_card_id\",\n    \"amount\": 2500\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{base_url}}/api/gift-cards/reload",
-							"host": ["{{base_url}}"],
-							"path": ["api", "gift-cards", "reload"]
-						}
-					},
-					"response": [],
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Status code is 200', function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test('Reload successful', function () {",
-									"    const responseJson = pm.response.json();",
-									"    pm.expect(responseJson).to.have.property('success');",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					]
-				},
-				{
-					"name": "Redeem Gift Card",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"giftCardId\": \"test_card_id\",\n    \"amount\": 1000\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{base_url}}/api/gift-cards/redeem",
-							"host": ["{{base_url}}"],
-							"path": ["api", "gift-cards", "redeem"]
-						}
-					},
-					"response": [],
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Status code is 200', function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test('Redemption successful', function () {",
-									"    const responseJson = pm.response.json();",
-									"    pm.expect(responseJson).to.have.property('success');",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					]
-				}
-			]
-		},
-		{
-			"name": "Phase 2: Admin Dashboard Operations",
-			"item": [
-				{
-					"name": "Get All Gift Cards",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/api/admin/gift-cards",
-							"host": ["{{base_url}}"],
-							"path": ["api", "admin", "gift-cards"]
-						}
-					},
-					"response": [],
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Status code is 200', function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test('Response is array of gift cards', function () {",
-									"    const responseJson = pm.response.json();",
-									"    pm.expect(responseJson).to.be.an('array');",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					]
-				},
-				{
-					"name": "Get Activity Logs",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/api/activity/logs",
-							"host": ["{{base_url}}"],
-							"path": ["api", "activity", "logs"]
-						}
-					},
-					"response": [],
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Status code is 200', function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test('Response contains activity logs', function () {",
-									"    const responseJson = pm.response.json();",
-									"    pm.expect(responseJson).to.be.an('array');",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					]
-				}
-			]
-		},
-		{
-			"name": "Phase 3: Webhook Monitoring",
-			"item": [
-				{
-					"name": "Simulate Normal Webhook Event",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"merchant_id\": \"test_merchant\",\n    \"type\": \"gift_card_activity.created\",\n    \"event_id\": \"normal_event_1\",\n    \"created_at\": \"2025-01-18T22:00:00Z\",\n    \"data\": {\n        \"type\": \"gift_card_activity\",\n        \"id\": \"activity_normal_1\",\n        \"object\": {\n            \"id\": \"gfta:normal_001\",\n            \"type\": \"LOAD\",\n            \"gift_card_id\": \"gftc:normal_test_001\",\n            \"location_id\": \"L001NORMAL\",\n            \"amount_money\": {\n                \"amount\": 2500,\n                \"currency\": \"USD\"\n            },\n            \"created_at\": \"2025-01-18T22:00:00Z\"\n        }\n    }\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{base_url}}/api/webhooks/gift-cards",
-							"host": ["{{base_url}}"],
-							"path": ["api", "webhooks", "gift-cards"]
-						}
-					},
-					"response": [],
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Webhook processed successfully', function () {",
-									"    pm.response.to.have.status(200);",
-									"    pm.expect(pm.response.text()).to.equal('OK');",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					]
-				},
-				{
-					"name": "Get Webhook Logs",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/api/webhooks/logs",
-							"host": ["{{base_url}}"],
-							"path": ["api", "webhooks", "logs"]
-						}
-					},
-					"response": [],
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Status code is 200', function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test('Response contains webhook logs', function () {",
-									"    const responseJson = pm.response.json();",
-									"    pm.expect(responseJson).to.be.an('array');",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					]
-				}
-			]
-		},
-		{
-			"name": "Phase 4: Fraud Detection Tests",
-			"item": [
-				{
-					"name": "Trigger Large Amount Fraud",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"merchant_id\": \"test_merchant\",\n    \"type\": \"gift_card_activity.created\",\n    \"event_id\": \"large_amount_fraud\",\n    \"created_at\": \"2025-01-18T22:00:00Z\",\n    \"data\": {\n        \"type\": \"gift_card_activity\",\n        \"id\": \"activity_large_amount\",\n        \"object\": {\n            \"id\": \"gfta:large_amount_001\",\n            \"type\": \"LOAD\",\n            \"gift_card_id\": \"gftc:fraud_test_001\",\n            \"location_id\": \"L999FRAUD\",\n            \"amount_money\": {\n                \"amount\": 150000,\n                \"currency\": \"USD\"\n            },\n            \"created_at\": \"2025-01-18T22:00:00Z\"\n        }\n    }\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{base_url}}/api/webhooks/gift-cards",
-							"host": ["{{base_url}}"],
-							"path": ["api", "webhooks", "gift-cards"]
-						}
-					},
-					"response": [],
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Large amount fraud detected', function () {",
-									"    pm.response.to.have.status(200);",
-									"    pm.expect(pm.response.text()).to.equal('OK');",
-									"});",
-									"",
-									"// Wait for fraud detection processing",
-									"setTimeout(function() {",
-									"    pm.sendRequest({",
-									"        url: pm.variables.get('base_url') + '/api/fraud/stats',",
-									"        method: 'GET'",
-									"    }, function (err, response) {",
-									"        if (!err) {",
-									"            const stats = response.json();",
-									"            pm.test('Fraud signal generated', function () {",
-									"                pm.expect(stats.total).to.be.greaterThan(0);",
-									"            });",
-									"        }",
-									"    });",
-									"}, 1000);"
-								],
-								"type": "text/javascript"
-							}
-						}
-					]
-				},
-				{
-					"name": "Trigger Multi-Location Fraud",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"merchant_id\": \"test_merchant\",\n    \"type\": \"gift_card_activity.created\",\n    \"event_id\": \"multi_location_fraud_1\",\n    \"created_at\": \"2025-01-18T22:00:00Z\",\n    \"data\": {\n        \"type\": \"gift_card_activity\",\n        \"id\": \"activity_multi_loc_1\",\n        \"object\": {\n            \"id\": \"gfta:multi_loc_001\",\n            \"type\": \"LOAD\",\n            \"gift_card_id\": \"gftc:multi_location_test\",\n            \"location_id\": \"L001FIRST\",\n            \"amount_money\": {\n                \"amount\": 5000,\n                \"currency\": \"USD\"\n            },\n            \"created_at\": \"2025-01-18T22:00:00Z\"\n        }\n    }\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{base_url}}/api/webhooks/gift-cards",
-							"host": ["{{base_url}}"],
-							"path": ["api", "webhooks", "gift-cards"]
-						}
-					},
-					"response": [],
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Multi-location event 1 processed', function () {",
-									"    pm.response.to.have.status(200);",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					]
-				},
-				{
-					"name": "Get Fraud Statistics",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/api/fraud/stats",
-							"host": ["{{base_url}}"],
-							"path": ["api", "fraud", "stats"]
-						}
-					},
-					"response": [],
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Status code is 200', function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test('Fraud stats structure valid', function () {",
-									"    const responseJson = pm.response.json();",
-									"    pm.expect(responseJson).to.have.property('total');",
-									"    pm.expect(responseJson).to.have.property('byType');",
-									"    pm.expect(responseJson).to.have.property('bySeverity');",
-									"    pm.expect(responseJson).to.have.property('avgScore');",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					]
-				},
-				{
-					"name": "Get Fraud Signals",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/api/fraud/signals",
-							"host": ["{{base_url}}"],
-							"path": ["api", "fraud", "signals"]
-						}
-					},
-					"response": [],
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Status code is 200', function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test('Fraud signals array returned', function () {",
-									"    const responseJson = pm.response.json();",
-									"    pm.expect(responseJson).to.be.an('array');",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					]
-				}
-			]
-		},
-		{
-			"name": "Phase 4.5: Geo-Threat Detection Tests",
-			"item": [
-				{
-					"name": "Trigger High-Risk Geo Event",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"merchant_id\": \"test_merchant\",\n    \"type\": \"gift_card_activity.created\",\n    \"event_id\": \"geo_threat_nigeria\",\n    \"created_at\": \"2025-01-18T22:00:00Z\",\n    \"data\": {\n        \"type\": \"gift_card_activity\",\n        \"id\": \"activity_geo_threat\",\n        \"object\": {\n            \"id\": \"gfta:geo_threat_001\",\n            \"type\": \"LOAD\",\n            \"gift_card_id\": \"gftc:geo_test_001\",\n            \"location_id\": \"L777NIGERIA\",\n            \"amount_money\": {\n                \"amount\": 75000,\n                \"currency\": \"USD\"\n            },\n            \"created_at\": \"2025-01-18T22:00:00Z\"\n        }\n    }\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{base_url}}/api/webhooks/gift-cards",
-							"host": ["{{base_url}}"],
-							"path": ["api", "webhooks", "gift-cards"]
-						}
-					},
-					"response": [],
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Geo-threat event processed', function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"// Verify threat detection after processing",
-									"setTimeout(function() {",
-									"    pm.sendRequest({",
-									"        url: pm.variables.get('base_url') + '/api/threats/stats',",
-									"        method: 'GET'",
-									"    }, function (err, response) {",
-									"        if (!err) {",
-									"            const stats = response.json();",
-									"            pm.test('Threat statistics updated', function () {",
-									"                pm.expect(stats.total).to.be.greaterThan(0);",
-									"            });",
-									"        }",
-									"    });",
-									"}, 1000);"
-								],
-								"type": "text/javascript"
-							}
-						}
-					]
-				},
-				{
-					"name": "Get Threat Map Data",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/api/threats/map",
-							"host": ["{{base_url}}"],
-							"path": ["api", "threats", "map"]
-						}
-					},
-					"response": [],
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Status code is 200', function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test('Threat map data structure valid', function () {",
-									"    const responseJson = pm.response.json();",
-									"    pm.expect(responseJson).to.be.an('array');",
-									"    if (responseJson.length > 0) {",
-									"        pm.expect(responseJson[0]).to.have.property('id');",
-									"        pm.expect(responseJson[0]).to.have.property('ip');",
-									"        pm.expect(responseJson[0]).to.have.property('location');",
-									"        pm.expect(responseJson[0]).to.have.property('riskScore');",
-									"    }",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					]
-				},
-				{
-					"name": "Get Threat Statistics",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/api/threats/stats",
-							"host": ["{{base_url}}"],
-							"path": ["api", "threats", "stats"]
-						}
-					},
-					"response": [],
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Status code is 200', function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test('Threat stats structure valid', function () {",
-									"    const responseJson = pm.response.json();",
-									"    pm.expect(responseJson).to.have.property('total');",
-									"    pm.expect(responseJson).to.have.property('byCountry');",
-									"    pm.expect(responseJson).to.have.property('byThreatType');",
-									"    pm.expect(responseJson).to.have.property('avgRiskScore');",
-									"    pm.expect(responseJson).to.have.property('vpnCount');",
-									"    pm.expect(responseJson).to.have.property('proxyCount');",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					]
-				}
-			]
-		},
-		{
-			"name": "Phase 5: Analytics & Alerting Tests",
-			"item": [
-				{
-					"name": "Trigger Critical Alert Event",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"merchant_id\": \"test_merchant\",\n    \"type\": \"gift_card_activity.created\",\n    \"event_id\": \"critical_alert_test\",\n    \"created_at\": \"2025-01-18T22:00:00Z\",\n    \"data\": {\n        \"type\": \"gift_card_activity\",\n        \"id\": \"activity_critical_alert\",\n        \"object\": {\n            \"id\": \"gfta:critical_alert_001\",\n            \"type\": \"LOAD\",\n            \"gift_card_id\": \"gftc:critical_test_001\",\n            \"location_id\": \"L999CRITICAL\",\n            \"amount_money\": {\n                \"amount\": 500000,\n                \"currency\": \"USD\"\n            },\n            \"created_at\": \"2025-01-18T22:00:00Z\"\n        }\n    }\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{base_url}}/api/webhooks/gift-cards",
-							"host": ["{{base_url}}"],
-							"path": ["api", "webhooks", "gift-cards"]
-						}
-					},
-					"response": [],
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Critical event processed', function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"// Verify alert generation",
-									"setTimeout(function() {",
-									"    pm.sendRequest({",
-									"        url: pm.variables.get('base_url') + '/api/analytics/data',",
-									"        method: 'GET'",
-									"    }, function (err, response) {",
-									"        if (!err) {",
-									"            const analytics = response.json();",
-									"            pm.test('Critical alert generated', function () {",
-									"                pm.expect(analytics.fraudStats.total).to.be.greaterThan(0);",
-									"                pm.expect(analytics.fraudStats.bySeverity.critical).to.be.greaterThan(0);",
-									"            });",
-									"        }",
-									"    });",
-									"}, 2000);"
-								],
-								"type": "text/javascript"
-							}
-						}
-					]
-				},
-				{
-					"name": "Get Analytics Dashboard Data",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/api/analytics/data",
-							"host": ["{{base_url}}"],
-							"path": ["api", "analytics", "data"]
-						}
-					},
-					"response": [],
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Status code is 200', function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test('Analytics data structure complete', function () {",
-									"    const responseJson = pm.response.json();",
-									"    pm.expect(responseJson).to.have.property('fraudStats');",
-									"    pm.expect(responseJson).to.have.property('threatStats');",
-									"    pm.expect(responseJson).to.have.property('timeSeriesData');",
-									"    ",
-									"    // Verify fraud stats structure",
-									"    pm.expect(responseJson.fraudStats).to.have.property('total');",
-									"    pm.expect(responseJson.fraudStats).to.have.property('byType');",
-									"    pm.expect(responseJson.fraudStats).to.have.property('bySeverity');",
-									"    pm.expect(responseJson.fraudStats).to.have.property('avgScore');",
-									"    ",
-									"    // Verify threat stats structure",
-									"    pm.expect(responseJson.threatStats).to.have.property('total');",
-									"    pm.expect(responseJson.threatStats).to.have.property('byCountry');",
-									"    pm.expect(responseJson.threatStats).to.have.property('avgRiskScore');",
-									"    ",
-									"    // Verify time series data",
-									"    pm.expect(responseJson.timeSeriesData).to.be.an('array');",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					]
-				}
-			]
-		},
-		{
-			"name": "System Health & Status",
-			"item": [
-				{
-					"name": "Check Square API Status",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/api/status",
-							"host": ["{{base_url}}"],
-							"path": ["api", "status"]
-						}
-					},
-					"response": [],
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Status endpoint available', function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test('System status information provided', function () {",
-									"    const responseJson = pm.response.json();",
-									"    pm.expect(responseJson).to.have.property('status');",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					]
-				}
-			]
-		}
-	],
-	"event": [
-		{
-			"listen": "prerequest",
-			"script": {
-				"type": "text/javascript",
-				"exec": [
-					"// Set base URL if not already set",
-					"if (!pm.variables.get('base_url')) {",
-					"    pm.variables.set('base_url', 'http://localhost:5000');",
-					"}"
-				]
-			}
-		},
-		{
-			"listen": "test",
-			"script": {
-				"type": "text/javascript",
-				"exec": [
-					"// Global test for response time",
-					"pm.test('Response time is acceptable', function () {",
-					"    pm.expect(pm.response.responseTime).to.be.below(5000);",
-					"});"
-				]
-			}
-		}
-	],
-	"variable": [
-		{
-			"key": "base_url",
-			"value": "http://localhost:5000",
-			"type": "string"
-		}
-	]
+        "info": {
+                "_postman_id": "fraud-engine-2025-01-18",
+                "name": "Enterprise Fraud Detection & Analytics System",
+                "description": "Comprehensive API testing collection for Phases 1-6 of the fraud detection system including Threat Replay Engine and Defense Learning capabilities",
+                "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+        },
+        "item": [
+                {
+                        "name": "Phase 1: Core Gift Card Operations",
+                        "item": [
+                                {
+                                        "name": "Issue Gift Card",
+                                        "request": {
+                                                "method": "POST",
+                                                "header": [],
+                                                "body": {
+                                                        "mode": "raw",
+                                                        "raw": "{}",
+                                                        "options": {
+                                                                "raw": {
+                                                                        "language": "json"
+                                                                }
+                                                        }
+                                                },
+                                                "url": {
+                                                        "raw": "{{base_url}}/api/gift-cards/issue",
+                                                        "host": ["{{base_url}}"],
+                                                        "path": ["api", "gift-cards", "issue"]
+                                                }
+                                        },
+                                        "response": [],
+                                        "event": [
+                                                {
+                                                        "listen": "test",
+                                                        "script": {
+                                                                "exec": [
+                                                                        "pm.test('Status code is 200', function () {",
+                                                                        "    pm.response.to.have.status(200);",
+                                                                        "});",
+                                                                        "",
+                                                                        "pm.test('Response has gift card data', function () {",
+                                                                        "    const responseJson = pm.response.json();",
+                                                                        "    pm.expect(responseJson).to.have.property('gift_card');",
+                                                                        "    pm.expect(responseJson.gift_card).to.have.property('id');",
+                                                                        "    pm.expect(responseJson.gift_card).to.have.property('gan');",
+                                                                        "});"
+                                                                ],
+                                                                "type": "text/javascript"
+                                                        }
+                                                }
+                                        ]
+                                },
+                                {
+                                        "name": "Check Gift Card Balance",
+                                        "request": {
+                                                "method": "GET",
+                                                "header": [],
+                                                "url": {
+                                                        "raw": "{{base_url}}/api/gift-cards/balance/test_card_id",
+                                                        "host": ["{{base_url}}"],
+                                                        "path": ["api", "gift-cards", "balance", "test_card_id"]
+                                                }
+                                        },
+                                        "response": [],
+                                        "event": [
+                                                {
+                                                        "listen": "test",
+                                                        "script": {
+                                                                "exec": [
+                                                                        "pm.test('Status code is 200', function () {",
+                                                                        "    pm.response.to.have.status(200);",
+                                                                        "});",
+                                                                        "",
+                                                                        "pm.test('Response has balance data', function () {",
+                                                                        "    const responseJson = pm.response.json();",
+                                                                        "    pm.expect(responseJson).to.have.property('balance_money');",
+                                                                        "});"
+                                                                ],
+                                                                "type": "text/javascript"
+                                                        }
+                                                }
+                                        ]
+                                },
+                                {
+                                        "name": "Reload Gift Card",
+                                        "request": {
+                                                "method": "POST",
+                                                "header": [
+                                                        {
+                                                                "key": "Content-Type",
+                                                                "value": "application/json"
+                                                        }
+                                                ],
+                                                "body": {
+                                                        "mode": "raw",
+                                                        "raw": "{\n    \"giftCardId\": \"test_card_id\",\n    \"amount\": 2500\n}",
+                                                        "options": {
+                                                                "raw": {
+                                                                        "language": "json"
+                                                                }
+                                                        }
+                                                },
+                                                "url": {
+                                                        "raw": "{{base_url}}/api/gift-cards/reload",
+                                                        "host": ["{{base_url}}"],
+                                                        "path": ["api", "gift-cards", "reload"]
+                                                }
+                                        },
+                                        "response": [],
+                                        "event": [
+                                                {
+                                                        "listen": "test",
+                                                        "script": {
+                                                                "exec": [
+                                                                        "pm.test('Status code is 200', function () {",
+                                                                        "    pm.response.to.have.status(200);",
+                                                                        "});",
+                                                                        "",
+                                                                        "pm.test('Reload successful', function () {",
+                                                                        "    const responseJson = pm.response.json();",
+                                                                        "    pm.expect(responseJson).to.have.property('success');",
+                                                                        "});"
+                                                                ],
+                                                                "type": "text/javascript"
+                                                        }
+                                                }
+                                        ]
+                                },
+                                {
+                                        "name": "Redeem Gift Card",
+                                        "request": {
+                                                "method": "POST",
+                                                "header": [
+                                                        {
+                                                                "key": "Content-Type",
+                                                                "value": "application/json"
+                                                        }
+                                                ],
+                                                "body": {
+                                                        "mode": "raw",
+                                                        "raw": "{\n    \"giftCardId\": \"test_card_id\",\n    \"amount\": 1000\n}",
+                                                        "options": {
+                                                                "raw": {
+                                                                        "language": "json"
+                                                                }
+                                                        }
+                                                },
+                                                "url": {
+                                                        "raw": "{{base_url}}/api/gift-cards/redeem",
+                                                        "host": ["{{base_url}}"],
+                                                        "path": ["api", "gift-cards", "redeem"]
+                                                }
+                                        },
+                                        "response": [],
+                                        "event": [
+                                                {
+                                                        "listen": "test",
+                                                        "script": {
+                                                                "exec": [
+                                                                        "pm.test('Status code is 200', function () {",
+                                                                        "    pm.response.to.have.status(200);",
+                                                                        "});",
+                                                                        "",
+                                                                        "pm.test('Redemption successful', function () {",
+                                                                        "    const responseJson = pm.response.json();",
+                                                                        "    pm.expect(responseJson).to.have.property('success');",
+                                                                        "});"
+                                                                ],
+                                                                "type": "text/javascript"
+                                                        }
+                                                }
+                                        ]
+                                }
+                        ]
+                },
+                {
+                        "name": "Phase 2: Admin Dashboard Operations",
+                        "item": [
+                                {
+                                        "name": "Get All Gift Cards",
+                                        "request": {
+                                                "method": "GET",
+                                                "header": [],
+                                                "url": {
+                                                        "raw": "{{base_url}}/api/admin/gift-cards",
+                                                        "host": ["{{base_url}}"],
+                                                        "path": ["api", "admin", "gift-cards"]
+                                                }
+                                        },
+                                        "response": [],
+                                        "event": [
+                                                {
+                                                        "listen": "test",
+                                                        "script": {
+                                                                "exec": [
+                                                                        "pm.test('Status code is 200', function () {",
+                                                                        "    pm.response.to.have.status(200);",
+                                                                        "});",
+                                                                        "",
+                                                                        "pm.test('Response is array of gift cards', function () {",
+                                                                        "    const responseJson = pm.response.json();",
+                                                                        "    pm.expect(responseJson).to.be.an('array');",
+                                                                        "});"
+                                                                ],
+                                                                "type": "text/javascript"
+                                                        }
+                                                }
+                                        ]
+                                },
+                                {
+                                        "name": "Get Activity Logs",
+                                        "request": {
+                                                "method": "GET",
+                                                "header": [],
+                                                "url": {
+                                                        "raw": "{{base_url}}/api/activity/logs",
+                                                        "host": ["{{base_url}}"],
+                                                        "path": ["api", "activity", "logs"]
+                                                }
+                                        },
+                                        "response": [],
+                                        "event": [
+                                                {
+                                                        "listen": "test",
+                                                        "script": {
+                                                                "exec": [
+                                                                        "pm.test('Status code is 200', function () {",
+                                                                        "    pm.response.to.have.status(200);",
+                                                                        "});",
+                                                                        "",
+                                                                        "pm.test('Response contains activity logs', function () {",
+                                                                        "    const responseJson = pm.response.json();",
+                                                                        "    pm.expect(responseJson).to.be.an('array');",
+                                                                        "});"
+                                                                ],
+                                                                "type": "text/javascript"
+                                                        }
+                                                }
+                                        ]
+                                }
+                        ]
+                },
+                {
+                        "name": "Phase 3: Webhook Monitoring",
+                        "item": [
+                                {
+                                        "name": "Simulate Normal Webhook Event",
+                                        "request": {
+                                                "method": "POST",
+                                                "header": [
+                                                        {
+                                                                "key": "Content-Type",
+                                                                "value": "application/json"
+                                                        }
+                                                ],
+                                                "body": {
+                                                        "mode": "raw",
+                                                        "raw": "{\n    \"merchant_id\": \"test_merchant\",\n    \"type\": \"gift_card_activity.created\",\n    \"event_id\": \"normal_event_1\",\n    \"created_at\": \"2025-01-18T22:00:00Z\",\n    \"data\": {\n        \"type\": \"gift_card_activity\",\n        \"id\": \"activity_normal_1\",\n        \"object\": {\n            \"id\": \"gfta:normal_001\",\n            \"type\": \"LOAD\",\n            \"gift_card_id\": \"gftc:normal_test_001\",\n            \"location_id\": \"L001NORMAL\",\n            \"amount_money\": {\n                \"amount\": 2500,\n                \"currency\": \"USD\"\n            },\n            \"created_at\": \"2025-01-18T22:00:00Z\"\n        }\n    }\n}",
+                                                        "options": {
+                                                                "raw": {
+                                                                        "language": "json"
+                                                                }
+                                                        }
+                                                },
+                                                "url": {
+                                                        "raw": "{{base_url}}/api/webhooks/gift-cards",
+                                                        "host": ["{{base_url}}"],
+                                                        "path": ["api", "webhooks", "gift-cards"]
+                                                }
+                                        },
+                                        "response": [],
+                                        "event": [
+                                                {
+                                                        "listen": "test",
+                                                        "script": {
+                                                                "exec": [
+                                                                        "pm.test('Webhook processed successfully', function () {",
+                                                                        "    pm.response.to.have.status(200);",
+                                                                        "    pm.expect(pm.response.text()).to.equal('OK');",
+                                                                        "});"
+                                                                ],
+                                                                "type": "text/javascript"
+                                                        }
+                                                }
+                                        ]
+                                },
+                                {
+                                        "name": "Get Webhook Logs",
+                                        "request": {
+                                                "method": "GET",
+                                                "header": [],
+                                                "url": {
+                                                        "raw": "{{base_url}}/api/webhooks/logs",
+                                                        "host": ["{{base_url}}"],
+                                                        "path": ["api", "webhooks", "logs"]
+                                                }
+                                        },
+                                        "response": [],
+                                        "event": [
+                                                {
+                                                        "listen": "test",
+                                                        "script": {
+                                                                "exec": [
+                                                                        "pm.test('Status code is 200', function () {",
+                                                                        "    pm.response.to.have.status(200);",
+                                                                        "});",
+                                                                        "",
+                                                                        "pm.test('Response contains webhook logs', function () {",
+                                                                        "    const responseJson = pm.response.json();",
+                                                                        "    pm.expect(responseJson).to.be.an('array');",
+                                                                        "});"
+                                                                ],
+                                                                "type": "text/javascript"
+                                                        }
+                                                }
+                                        ]
+                                }
+                        ]
+                },
+                {
+                        "name": "Phase 4: Fraud Detection Tests",
+                        "item": [
+                                {
+                                        "name": "Trigger Large Amount Fraud",
+                                        "request": {
+                                                "method": "POST",
+                                                "header": [
+                                                        {
+                                                                "key": "Content-Type",
+                                                                "value": "application/json"
+                                                        }
+                                                ],
+                                                "body": {
+                                                        "mode": "raw",
+                                                        "raw": "{\n    \"merchant_id\": \"test_merchant\",\n    \"type\": \"gift_card_activity.created\",\n    \"event_id\": \"large_amount_fraud\",\n    \"created_at\": \"2025-01-18T22:00:00Z\",\n    \"data\": {\n        \"type\": \"gift_card_activity\",\n        \"id\": \"activity_large_amount\",\n        \"object\": {\n            \"id\": \"gfta:large_amount_001\",\n            \"type\": \"LOAD\",\n            \"gift_card_id\": \"gftc:fraud_test_001\",\n            \"location_id\": \"L999FRAUD\",\n            \"amount_money\": {\n                \"amount\": 150000,\n                \"currency\": \"USD\"\n            },\n            \"created_at\": \"2025-01-18T22:00:00Z\"\n        }\n    }\n}",
+                                                        "options": {
+                                                                "raw": {
+                                                                        "language": "json"
+                                                                }
+                                                        }
+                                                },
+                                                "url": {
+                                                        "raw": "{{base_url}}/api/webhooks/gift-cards",
+                                                        "host": ["{{base_url}}"],
+                                                        "path": ["api", "webhooks", "gift-cards"]
+                                                }
+                                        },
+                                        "response": [],
+                                        "event": [
+                                                {
+                                                        "listen": "test",
+                                                        "script": {
+                                                                "exec": [
+                                                                        "pm.test('Large amount fraud detected', function () {",
+                                                                        "    pm.response.to.have.status(200);",
+                                                                        "    pm.expect(pm.response.text()).to.equal('OK');",
+                                                                        "});",
+                                                                        "",
+                                                                        "// Wait for fraud detection processing",
+                                                                        "setTimeout(function() {",
+                                                                        "    pm.sendRequest({",
+                                                                        "        url: pm.variables.get('base_url') + '/api/fraud/stats',",
+                                                                        "        method: 'GET'",
+                                                                        "    }, function (err, response) {",
+                                                                        "        if (!err) {",
+                                                                        "            const stats = response.json();",
+                                                                        "            pm.test('Fraud signal generated', function () {",
+                                                                        "                pm.expect(stats.total).to.be.greaterThan(0);",
+                                                                        "            });",
+                                                                        "        }",
+                                                                        "    });",
+                                                                        "}, 1000);"
+                                                                ],
+                                                                "type": "text/javascript"
+                                                        }
+                                                }
+                                        ]
+                                },
+                                {
+                                        "name": "Trigger Multi-Location Fraud",
+                                        "request": {
+                                                "method": "POST",
+                                                "header": [
+                                                        {
+                                                                "key": "Content-Type",
+                                                                "value": "application/json"
+                                                        }
+                                                ],
+                                                "body": {
+                                                        "mode": "raw",
+                                                        "raw": "{\n    \"merchant_id\": \"test_merchant\",\n    \"type\": \"gift_card_activity.created\",\n    \"event_id\": \"multi_location_fraud_1\",\n    \"created_at\": \"2025-01-18T22:00:00Z\",\n    \"data\": {\n        \"type\": \"gift_card_activity\",\n        \"id\": \"activity_multi_loc_1\",\n        \"object\": {\n            \"id\": \"gfta:multi_loc_001\",\n            \"type\": \"LOAD\",\n            \"gift_card_id\": \"gftc:multi_location_test\",\n            \"location_id\": \"L001FIRST\",\n            \"amount_money\": {\n                \"amount\": 5000,\n                \"currency\": \"USD\"\n            },\n            \"created_at\": \"2025-01-18T22:00:00Z\"\n        }\n    }\n}",
+                                                        "options": {
+                                                                "raw": {
+                                                                        "language": "json"
+                                                                }
+                                                        }
+                                                },
+                                                "url": {
+                                                        "raw": "{{base_url}}/api/webhooks/gift-cards",
+                                                        "host": ["{{base_url}}"],
+                                                        "path": ["api", "webhooks", "gift-cards"]
+                                                }
+                                        },
+                                        "response": [],
+                                        "event": [
+                                                {
+                                                        "listen": "test",
+                                                        "script": {
+                                                                "exec": [
+                                                                        "pm.test('Multi-location event 1 processed', function () {",
+                                                                        "    pm.response.to.have.status(200);",
+                                                                        "});"
+                                                                ],
+                                                                "type": "text/javascript"
+                                                        }
+                                                }
+                                        ]
+                                },
+                                {
+                                        "name": "Get Fraud Statistics",
+                                        "request": {
+                                                "method": "GET",
+                                                "header": [],
+                                                "url": {
+                                                        "raw": "{{base_url}}/api/fraud/stats",
+                                                        "host": ["{{base_url}}"],
+                                                        "path": ["api", "fraud", "stats"]
+                                                }
+                                        },
+                                        "response": [],
+                                        "event": [
+                                                {
+                                                        "listen": "test",
+                                                        "script": {
+                                                                "exec": [
+                                                                        "pm.test('Status code is 200', function () {",
+                                                                        "    pm.response.to.have.status(200);",
+                                                                        "});",
+                                                                        "",
+                                                                        "pm.test('Fraud stats structure valid', function () {",
+                                                                        "    const responseJson = pm.response.json();",
+                                                                        "    pm.expect(responseJson).to.have.property('total');",
+                                                                        "    pm.expect(responseJson).to.have.property('byType');",
+                                                                        "    pm.expect(responseJson).to.have.property('bySeverity');",
+                                                                        "    pm.expect(responseJson).to.have.property('avgScore');",
+                                                                        "});"
+                                                                ],
+                                                                "type": "text/javascript"
+                                                        }
+                                                }
+                                        ]
+                                },
+                                {
+                                        "name": "Get Fraud Signals",
+                                        "request": {
+                                                "method": "GET",
+                                                "header": [],
+                                                "url": {
+                                                        "raw": "{{base_url}}/api/fraud/signals",
+                                                        "host": ["{{base_url}}"],
+                                                        "path": ["api", "fraud", "signals"]
+                                                }
+                                        },
+                                        "response": [],
+                                        "event": [
+                                                {
+                                                        "listen": "test",
+                                                        "script": {
+                                                                "exec": [
+                                                                        "pm.test('Status code is 200', function () {",
+                                                                        "    pm.response.to.have.status(200);",
+                                                                        "});",
+                                                                        "",
+                                                                        "pm.test('Fraud signals array returned', function () {",
+                                                                        "    const responseJson = pm.response.json();",
+                                                                        "    pm.expect(responseJson).to.be.an('array');",
+                                                                        "});"
+                                                                ],
+                                                                "type": "text/javascript"
+                                                        }
+                                                }
+                                        ]
+                                }
+                        ]
+                },
+                {
+                        "name": "Phase 4.5: Geo-Threat Detection Tests",
+                        "item": [
+                                {
+                                        "name": "Trigger High-Risk Geo Event",
+                                        "request": {
+                                                "method": "POST",
+                                                "header": [
+                                                        {
+                                                                "key": "Content-Type",
+                                                                "value": "application/json"
+                                                        }
+                                                ],
+                                                "body": {
+                                                        "mode": "raw",
+                                                        "raw": "{\n    \"merchant_id\": \"test_merchant\",\n    \"type\": \"gift_card_activity.created\",\n    \"event_id\": \"geo_threat_nigeria\",\n    \"created_at\": \"2025-01-18T22:00:00Z\",\n    \"data\": {\n        \"type\": \"gift_card_activity\",\n        \"id\": \"activity_geo_threat\",\n        \"object\": {\n            \"id\": \"gfta:geo_threat_001\",\n            \"type\": \"LOAD\",\n            \"gift_card_id\": \"gftc:geo_test_001\",\n            \"location_id\": \"L777NIGERIA\",\n            \"amount_money\": {\n                \"amount\": 75000,\n                \"currency\": \"USD\"\n            },\n            \"created_at\": \"2025-01-18T22:00:00Z\"\n        }\n    }\n}",
+                                                        "options": {
+                                                                "raw": {
+                                                                        "language": "json"
+                                                                }
+                                                        }
+                                                },
+                                                "url": {
+                                                        "raw": "{{base_url}}/api/webhooks/gift-cards",
+                                                        "host": ["{{base_url}}"],
+                                                        "path": ["api", "webhooks", "gift-cards"]
+                                                }
+                                        },
+                                        "response": [],
+                                        "event": [
+                                                {
+                                                        "listen": "test",
+                                                        "script": {
+                                                                "exec": [
+                                                                        "pm.test('Geo-threat event processed', function () {",
+                                                                        "    pm.response.to.have.status(200);",
+                                                                        "});",
+                                                                        "",
+                                                                        "// Verify threat detection after processing",
+                                                                        "setTimeout(function() {",
+                                                                        "    pm.sendRequest({",
+                                                                        "        url: pm.variables.get('base_url') + '/api/threats/stats',",
+                                                                        "        method: 'GET'",
+                                                                        "    }, function (err, response) {",
+                                                                        "        if (!err) {",
+                                                                        "            const stats = response.json();",
+                                                                        "            pm.test('Threat statistics updated', function () {",
+                                                                        "                pm.expect(stats.total).to.be.greaterThan(0);",
+                                                                        "            });",
+                                                                        "        }",
+                                                                        "    });",
+                                                                        "}, 1000);"
+                                                                ],
+                                                                "type": "text/javascript"
+                                                        }
+                                                }
+                                        ]
+                                },
+                                {
+                                        "name": "Get Threat Map Data",
+                                        "request": {
+                                                "method": "GET",
+                                                "header": [],
+                                                "url": {
+                                                        "raw": "{{base_url}}/api/threats/map",
+                                                        "host": ["{{base_url}}"],
+                                                        "path": ["api", "threats", "map"]
+                                                }
+                                        },
+                                        "response": [],
+                                        "event": [
+                                                {
+                                                        "listen": "test",
+                                                        "script": {
+                                                                "exec": [
+                                                                        "pm.test('Status code is 200', function () {",
+                                                                        "    pm.response.to.have.status(200);",
+                                                                        "});",
+                                                                        "",
+                                                                        "pm.test('Threat map data structure valid', function () {",
+                                                                        "    const responseJson = pm.response.json();",
+                                                                        "    pm.expect(responseJson).to.be.an('array');",
+                                                                        "    if (responseJson.length > 0) {",
+                                                                        "        pm.expect(responseJson[0]).to.have.property('id');",
+                                                                        "        pm.expect(responseJson[0]).to.have.property('ip');",
+                                                                        "        pm.expect(responseJson[0]).to.have.property('location');",
+                                                                        "        pm.expect(responseJson[0]).to.have.property('riskScore');",
+                                                                        "    }",
+                                                                        "});"
+                                                                ],
+                                                                "type": "text/javascript"
+                                                        }
+                                                }
+                                        ]
+                                },
+                                {
+                                        "name": "Get Threat Statistics",
+                                        "request": {
+                                                "method": "GET",
+                                                "header": [],
+                                                "url": {
+                                                        "raw": "{{base_url}}/api/threats/stats",
+                                                        "host": ["{{base_url}}"],
+                                                        "path": ["api", "threats", "stats"]
+                                                }
+                                        },
+                                        "response": [],
+                                        "event": [
+                                                {
+                                                        "listen": "test",
+                                                        "script": {
+                                                                "exec": [
+                                                                        "pm.test('Status code is 200', function () {",
+                                                                        "    pm.response.to.have.status(200);",
+                                                                        "});",
+                                                                        "",
+                                                                        "pm.test('Threat stats structure valid', function () {",
+                                                                        "    const responseJson = pm.response.json();",
+                                                                        "    pm.expect(responseJson).to.have.property('total');",
+                                                                        "    pm.expect(responseJson).to.have.property('byCountry');",
+                                                                        "    pm.expect(responseJson).to.have.property('byThreatType');",
+                                                                        "    pm.expect(responseJson).to.have.property('avgRiskScore');",
+                                                                        "    pm.expect(responseJson).to.have.property('vpnCount');",
+                                                                        "    pm.expect(responseJson).to.have.property('proxyCount');",
+                                                                        "});"
+                                                                ],
+                                                                "type": "text/javascript"
+                                                        }
+                                                }
+                                        ]
+                                }
+                        ]
+                },
+                {
+                        "name": "Phase 5: Analytics & Alerting Tests",
+                        "item": [
+                                {
+                                        "name": "Trigger Critical Alert Event",
+                                        "request": {
+                                                "method": "POST",
+                                                "header": [
+                                                        {
+                                                                "key": "Content-Type",
+                                                                "value": "application/json"
+                                                        }
+                                                ],
+                                                "body": {
+                                                        "mode": "raw",
+                                                        "raw": "{\n    \"merchant_id\": \"test_merchant\",\n    \"type\": \"gift_card_activity.created\",\n    \"event_id\": \"critical_alert_test\",\n    \"created_at\": \"2025-01-18T22:00:00Z\",\n    \"data\": {\n        \"type\": \"gift_card_activity\",\n        \"id\": \"activity_critical_alert\",\n        \"object\": {\n            \"id\": \"gfta:critical_alert_001\",\n            \"type\": \"LOAD\",\n            \"gift_card_id\": \"gftc:critical_test_001\",\n            \"location_id\": \"L999CRITICAL\",\n            \"amount_money\": {\n                \"amount\": 500000,\n                \"currency\": \"USD\"\n            },\n            \"created_at\": \"2025-01-18T22:00:00Z\"\n        }\n    }\n}",
+                                                        "options": {
+                                                                "raw": {
+                                                                        "language": "json"
+                                                                }
+                                                        }
+                                                },
+                                                "url": {
+                                                        "raw": "{{base_url}}/api/webhooks/gift-cards",
+                                                        "host": ["{{base_url}}"],
+                                                        "path": ["api", "webhooks", "gift-cards"]
+                                                }
+                                        },
+                                        "response": [],
+                                        "event": [
+                                                {
+                                                        "listen": "test",
+                                                        "script": {
+                                                                "exec": [
+                                                                        "pm.test('Critical event processed', function () {",
+                                                                        "    pm.response.to.have.status(200);",
+                                                                        "});",
+                                                                        "",
+                                                                        "// Verify alert generation",
+                                                                        "setTimeout(function() {",
+                                                                        "    pm.sendRequest({",
+                                                                        "        url: pm.variables.get('base_url') + '/api/analytics/data',",
+                                                                        "        method: 'GET'",
+                                                                        "    }, function (err, response) {",
+                                                                        "        if (!err) {",
+                                                                        "            const analytics = response.json();",
+                                                                        "            pm.test('Critical alert generated', function () {",
+                                                                        "                pm.expect(analytics.fraudStats.total).to.be.greaterThan(0);",
+                                                                        "                pm.expect(analytics.fraudStats.bySeverity.critical).to.be.greaterThan(0);",
+                                                                        "            });",
+                                                                        "        }",
+                                                                        "    });",
+                                                                        "}, 2000);"
+                                                                ],
+                                                                "type": "text/javascript"
+                                                        }
+                                                }
+                                        ]
+                                },
+                                {
+                                        "name": "Get Analytics Dashboard Data",
+                                        "request": {
+                                                "method": "GET",
+                                                "header": [],
+                                                "url": {
+                                                        "raw": "{{base_url}}/api/analytics/data",
+                                                        "host": ["{{base_url}}"],
+                                                        "path": ["api", "analytics", "data"]
+                                                }
+                                        },
+                                        "response": [],
+                                        "event": [
+                                                {
+                                                        "listen": "test",
+                                                        "script": {
+                                                                "exec": [
+                                                                        "pm.test('Status code is 200', function () {",
+                                                                        "    pm.response.to.have.status(200);",
+                                                                        "});",
+                                                                        "",
+                                                                        "pm.test('Analytics data structure complete', function () {",
+                                                                        "    const responseJson = pm.response.json();",
+                                                                        "    pm.expect(responseJson).to.have.property('fraudStats');",
+                                                                        "    pm.expect(responseJson).to.have.property('threatStats');",
+                                                                        "    pm.expect(responseJson).to.have.property('timeSeriesData');",
+                                                                        "    ",
+                                                                        "    // Verify fraud stats structure",
+                                                                        "    pm.expect(responseJson.fraudStats).to.have.property('total');",
+                                                                        "    pm.expect(responseJson.fraudStats).to.have.property('byType');",
+                                                                        "    pm.expect(responseJson.fraudStats).to.have.property('bySeverity');",
+                                                                        "    pm.expect(responseJson.fraudStats).to.have.property('avgScore');",
+                                                                        "    ",
+                                                                        "    // Verify threat stats structure",
+                                                                        "    pm.expect(responseJson.threatStats).to.have.property('total');",
+                                                                        "    pm.expect(responseJson.threatStats).to.have.property('byCountry');",
+                                                                        "    pm.expect(responseJson.threatStats).to.have.property('avgRiskScore');",
+                                                                        "    ",
+                                                                        "    // Verify time series data",
+                                                                        "    pm.expect(responseJson.timeSeriesData).to.be.an('array');",
+                                                                        "});"
+                                                                ],
+                                                                "type": "text/javascript"
+                                                        }
+                                                }
+                                        ]
+                                }
+                        ]
+                },
+                {
+                        "name": "System Health & Status",
+                        "item": [
+                                {
+                                        "name": "Check Square API Status",
+                                        "request": {
+                                                "method": "GET",
+                                                "header": [],
+                                                "url": {
+                                                        "raw": "{{base_url}}/api/status",
+                                                        "host": ["{{base_url}}"],
+                                                        "path": ["api", "status"]
+                                                }
+                                        },
+                                        "response": [],
+                                        "event": [
+                                                {
+                                                        "listen": "test",
+                                                        "script": {
+                                                                "exec": [
+                                                                        "pm.test('Status endpoint available', function () {",
+                                                                        "    pm.response.to.have.status(200);",
+                                                                        "});",
+                                                                        "",
+                                                                        "pm.test('System status information provided', function () {",
+                                                                        "    const responseJson = pm.response.json();",
+                                                                        "    pm.expect(responseJson).to.have.property('status');",
+                                                                        "});"
+                                                                ],
+                                                                "type": "text/javascript"
+                                                        }
+                                                }
+                                        ]
+                                }
+                        ]
+                }
+        ],
+        "event": [
+                {
+                        "listen": "prerequest",
+                        "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                        "// Set base URL if not already set",
+                                        "if (!pm.variables.get('base_url')) {",
+                                        "    pm.variables.set('base_url', 'http://localhost:5000');",
+                                        "}"
+                                ]
+                        }
+                },
+                {
+                        "listen": "test",
+                        "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                        "// Global test for response time",
+                                        "pm.test('Response time is acceptable', function () {",
+                                        "    pm.expect(pm.response.responseTime).to.be.below(5000);",
+                                        "});"
+                                ]
+                        }
+                }
+        ],
+        {
+                "name": "Phase 6: Threat Replay Engine + Defense Learning",
+                "item": [
+                        {
+                                "name": "Replay Single Threat",
+                                "request": {
+                                        "method": "POST",
+                                        "header": [
+                                                {
+                                                        "key": "Content-Type",
+                                                        "value": "application/json"
+                                                }
+                                        ],
+                                        "body": {
+                                                "mode": "raw",
+                                                "raw": "{\n  \"threatId\": \"threat_log_1\",\n  \"safeMode\": true\n}",
+                                                "options": {
+                                                        "raw": {
+                                                                "language": "json"
+                                                        }
+                                                }
+                                        },
+                                        "url": {
+                                                "raw": "{{base_url}}/api/replay/threat",
+                                                "host": ["{{base_url}}"],
+                                                "path": ["api", "replay", "threat"]
+                                        }
+                                },
+                                "response": [],
+                                "event": [
+                                        {
+                                                "listen": "test",
+                                                "script": {
+                                                        "exec": [
+                                                                "pm.test('Status code is 200', function () {",
+                                                                "    pm.response.to.have.status(200);",
+                                                                "});",
+                                                                "",
+                                                                "pm.test('Replay result has required fields', function () {",
+                                                                "    const responseJson = pm.response.json();",
+                                                                "    pm.expect(responseJson).to.have.property('id');",
+                                                                "    pm.expect(responseJson).to.have.property('threatId');",
+                                                                "    pm.expect(responseJson).to.have.property('replayOutcome');",
+                                                                "    pm.expect(responseJson.replayOutcome).to.have.property('fraudScore');",
+                                                                "    pm.expect(responseJson.replayOutcome.fraudScore).to.be.a('number');",
+                                                                "});",
+                                                                "",
+                                                                "pm.test('Safe mode is enforced', function () {",
+                                                                "    const responseJson = pm.response.json();",
+                                                                "    pm.expect(responseJson.safeMode).to.be.true;",
+                                                                "});"
+                                                        ],
+                                                        "type": "text/javascript"
+                                                }
+                                        }
+                                ]
+                        },
+                        {
+                                "name": "Batch Threat Replay",
+                                "request": {
+                                        "method": "POST",
+                                        "header": [
+                                                {
+                                                        "key": "Content-Type",
+                                                        "value": "application/json"
+                                                }
+                                        ],
+                                        "body": {
+                                                "mode": "raw",
+                                                "raw": "{\n  \"query\": {\n    \"scoreMin\": 70,\n    \"limit\": 5\n  },\n  \"safeMode\": true\n}",
+                                                "options": {
+                                                        "raw": {
+                                                                "language": "json"
+                                                        }
+                                                }
+                                        },
+                                        "url": {
+                                                "raw": "{{base_url}}/api/replay/batch",
+                                                "host": ["{{base_url}}"],
+                                                "path": ["api", "replay", "batch"]
+                                        }
+                                },
+                                "response": [],
+                                "event": [
+                                        {
+                                                "listen": "test",
+                                                "script": {
+                                                        "exec": [
+                                                                "pm.test('Status code is 200', function () {",
+                                                                "    pm.response.to.have.status(200);",
+                                                                "});",
+                                                                "",
+                                                                "pm.test('Batch results returned', function () {",
+                                                                "    const responseJson = pm.response.json();",
+                                                                "    pm.expect(responseJson).to.be.an('array');",
+                                                                "});",
+                                                                "",
+                                                                "pm.test('Each result has valid structure', function () {",
+                                                                "    const responseJson = pm.response.json();",
+                                                                "    if (responseJson.length > 0) {",
+                                                                "        pm.expect(responseJson[0]).to.have.property('threatId');",
+                                                                "        pm.expect(responseJson[0]).to.have.property('replayOutcome');",
+                                                                "        pm.expect(responseJson[0].replayOutcome).to.have.property('fraudScore');",
+                                                                "    }",
+                                                                "});"
+                                                        ],
+                                                        "type": "text/javascript"
+                                                }
+                                        }
+                                ]
+                        },
+                        {
+                                "name": "Defense Learning Training",
+                                "request": {
+                                        "method": "POST",
+                                        "header": [
+                                                {
+                                                        "key": "Content-Type",
+                                                        "value": "application/json"
+                                                }
+                                        ],
+                                        "body": {
+                                                "mode": "raw",
+                                                "raw": "{\n  \"query\": {\n    \"scoreMin\": 70\n  },\n  \"autoApply\": false\n}",
+                                                "options": {
+                                                        "raw": {
+                                                                "language": "json"
+                                                        }
+                                                }
+                                        },
+                                        "url": {
+                                                "raw": "{{base_url}}/api/replay/train",
+                                                "host": ["{{base_url}}"],
+                                                "path": ["api", "replay", "train"]
+                                        }
+                                },
+                                "response": [],
+                                "event": [
+                                        {
+                                                "listen": "test",
+                                                "script": {
+                                                        "exec": [
+                                                                "pm.test('Status code is 200', function () {",
+                                                                "    pm.response.to.have.status(200);",
+                                                                "});",
+                                                                "",
+                                                                "pm.test('Training analysis returned', function () {",
+                                                                "    const responseJson = pm.response.json();",
+                                                                "    pm.expect(responseJson).to.have.property('trainingSession');",
+                                                                "    pm.expect(responseJson).to.have.property('suggestions');",
+                                                                "    pm.expect(responseJson.suggestions).to.be.an('array');",
+                                                                "});",
+                                                                "",
+                                                                "pm.test('Training metrics available', function () {",
+                                                                "    const responseJson = pm.response.json();",
+                                                                "    pm.expect(responseJson.trainingSession).to.have.property('improvements');",
+                                                                "    pm.expect(responseJson).to.have.property('replayResults');",
+                                                                "    pm.expect(responseJson.replayResults).to.be.a('number');",
+                                                                "});"
+                                                        ],
+                                                        "type": "text/javascript"
+                                                }
+                                        }
+                                ]
+                        },
+                        {
+                                "name": "Get Replay Statistics",
+                                "request": {
+                                        "method": "GET",
+                                        "header": [],
+                                        "url": {
+                                                "raw": "{{base_url}}/api/replay/stats",
+                                                "host": ["{{base_url}}"],
+                                                "path": ["api", "replay", "stats"]
+                                        }
+                                },
+                                "response": [],
+                                "event": [
+                                        {
+                                                "listen": "test",
+                                                "script": {
+                                                        "exec": [
+                                                                "pm.test('Status code is 200', function () {",
+                                                                "    pm.response.to.have.status(200);",
+                                                                "});",
+                                                                "",
+                                                                "pm.test('Statistics data structure', function () {",
+                                                                "    const responseJson = pm.response.json();",
+                                                                "    pm.expect(responseJson).to.have.property('totalThreats');",
+                                                                "    pm.expect(responseJson).to.have.property('totalReplays');",
+                                                                "    pm.expect(responseJson).to.have.property('learning');",
+                                                                "});",
+                                                                "",
+                                                                "pm.test('Performance metrics available', function () {",
+                                                                "    const responseJson = pm.response.json();",
+                                                                "    pm.expect(responseJson).to.have.property('avgProcessingTime');",
+                                                                "    pm.expect(responseJson.avgProcessingTime).to.be.a('number');",
+                                                                "});"
+                                                        ],
+                                                        "type": "text/javascript"
+                                                }
+                                        }
+                                ]
+                        },
+                        {
+                                "name": "Get Learning Rules",
+                                "request": {
+                                        "method": "GET",
+                                        "header": [],
+                                        "url": {
+                                                "raw": "{{base_url}}/api/learning/rules",
+                                                "host": ["{{base_url}}"],
+                                                "path": ["api", "learning", "rules"]
+                                        }
+                                },
+                                "response": [],
+                                "event": [
+                                        {
+                                                "listen": "test",
+                                                "script": {
+                                                        "exec": [
+                                                                "pm.test('Status code is 200', function () {",
+                                                                "    pm.response.to.have.status(200);",
+                                                                "});",
+                                                                "",
+                                                                "pm.test('Learning rules array returned', function () {",
+                                                                "    const responseJson = pm.response.json();",
+                                                                "    pm.expect(responseJson).to.be.an('array');",
+                                                                "});",
+                                                                "",
+                                                                "pm.test('Rule structure validation', function () {",
+                                                                "    const responseJson = pm.response.json();",
+                                                                "    if (responseJson.length > 0) {",
+                                                                "        const rule = responseJson[0];",
+                                                                "        pm.expect(rule).to.have.property('id');",
+                                                                "        pm.expect(rule).to.have.property('name');",
+                                                                "        pm.expect(rule).to.have.property('confidence');",
+                                                                "        pm.expect(rule).to.have.property('category');",
+                                                                "        pm.expect(rule).to.have.property('status');",
+                                                                "    }",
+                                                                "});"
+                                                        ],
+                                                        "type": "text/javascript"
+                                                }
+                                        }
+                                ]
+                        }
+                ]
+        }
+        ],
+        "variable": [
+                {
+                        "key": "base_url",
+                        "value": "http://localhost:5000",
+                        "type": "string"
+                }
+        ]
 }

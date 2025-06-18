@@ -274,3 +274,143 @@ curl -X GET http://localhost:5000/api/replay/stats
 - Security information and event management (SIEM) systems
 - Compliance reporting and audit systems
 - Performance monitoring and alerting platforms
+
+## Postman Testing Integration
+
+### Test Suite Overview
+**Collection Name:** `Phase 6: Threat Replay Engine + Defense Learning`
+
+| Endpoint                    | Method | Description                               | Test Coverage                           |
+| --------------------------- | ------ | ----------------------------------------- | --------------------------------------- |
+| `/api/replay/threat`        | POST   | Replay a single threat by ID              | Status validation, result structure     |
+| `/api/replay/batch`         | POST   | Replay threats matching query criteria    | Batch processing, array validation      |
+| `/api/replay/train`         | POST   | Run defense learning engine on replay set | Training metrics, suggestions array     |
+| `/api/replay/stats`         | GET    | Get comprehensive replay statistics       | Performance metrics, data structure     |
+| `/api/learning/rules`       | GET    | Get generated learning rules              | Rule structure, confidence validation   |
+
+### Success Criteria
+
+**Core Functionality Tests:**
+- Status code 200 for all successful operations
+- `fraudScore` present in replay results as numeric value
+- `suggestions` array present in training response
+- Safe mode enforcement validation in replay operations
+- Multiple threat replay outcomes logged and displayed
+
+**Data Structure Validation:**
+- Replay results contain required fields: `id`, `threatId`, `replayOutcome`
+- Batch operations return valid array structures
+- Learning rules include: `id`, `name`, `confidence`, `category`, `status`
+- Training sessions provide improvement metrics and rule generation counts
+
+**Performance Validation:**
+- Average processing time measurements available
+- Threat statistics include total counts and success rates
+- Learning metrics track detection accuracy improvements
+
+### Test Execution Instructions
+
+1. **Import Collection:**
+   - Open Postman application
+   - Import `docs/fraud-engine-postman-collection.json`
+   - Navigate to **Phase 6: Threat Replay Engine + Defense Learning** folder
+
+2. **Environment Setup:**
+   - Set `base_url` variable to `http://localhost:5000`
+   - Ensure application server is running on port 5000
+
+3. **Test Sequence:**
+   - Execute "Get Replay Statistics" first to verify system status
+   - Run "Replay Single Threat" with valid threat ID
+   - Execute "Batch Threat Replay" with score filtering
+   - Run "Defense Learning Training" to generate learning rules
+   - Verify "Get Learning Rules" returns generated rules
+
+4. **Validation Steps:**
+   - Check Test Results tab for all passed assertions
+   - Verify response times are within acceptable limits (<1000ms)
+   - Confirm safe mode enforcement in all replay operations
+   - Validate learning rule confidence scores are numeric (0-1 range)
+
+### Sample Test Data
+
+**Valid Threat IDs for Testing:**
+- `threat_log_1` - High fraud score historical event
+- `threat_log_2` - Medium risk geographic threat
+- `threat_log_3` - Low risk approved transaction
+- `threat_log_4` - Critical fraud with multiple flags
+- `threat_log_5` - Performance optimization scenario
+
+**Query Parameters for Batch Testing:**
+```json
+{
+  "query": {
+    "scoreMin": 70,
+    "scoreMax": 100,
+    "limit": 5,
+    "eventTypes": ["gift_card_activity.created"]
+  },
+  "safeMode": true
+}
+```
+
+**Training Configuration:**
+```json
+{
+  "query": {"scoreMin": 70},
+  "autoApply": false
+}
+```
+
+### Expected Response Formats
+
+**Replay Result Structure:**
+```json
+{
+  "id": "replay_1750260000000_1",
+  "threatId": "threat_log_1",
+  "replayedAt": "2025-06-18T15:00:00.000Z",
+  "replayOutcome": {
+    "fraudScore": 85,
+    "geoRisk": 60,
+    "responsesTriggered": ["Additional verification required"],
+    "detectionTime": 150,
+    "processingTime": 75
+  },
+  "comparison": {
+    "scoreDifference": 5,
+    "missedDetections": [],
+    "newDetections": ["Geographic threat detected"],
+    "responseVariance": 1
+  },
+  "learningOpportunities": [
+    "Score variance: 5 points difference"
+  ],
+  "safeMode": true,
+  "adminTriggered": true
+}
+```
+
+**Training Analysis Result:**
+```json
+{
+  "trainingSession": {
+    "id": "training_1750260000000_1",
+    "rulesGenerated": ["learning_rule_1", "learning_rule_2"],
+    "improvements": {
+      "detectionAccuracy": 0.15,
+      "responseTime": 0.20,
+      "falsePositiveReduction": 0.10,
+      "coverageIncrease": 0.05
+    }
+  },
+  "replayResults": 5,
+  "suggestions": [
+    {
+      "rule": "IF score >= 90 THEN escalate",
+      "threatId": "threat_log_2",
+      "confidence": 0.9
+    }
+  ]
+}
+```
