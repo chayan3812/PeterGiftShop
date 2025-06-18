@@ -101,7 +101,7 @@ export default function AdminDashboard() {
                           </div>
                           <div className="flex justify-between">
                             <span className="text-slate-400">Response Time</span>
-                            <span className="text-white">< 50ms</span>
+                            <span className="text-white">{"< 50ms"}</span>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-slate-400">Success Rate</span>

@@ -29,6 +29,7 @@ function Router() {
           <Route path="/balance" component={Balance} />
           <Route path="/success" component={Success} />
           <Route path="/admin/gift-cards" component={AdminGiftCards} />
+          <Route path="/admin/dashboard" component={AdminDashboard} />
           <Route component={NotFound} />
         </Switch>
       </main>
