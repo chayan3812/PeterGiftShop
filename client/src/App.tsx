@@ -27,7 +27,7 @@ function Router() {
       <Navigation />
       <main>
         <Switch>
-          <Route path="/" component={Home} />
+          <Route path="/" component={AdminThreatReplay} />
           <Route path="/gift-cards" component={GiftCards} />
           <Route path="/redeem" component={Redeem} />
           <Route path="/checkout" component={Checkout} />

@@ -175,7 +175,7 @@ export class ThreatReplayEngine {
       }
 
       // Process through auto-responder
-      const autoResponses = AutoResponderEngine.processEvent(syntheticEvent, fraudSignals, geoThreats);
+      const autoResponses = AutoResponderEngine.processEvent(syntheticEvent, fraudSignals, geoThreats) || [];
 
       // Track post-execution state
       const postExecutionState = {
@@ -186,7 +186,7 @@ export class ThreatReplayEngine {
       };
 
       // Calculate impact metrics
-      const impactScore = this.calculateImpactScore(preExecutionState, postExecutionState, fraudSignals.length);
+      const impactScore = this.calculateImpactScore(preExecutionState, postExecutionState, Array.isArray(fraudSignals) ? fraudSignals.length : 0);
       
       // Generate learning insights
       const learningData = await this.generateLearningInsights(
@@ -211,29 +211,30 @@ export class ThreatReplayEngine {
         sourceType: adminTriggered ? 'manual' : 'ai-training',
         scenarioSummary: `${effectiveScenario.name}: ${effectiveScenario.description}`,
         impactScore,
-        fraudSignalsGenerated: fraudSignals.length,
-        autoResponsesTriggered: autoResponses.length,
+        fraudSignalsGenerated: Array.isArray(fraudSignals) ? fraudSignals.length : 0,
+        autoResponsesTriggered: Array.isArray(autoResponses) ? autoResponses.length : 0,
         aiAdjustmentsMade: aiAdjustments,
         executionTime,
         status: 'success',
         outcomes: [
-          ...fraudSignals.map(signal => ({ type: 'fraud_signal', data: signal })),
+          ...(fraudSignals || []).map((signal: any) => ({ type: 'fraud_signal', data: signal })),
           ...geoThreats.map(threat => ({ type: 'geo_threat', data: threat })),
-          ...autoResponses.map(response => ({ type: 'auto_response', data: response }))
+          ...(autoResponses || []).map((response: any) => ({ type: 'auto_response', data: response }))
         ],
         learningData
       };
 
       this.executions.set(executionId, execution);
 
-      // Log activity
-      activityLogger.log('threat_replay', {
+      // Log activity  
+      activityLogger.log('webhook', {
         executionId,
         scenarioId,
         impactScore,
         fraudSignalsGenerated: fraudSignals.length,
         autoResponsesTriggered: autoResponses.length,
-        executionTime
+        executionTime,
+        type: 'threat_replay'
       }, 'ThreatReplayEngine');
 
       console.log(`[THREAT REPLAY] Execution ${executionId} completed successfully`);
