@@ -1,0 +1,253 @@
+🔥 Let’s go — you asked for it:
+
+> ✅ **“Phase 1 Prompt Now”**
+> So here’s the **full Replit-ready master prompt** to build the **REAL Square Gift Card Engine** into your already-running **Peter Digital Shop**.
+
+This is where we connect to Square’s live APIs (issue, reload, redeem), add real transaction logs, and implement webhook-based activity monitoring — making your platform truly production-grade.
+
+---
+
+# 🧠 PHASE 1: REAL SQUARE GIFT CARD ENGINE (FOR REPLIT AI AGENT)
+
+## 🎯 GOAL:
+
+Build a fully working gift card engine in your existing Peter Digital Shop project with real Square API calls and webhook support.
+
+---
+
+## 🔐 REQUIREMENTS
+
+Set the following in `.env`:
+
+```env
+SQUARE_ACCESS_TOKEN=REPLACE_ME
+SQUARE_ENVIRONMENT=sandbox
+SQUARE_LOCATION_ID=REPLACE_ME
+```
+
+Install if not already:
+
+```bash
+npm install @square/square uuid
+```
+
+---
+
+## 📁 FILE STRUCTURE TO MODIFY / CREATE
+
+```
+server/
+├── services/SquareGiftCardService.ts
+├── controllers/GiftCardController.ts
+├── routes/giftCards.ts
+├── routes/webhooks.ts
+├── db/activity-log.ts  ← in-memory or Replit DB logging
+```
+
+---
+
+## 🧩 Step-by-Step Instructions to Agent (FULL PROMPT ⬇️)
+
+````txt
+🟪 Add the following complete logic into Peter Digital Shop backend to enable full Square Gift Card functionality:
+
+---
+
+✅ 1. Create: `services/SquareGiftCardService.ts`
+Handles all Square Gift Card API logic.
+
+```ts
+import { Client, Environment } from 'square';
+import { v4 as uuidv4 } from 'uuid';
+
+const client = new Client({
+  accessToken: process.env.SQUARE_ACCESS_TOKEN!,
+  environment: process.env.SQUARE_ENVIRONMENT === 'production' ? Environment.Production : Environment.Sandbox,
+});
+
+const locationId = process.env.SQUARE_LOCATION_ID!;
+
+export const SquareGiftCardService = {
+  async issueGiftCard() {
+    const idempotencyKey = uuidv4();
+    const { result } = await client.giftCardsApi.createGiftCard({
+      idempotencyKey,
+      locationId,
+      giftCard: { type: 'DIGITAL' },
+    });
+    return result.giftCard;
+  },
+
+  async reloadGiftCard(giftCardId: string, amountCents: number) {
+    const idempotencyKey = uuidv4();
+    const { result } = await client.giftCardsApi.createGiftCardActivity({
+      idempotencyKey,
+      giftCardActivity: {
+        type: 'LOAD',
+        locationId,
+        giftCardId,
+        loadActivityDetails: { amountMoney: { amount: BigInt(amountCents), currency: 'USD' } },
+      },
+    });
+    return result.giftCardActivity;
+  },
+
+  async redeemGiftCard(giftCardId: string, amountCents: number) {
+    const idempotencyKey = uuidv4();
+    const { result } = await client.giftCardsApi.createGiftCardActivity({
+      idempotencyKey,
+      giftCardActivity: {
+        type: 'REDEEM',
+        locationId,
+        giftCardId,
+        redeemActivityDetails: { amountMoney: { amount: BigInt(amountCents), currency: 'USD' } },
+      },
+    });
+    return result.giftCardActivity;
+  },
+
+  async checkBalance(giftCardId: string) {
+    const { result } = await client.giftCardsApi.retrieveGiftCardFromGAN({ gan: giftCardId });
+    return result.giftCard?.balanceMoney;
+  },
+};
+````
+
+---
+
+✅ 2. Create: `controllers/GiftCardController.ts`
+
+```ts
+import { Request, Response } from 'express';
+import { SquareGiftCardService } from '../services/SquareGiftCardService';
+
+export const GiftCardController = {
+  async issue(req: Request, res: Response) {
+    try {
+      const card = await SquareGiftCardService.issueGiftCard();
+      res.json({ success: true, card });
+    } catch (err: any) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  },
+
+  async reload(req: Request, res: Response) {
+    const { giftCardId, amount } = req.body;
+    try {
+      const activity = await SquareGiftCardService.reloadGiftCard(giftCardId, amount);
+      res.json({ success: true, activity });
+    } catch (err: any) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  },
+
+  async redeem(req: Request, res: Response) {
+    const { giftCardId, amount } = req.body;
+    try {
+      const activity = await SquareGiftCardService.redeemGiftCard(giftCardId, amount);
+      res.json({ success: true, activity });
+    } catch (err: any) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  },
+
+  async balance(req: Request, res: Response) {
+    const { giftCardId } = req.params;
+    try {
+      const balance = await SquareGiftCardService.checkBalance(giftCardId);
+      res.json({ success: true, balance });
+    } catch (err: any) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  },
+};
+```
+
+---
+
+✅ 3. Create: `routes/giftCards.ts`
+
+```ts
+import { Router } from 'express';
+import { GiftCardController } from '../controllers/GiftCardController';
+
+const router = Router();
+
+router.post('/issue', GiftCardController.issue);
+router.post('/reload', GiftCardController.reload);
+router.post('/redeem', GiftCardController.redeem);
+router.get('/balance/:giftCardId', GiftCardController.balance);
+
+export default router;
+```
+
+Then import this route in `server/index.ts`:
+
+```ts
+import giftCardRoutes from './routes/giftCards';
+app.use('/api/gift-cards', giftCardRoutes);
+```
+
+---
+
+✅ 4. Create: `routes/webhooks.ts`
+
+```ts
+import { Router } from 'express';
+const router = Router();
+
+router.post('/gift-cards', (req, res) => {
+  console.log('🎯 Webhook received:', req.body);
+  // TODO: store into DB or activity-log.ts
+  res.sendStatus(200);
+});
+
+export default router;
+```
+
+Import it in `index.ts`:
+
+```ts
+import webhookRoutes from './routes/webhooks';
+app.use('/api/webhooks', webhookRoutes);
+```
+
+---
+
+✅ 5. (Optional) Create: `db/activity-log.ts`
+
+Simple array or Replit DB-based log recorder for all webhook events.
+
+---
+
+🚀 Once this is built:
+
+* `/api/gift-cards/issue` issues a Square gift card
+* `/api/gift-cards/reload` reloads an existing card (cents)
+* `/api/gift-cards/redeem` redeems a card (cents)
+* `/api/gift-cards/balance/:giftCardId` checks card balance
+* `/api/webhooks/gift-cards` listens to Square's webhook payloads
+
+---
+
+DO NOT use mock values
+DO NOT skip .env bindings
+DO NOT forget to install `@square/square`
+
+Build this exactly. Do not continue to UI yet.
+
+```
+
+---
+
+## ✅ Your Job Now:
+1. Paste this entire prompt into your **Replit AI Agent**
+2. Wait for the implementation
+3. Then **test each endpoint using Postman or Replit client fetch calls**
+4. Come back and say:
+
+> ☑️ “Phase 1 Complete”  
+and I’ll hand you **Phase 2: Gift Card Checkout UI + Payment via Square Orders API + Real Receipt**
+
+You're building a monster here. Let’s get it live-use real.
+```

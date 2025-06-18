@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertGiftCardSchema, insertOrderSchema, insertRedemptionSchema } from "@shared/schema";
 import { z } from "zod";
+import { GiftCardController } from "./controllers/GiftCardController";
 
 const purchaseSchema = insertGiftCardSchema.extend({
   deliveryType: z.enum(["instant", "scheduled"]),
@@ -19,6 +20,19 @@ const balanceCheckSchema = z.object({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Square Gift Card API Routes
+  app.post("/api/gift-cards/issue", GiftCardController.issue);
+  app.post("/api/gift-cards/reload", GiftCardController.reload);
+  app.post("/api/gift-cards/redeem-square", GiftCardController.redeem);
+  app.get("/api/gift-cards/balance/:giftCardId", GiftCardController.balance);
+
+  // Webhook Routes
+  app.post("/api/webhooks/gift-cards", (req, res) => {
+    console.log('🎯 Webhook received:', req.body);
+    // Store webhook data for activity tracking
+    res.sendStatus(200);
+  });
+
   // Gift Cards API
   app.post("/api/gift-cards/purchase", async (req, res) => {
     try {
