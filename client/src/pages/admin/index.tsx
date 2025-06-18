@@ -11,6 +11,8 @@ import ThreatMap from "./ThreatMap";
 import ReplayDashboard from "./ReplayDashboard";
 import ThreatReplay from "./ThreatReplay";
 import MerchantInbox from "./MerchantInbox";
+import SystemLogs from "./SystemLogs";
+import UserManagement from "./UserManagement";
 
 export default function AdminRouter() {
   return (
@@ -25,6 +27,8 @@ export default function AdminRouter() {
           <Route path="/admin/replay-dashboard" component={ReplayDashboard} />
           <Route path="/admin/threat-replay" component={ThreatReplay} />
           <Route path="/admin/merchant-inbox" component={MerchantInbox} />
+          <Route path="/admin/system-logs" component={SystemLogs} />
+          <Route path="/admin/user-management" component={UserManagement} />
           <Route path="/admin">
             <Redirect to="/admin/dashboard" />
           </Route>

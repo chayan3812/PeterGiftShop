@@ -30,6 +30,8 @@ const adminNavItems = [
   { path: "/admin/replay-dashboard", label: "Threat Replay", icon: PlayCircle },
   { path: "/admin/threat-replay", label: "Legacy Replay", icon: Target },
   { path: "/admin/merchant-inbox", label: "Merchant Inbox", icon: Mail },
+  { path: "/admin/system-logs", label: "System Logs", icon: FileText },
+  { path: "/admin/user-management", label: "User Management", icon: Users },
 ];
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
