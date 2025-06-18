@@ -1,83 +1,62 @@
 import { useEffect } from "react";
 import { useLocation } from "wouter";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useFusionAuth } from "@fusionauth/react-sdk";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 
 export default function OAuthCallback() {
   const [, setLocation] = useLocation();
+  const { isAuthenticated, isLoading, user } = useFusionAuth();
 
   useEffect(() => {
-    const handleCallback = async () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const code = urlParams.get('code');
-      const state = urlParams.get('state');
-      const error = urlParams.get('error');
-
-      if (error) {
-        console.error('OAuth error:', error);
-        setLocation('/');
-        return;
-      }
-
-      if (code) {
-        try {
-          const response = await fetch('/api/auth/token', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              code,
-              client_id: import.meta.env.VITE_FUSIONAUTH_CLIENT_ID,
-              client_secret: import.meta.env.VITE_FUSIONAUTH_CLIENT_SECRET,
-              redirect_uri: `${window.location.origin}/oauth-callback`
-            }),
-          });
-
-          if (response.ok) {
-            const data = await response.json();
-            if (data.success) {
-              // Redirect to admin dashboard or original destination
-              const returnUrl = sessionStorage.getItem('auth_return_url') || '/admin/dashboard';
-              sessionStorage.removeItem('auth_return_url');
-              setLocation(returnUrl);
-            } else {
-              console.error('Token exchange failed:', data);
-              setLocation('/');
-            }
-          } else {
-            console.error('Token exchange failed with status:', response.status);
-            setLocation('/');
-          }
-        } catch (error) {
-          console.error('Token exchange error:', error);
-          setLocation('/');
-        }
+    if (!isLoading && isAuthenticated && user) {
+      // Check if user has admin role
+      const isAdmin = user.registrations?.some(reg => 
+        reg.roles?.includes('admin')
+      );
+      
+      if (isAdmin) {
+        setLocation("/admin/dashboard");
       } else {
-        console.error('No authorization code received');
-        setLocation('/');
+        setLocation("/");
       }
-    };
+    } else if (!isLoading && !isAuthenticated) {
+      setLocation("/");
+    }
+  }, [isAuthenticated, isLoading, user, setLocation]);
 
-    handleCallback();
-  }, [setLocation]);
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black">
+        <Card className="w-96 glass-card border-[hsl(var(--glass-border))]">
+          <CardHeader className="text-center">
+            <CardTitle className="flex items-center justify-center gap-2">
+              <Loader2 className="w-5 h-5 animate-spin" />
+              Authenticating
+            </CardTitle>
+            <CardDescription>
+              Please wait while we complete your authentication...
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="text-center">
+            <div className="animate-pulse">
+              <div className="h-2 bg-[hsl(var(--primary))] rounded w-3/4 mx-auto"></div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-black">
+      <Card className="w-96 glass-card border-[hsl(var(--glass-border))]">
         <CardHeader className="text-center">
-          <CardTitle className="text-blue-900 dark:text-blue-100">
-            Authenticating...
-          </CardTitle>
+          <CardTitle>Authentication Complete</CardTitle>
+          <CardDescription>
+            Redirecting you to the appropriate dashboard...
+          </CardDescription>
         </CardHeader>
-        <CardContent className="text-center space-y-4">
-          <div className="flex justify-center">
-            <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-          </div>
-          <p className="text-slate-600 dark:text-slate-400">
-            Please wait while we complete your authentication.
-          </p>
-        </CardContent>
       </Card>
     </div>
   );
