@@ -25,6 +25,7 @@ function Router() {
           <Route path="/redeem" component={Redeem} />
 
           <Route path="/oauth-callback" component={OAuthCallback} />
+          <Route path="/admin/oauth-callback" component={OAuthCallback} />
           <Route path="/admin/*" component={AdminRouter} />
           <Route component={NotFound} />
         </Switch>

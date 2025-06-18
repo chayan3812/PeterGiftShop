@@ -1,51 +1,51 @@
 import { motion } from "framer-motion";
 import { Link } from "wouter";
-import { Gift, ShoppingCart, PlayCircle, ShieldCheck, Zap, Headphones, Smartphone, Heart, Star } from "lucide-react";
+import { Shield, Lock, Globe, BarChart3, Target, Brain, Zap, Eye, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
 export default function Home() {
   const stats = [
-    { label: "Cards Delivered", value: "50,000+", color: "text-[hsl(var(--primary))]" },
-    { label: "Happy Customers", value: "12,000+", color: "text-[hsl(var(--secondary))]" },
-    { label: "Customer Rating", value: "4.9★", color: "text-[hsl(var(--accent))]" },
+    { label: "Threats Detected", value: "250K+", color: "text-[hsl(var(--primary))]" },
+    { label: "Organizations Protected", value: "1,200+", color: "text-[hsl(var(--secondary))]" },
+    { label: "Uptime Guarantee", value: "99.9%", color: "text-[hsl(var(--accent))]" },
   ];
 
   const features = [
     {
-      icon: ShieldCheck,
-      title: "Secure Payments",
-      description: "Protected by Square's enterprise-grade security and encryption",
+      icon: Shield,
+      title: "Advanced Threat Detection",
+      description: "AI-powered fraud detection with real-time risk assessment and scoring",
       gradient: "from-[hsl(var(--primary))] to-[hsl(var(--secondary))]",
     },
     {
-      icon: Zap,
-      title: "Instant Delivery",
-      description: "Digital gift cards delivered instantly to any email address",
+      icon: Globe,
+      title: "Global Threat Intelligence",
+      description: "Comprehensive geospatial threat mapping and geographic risk analysis",
       gradient: "from-[hsl(var(--secondary))] to-[hsl(var(--accent))]",
     },
     {
-      icon: Headphones,
-      title: "24/7 Support",
-      description: "Round-the-clock customer support for any questions or issues",
+      icon: Brain,
+      title: "AI-Powered Analytics",
+      description: "Machine learning algorithms for predictive threat analysis and prevention",
       gradient: "from-[hsl(var(--accent))] to-[hsl(var(--primary))]",
     },
     {
-      icon: Smartphone,
-      title: "Mobile Friendly",
-      description: "Perfectly optimized for all devices and screen sizes",
+      icon: Target,
+      title: "Threat Replay System",
+      description: "Advanced simulation engine for defense learning and threat modeling",
       gradient: "from-[hsl(var(--primary))] to-[hsl(var(--secondary))]",
     },
     {
-      icon: Gift,
-      title: "Custom Messages",
-      description: "Add personal touches with custom messages and scheduling",
+      icon: Eye,
+      title: "Real-Time Monitoring",
+      description: "24/7 system monitoring with instant alerting and automated response",
       gradient: "from-[hsl(var(--secondary))] to-[hsl(var(--accent))]",
     },
     {
-      icon: Star,
-      title: "Easy Redemption",
-      description: "Simple redemption process with balance tracking and history",
+      icon: Lock,
+      title: "Enterprise Security",
+      description: "Multi-factor authentication with role-based access control and audit logs",
       gradient: "from-[hsl(var(--accent))] to-[hsl(var(--primary))]",
     },
   ];
@@ -74,7 +74,7 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.2 }}
             >
-              🎁 Peter Digital Shop
+              🛡️ Enterprise Security Platform
             </motion.h1>
             <motion.p 
               className="text-xl md:text-2xl text-gray-300 mb-8 animate-slide-up"
@@ -82,7 +82,7 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              Premium Digital Gift Cards • Instant Delivery • Secure Payments
+              Advanced Threat Intelligence • AI-Powered Detection • Real-Time Protection
             </motion.p>
             <motion.p 
               className="text-lg text-gray-400 mb-12 max-w-2xl mx-auto animate-slide-up"
@@ -90,8 +90,8 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
             >
-              Send the perfect gift instantly with our ultra-premium digital gift cards. 
-              Powered by Square's secure payment system for peace of mind.
+              Comprehensive global threat intelligence platform with real-time risk assessment 
+              and AI-powered fraud detection for enterprise organizations.
             </motion.p>
             
             <motion.div 
@@ -100,15 +100,15 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.6 }}
             >
-              <Link href="/gift-cards">
+              <Link href="/admin">
                 <Button className="bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--secondary))] px-8 py-4 text-lg font-semibold hover-glow animate-glow-pulse">
-                  <ShoppingCart className="w-5 h-5 mr-2" />
-                  Shop Gift Cards
+                  <Shield className="w-5 h-5 mr-2" />
+                  Access Security Dashboard
                 </Button>
               </Link>
-              <Button variant="outline" className="glass-card px-8 py-4 text-lg font-semibold hover-glow border-[hsl(var(--glass-border))]">
-                <PlayCircle className="w-5 h-5 mr-2" />
-                See How It Works
+              <Button variant="outline" className="glass-card px-8 py-4 text-lg font-semibold hover-glow border-[hsl(var(--glass-border))]" onClick={() => scrollToSection('features')}>
+                <BarChart3 className="w-5 h-5 mr-2" />
+                View Threat Analytics
               </Button>
             </motion.div>
           </div>
@@ -144,9 +144,9 @@ export default function Home() {
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">Why Choose Peter Digital Shop?</h2>
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">Enterprise Security Capabilities</h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Experience the future of gift giving with our premium digital platform
+              Advanced threat intelligence and real-time protection for modern organizations
             </p>
           </motion.div>
           
