@@ -12,6 +12,7 @@ import Checkout from "@/pages/checkout";
 import Success from "@/pages/success";
 import Balance from "@/pages/balance";
 import AdminGiftCards from "@/pages/admin-gift-cards";
+import AdminDashboard from "@/pages/admin-dashboard";
 import Navigation from "@/components/layout/navigation";
 import Footer from "@/components/layout/footer";
 

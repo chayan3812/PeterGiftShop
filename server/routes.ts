@@ -58,11 +58,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { activityLogger } = await import('./db/activity-log');
       activityLogger.log('webhook', req.body, 'square_webhook');
+      
+      // Log to webhook service for dashboard
+      const { WebhookLogService } = await import('./services/WebhookLogService');
+      await WebhookLogService.logEvent(req.body);
     } catch (error) {
       console.error('Failed to log webhook activity:', error);
     }
     
     res.sendStatus(200);
+  });
+
+  // Webhook Dashboard API Routes
+  app.get("/api/webhooks/logs", async (req, res) => {
+    try {
+      const { WebhookLogService } = await import('./services/WebhookLogService');
+      const limit = parseInt(req.query.limit as string) || 20;
+      const logs = await WebhookLogService.list(limit);
+      res.json(logs);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch webhook logs' });
+    }
+  });
+
+  app.get("/api/webhooks/stats", async (req, res) => {
+    try {
+      const { WebhookLogService } = await import('./services/WebhookLogService');
+      const stats = await WebhookLogService.stats();
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch webhook stats' });
+    }
   });
 
   // Gift Cards API
