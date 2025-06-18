@@ -4,6 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/ui/theme-provider";
+import { FusionAuthProvider } from "@fusionauth/react-sdk";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import GiftCards from "@/pages/gift-cards";
@@ -12,6 +13,7 @@ import Checkout from "@/pages/checkout";
 import Success from "@/pages/success";
 import Balance from "@/pages/balance";
 import AdminRouter from "@/pages/admin";
+import OAuthCallback from "@/pages/oauth-callback";
 import Navigation from "@/components/layout/navigation";
 import Footer from "@/components/layout/footer";
 

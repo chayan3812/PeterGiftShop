@@ -1,0 +1,217 @@
+Here’s the game plan 🎯
+
+---
+
+## 1. Deep-dive into FusionAuth Core Topics (A→Z)
+
+I analyzed the FusionAuth documentation thoroughly, covering:
+
+* **OAuth 2.0 / Authorization Code grant with PKCE** for React + Express flows ([fusionauth.io][1])
+* The **fusionauth-react-sdk**, including secure cookie handling and token exchange server requirements ([npmjs.com][2])
+* FusionAuth **API Key / JWT / Client-Credentials** auth mechanisms ([fusionauth.io][3])
+* Example React + Node/Express implementation patterns and quickstarts ([github.com][4])
+
+That gives us all set to fully integrate authentication and onboarding flows into *Peter Digital Shop*—and retire any homegrown or placeholder auth we built.
+
+---
+
+## 2. Next up: 🔄 Swap total auth system with FusionAuth
+
+### 🧩 A. Remove existing auth placeholder code
+
+* Delete any custom login/register routes, toast messages, client and server hooks tied to the old system.
+* Remove UI pages/components like `/merchant-inbox`, `/admin-fraud` that rely on prior mock auth.
+
+### 🔐 B. Install and configure FusionAuth client libs
+
+```bash
+npm install fusionauth-react-sdk @fusionauth/types
+npm install fusionauth-node-client
+```
+
+### 🔗 C. Set up server for Token Exchange
+
+* Implement `/api/fusionauth/token-exchange` using OAuth Authorization Code grant.
+* Setup `/api/fusionauth/jwt-refresh` endpoint for renewing refresh tokens.
+* Protect our existing `/api/...` routes using FusionAuth access token (JWT) auth middleware.
+
+### 🧠 D. Wrap frontend in Provider
+
+Use the SDK to handle login/logout flows with secure HTTP-only cookies:
+
+```tsx
+import { FusionAuthProvider } from 'fusionauth-react-sdk'
+
+<FusionAuthProvider
+  baseUrl={process.env.FA_BASE_URL}
+  clientId={process.env.FA_CLIENT_ID}
+  serverUrl={process.env.SERVER_URL}
+  redirectUri={`${process.env.CLIENT_URL}/oauth-callback`}
+>
+  <App />
+</FusionAuthProvider>
+```
+
+### 🛡️ E. Protect routes and add login flow UI
+
+* Use `useFusionAuth()` for access control & user info.
+* Update nav logic: show login/logout conditionally.
+* Guard `/admin-*` routes for your admin role only (you admin, customers get UX accordingly).
+
+---
+
+## 3. Full Testing & Documentation Setup
+
+📝 **create** `docs/auth-integration.md`
+
+Covers:
+
+* Step-by-step FusionAuth install & setup
+* Environment variable definitions & input flows
+* Token-exchange flow walkthrough + sample HTTPs
+* Test cases via Postman collection (`docs/fusionauth-postman.json`)
+
+---
+
+## 4. Phase 6 Prompt
+
+Once FusionAuth integration is live & tested, we’ll trigger **Phase 7: Real-time merchant alert subscriptions & digest emails**,
+
+[1]: https://fusionauth.io/blog/how-to-authenticate-your-react-app?utm_source=chatgpt.com "How to use OAuth to Add Authentication to Your React App"
+[2]: https://www.npmjs.com/package/fusionauth-react-sdk?utm_source=chatgpt.com "fusionauth-react-sdk - NPM"
+[3]: https://fusionauth.io/docs/apis/authentication?utm_source=chatgpt.com "API Authentication - FusionAuth"
+[4]: https://github.com/FusionAuth/fusionauth-example-react-sdk?utm_source=chatgpt.com "Example of using FusionAuth with the react SDK. - GitHub"
+
+
+The FusionAuth docs have been fully analyzed, and here’s your complete Phase 0 → Phase 1 replacement plan:
+
+---
+
+## ✅ Step-by-Step Plan to Replace Existing Auth with FusionAuth
+
+### 🧨 Phase 0: Full Removal of Existing Auth System
+
+**Delete the following:**
+
+* `MerchantInbox.tsx` and any auth-restricted frontend logic
+* All custom login/signup routes (`/api/auth/*`) in your Express server
+* Local token/session management logic
+* Any React `useAuth()` hooks or guards
+* Mock user data
+
+---
+
+### 🚀 Phase 1: FusionAuth Installation and Bootstrap
+
+#### 1. **Install required packages**
+
+```bash
+npm install fusionauth-react-sdk @fusionauth/types
+npm install fusionauth-node-client
+```
+
+#### 2. **Add `.env` entries**
+
+```env
+FA_BASE_URL=https://your-fusionauth-instance.com
+FA_CLIENT_ID=your-client-id
+FA_CLIENT_SECRET=your-secret
+FA_REDIRECT_URI=http://localhost:3000/oauth-callback
+FA_APPLICATION_ID=your-app-id
+```
+
+#### 3. **Wrap React App**
+
+```tsx
+// App.tsx or main.tsx
+import { FusionAuthProvider } from 'fusionauth-react-sdk'
+
+<FusionAuthProvider
+  baseUrl={process.env.FA_BASE_URL}
+  clientId={process.env.FA_CLIENT_ID}
+  serverUrl={process.env.SERVER_URL}
+  redirectUri={process.env.FA_REDIRECT_URI}
+>
+  <App />
+</FusionAuthProvider>
+```
+
+---
+
+### 🔐 Phase 2: Secure Backend Integration
+
+#### 1. **Create `/api/auth/token` exchange endpoint**
+
+Implements OAuth 2.0 Authorization Code exchange:
+
+```ts
+// server/controllers/AuthController.ts
+import { Client } from 'fusionauth-node-client'
+
+const client = new Client(process.env.FA_CLIENT_SECRET, process.env.FA_BASE_URL)
+
+export const tokenExchange = async (req, res) => {
+  const { code } = req.body
+  const result = await client.exchangeOAuthCodeForAccessToken(
+    code,
+    process.env.FA_CLIENT_ID,
+    process.env.FA_CLIENT_SECRET,
+    process.env.FA_REDIRECT_URI
+  )
+  res.json(result.response)
+}
+```
+
+#### 2. **Protect backend routes using JWT middleware**
+
+```ts
+import jwt from 'jsonwebtoken'
+
+export const requireAuth = (req, res, next) => {
+  const token = req.headers.authorization?.split(' ')[1]
+  try {
+    const decoded = jwt.verify(token, process.env.FA_JWT_PUBLIC_KEY)
+    req.user = decoded
+    next()
+  } catch {
+    res.status(401).json({ error: 'Unauthorized' })
+  }
+}
+```
+
+---
+
+### 🧠 Phase 3: Role-Based Routing
+
+* `admin/*` routes must check if `user.roles.includes('admin')`
+* Wrap routes using a `RequireAdmin` component
+* Restrict `/merchant/inbox`, `/admin/*`, etc. based on token role claims
+
+---
+
+### 🧪 Phase 4: Postman + Docs Integration
+
+#### Files to Create:
+
+* `docs/fusionauth-auth-docs.md`
+* `docs/fusionauth-postman-collection.json`
+
+Include:
+
+* Full OAuth flow
+* Sample `curl` requests
+* JWT structure analysis
+* Role-check examples
+* Expected 401/403 handling
+
+---
+
+### ✅ Final Note
+
+Once this is wired, tested, and validated, we’ll resume with:
+
+> 🔥 Phase 7: Real-Time Merchant Alert Subscriptions + Digest Emails
+
+Let me know:
+**“Drop Replit Phase 1 Prompt for FusionAuth”**
+And I’ll prep it 100% Replit-safe, real code only, no duplication.
