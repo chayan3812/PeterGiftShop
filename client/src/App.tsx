@@ -11,6 +11,7 @@ import Redeem from "@/pages/redeem";
 import Checkout from "@/pages/checkout";
 import Success from "@/pages/success";
 import Balance from "@/pages/balance";
+import AdminGiftCards from "@/pages/admin-gift-cards";
 import Navigation from "@/components/layout/navigation";
 import Footer from "@/components/layout/footer";
 
@@ -26,6 +27,7 @@ function Router() {
           <Route path="/checkout" component={Checkout} />
           <Route path="/balance" component={Balance} />
           <Route path="/success" component={Success} />
+          <Route path="/admin/gift-cards" component={AdminGiftCards} />
           <Route component={NotFound} />
         </Switch>
       </main>

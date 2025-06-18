@@ -54,7 +54,9 @@ export default function AdminGiftCards() {
   // Fetch gift card list
   const { data: giftCards, isLoading: isLoadingList, refetch: refetchList } = useQuery({
     queryKey: ['/api/gift-card-admin/list', filters],
-    queryFn: () => apiRequest(`/api/gift-card-admin/list?${new URLSearchParams(filters).toString()}`),
+    queryFn: () => apiRequest(`/api/gift-card-admin/list?${new URLSearchParams(filters).toString()}`, {
+      method: 'GET'
+    }),
   });
 
   // Issue gift card mutation
@@ -62,7 +64,8 @@ export default function AdminGiftCards() {
     mutationFn: (type: "DIGITAL" | "PHYSICAL") => 
       apiRequest('/api/gift-card-admin/issue', {
         method: 'POST',
-        body: { type }
+        body: JSON.stringify({ type }),
+        headers: { 'Content-Type': 'application/json' }
       }),
     onSuccess: (data) => {
       toast({
@@ -85,7 +88,8 @@ export default function AdminGiftCards() {
     mutationFn: (gan: string) => 
       apiRequest('/api/gift-card-admin/from-gan', {
         method: 'POST',
-        body: { gan }
+        body: JSON.stringify({ gan }),
+        headers: { 'Content-Type': 'application/json' }
       }),
     onSuccess: (data) => {
       toast({
@@ -107,7 +111,8 @@ export default function AdminGiftCards() {
     mutationFn: (nonce: string) => 
       apiRequest('/api/gift-card-admin/from-nonce', {
         method: 'POST',
-        body: { nonce }
+        body: JSON.stringify({ nonce }),
+        headers: { 'Content-Type': 'application/json' }
       }),
     onSuccess: (data) => {
       toast({
@@ -129,7 +134,8 @@ export default function AdminGiftCards() {
     mutationFn: ({ giftCardId, customerId }: { giftCardId: string; customerId: string }) => 
       apiRequest('/api/gift-card-admin/link', {
         method: 'POST',
-        body: { giftCardId, customerId }
+        body: JSON.stringify({ giftCardId, customerId }),
+        headers: { 'Content-Type': 'application/json' }
       }),
     onSuccess: (data) => {
       toast({
@@ -152,7 +158,8 @@ export default function AdminGiftCards() {
     mutationFn: ({ giftCardId, customerId }: { giftCardId: string; customerId: string }) => 
       apiRequest('/api/gift-card-admin/unlink', {
         method: 'POST',
-        body: { giftCardId, customerId }
+        body: JSON.stringify({ giftCardId, customerId }),
+        headers: { 'Content-Type': 'application/json' }
       }),
     onSuccess: (data) => {
       toast({
@@ -476,7 +483,7 @@ export default function AdminGiftCards() {
                 {/* Gift Cards Grid */}
                 {isLoadingList ? (
                   <div className="text-center text-slate-400 py-8">Loading gift cards...</div>
-                ) : giftCards?.giftCards?.length > 0 ? (
+                ) : giftCards?.success && giftCards?.giftCards?.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {giftCards.giftCards.map((card: GiftCard) => (
                       <motion.div
