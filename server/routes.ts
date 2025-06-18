@@ -7,6 +7,11 @@ import { GiftCardController } from "./controllers/GiftCardController";
 import { GiftCardAdminController } from "./controllers/GiftCardAdminController";
 import { AuthController } from "./controllers/AuthController";
 import { fusionAuthService } from "./services/FusionAuthService";
+import { SecureTestResultController } from "./controllers/SecureTestResultController";
+import { IntegratedSystemsController } from "./controllers/IntegratedSystemsController";
+import { jwtTestResultService } from "./services/JWTTestResultService";
+import { automatedRecoveryService } from "./services/AutomatedRecoveryService";
+import { googleSheetsService } from "./services/GoogleSheetsService";
 
 const purchaseSchema = insertGiftCardSchema.extend({
   deliveryType: z.enum(["instant", "scheduled"]),
@@ -669,6 +674,148 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Health check
   app.get("/api/health", (req, res) => {
     res.json({ status: "ok", timestamp: new Date().toISOString() });
+  });
+
+  // Integrated Systems API Routes
+  app.post('/api/integrated/workflow', 
+    jwtTestResultService.authenticateTestResult(), 
+    IntegratedSystemsController.executeCompleteWorkflow
+  );
+  
+  app.get('/api/integrated/status', IntegratedSystemsController.getSystemStatus);
+  
+  app.post('/api/integrated/validate', IntegratedSystemsController.validateSystemIntegration);
+  
+  app.post('/api/integrated/recovery', 
+    jwtTestResultService.authenticateTestResult(),
+    jwtTestResultService.requirePermission('recovery:execute'),
+    IntegratedSystemsController.executeRecoveryWorkflow
+  );
+  
+  app.get('/api/integrated/export', 
+    jwtTestResultService.authenticateTestResult(),
+    jwtTestResultService.requirePermission('test:export'),
+    IntegratedSystemsController.exportSecureResults
+  );
+
+  // JWT Test Result API Routes
+  app.post('/api/secure-test/create', SecureTestResultController.createSignedResult);
+  
+  app.get('/api/secure-test/result/:resultId', 
+    jwtTestResultService.authenticateTestResult(),
+    SecureTestResultController.getSecureResult
+  );
+  
+  app.get('/api/secure-test/export', 
+    jwtTestResultService.authenticateTestResult(),
+    jwtTestResultService.requirePermission('test:export'),
+    SecureTestResultController.exportResults
+  );
+  
+  app.post('/api/secure-test/api-key', 
+    jwtTestResultService.authenticateTestResult(),
+    jwtTestResultService.requirePermission('admin:api_keys'),
+    SecureTestResultController.createApiKey
+  );
+  
+  app.post('/api/secure-test/verify', SecureTestResultController.verifyToken);
+  app.get('/api/secure-test/status', SecureTestResultController.getStatus);
+
+  // Automated Recovery API Routes
+  app.get('/api/recovery/scenarios', (req, res) => {
+    const scenarios = automatedRecoveryService.getScenarios();
+    res.json({ success: true, scenarios });
+  });
+  
+  app.get('/api/recovery/executions', (req, res) => {
+    const executions = automatedRecoveryService.getAllExecutions();
+    res.json({ success: true, executions });
+  });
+  
+  app.get('/api/recovery/execution/:id', (req, res) => {
+    const execution = automatedRecoveryService.getExecution(req.params.id);
+    if (execution) {
+      res.json({ success: true, execution });
+    } else {
+      res.status(404).json({ error: 'Execution not found' });
+    }
+  });
+  
+  app.post('/api/recovery/execute/:scenarioId', async (req, res) => {
+    try {
+      const { scenarioId } = req.params;
+      const execution = await automatedRecoveryService.executeRecovery(scenarioId, 'api_request');
+      res.json({ success: true, execution });
+    } catch (error) {
+      res.status(500).json({ 
+        error: 'Recovery execution failed', 
+        message: error instanceof Error ? error.message : 'Unknown error' 
+      });
+    }
+  });
+  
+  app.post('/api/recovery/toggle', (req, res) => {
+    const { enabled } = req.body;
+    automatedRecoveryService.setEnabled(enabled);
+    res.json({ success: true, enabled });
+  });
+
+  // Google Sheets Integration API Routes
+  app.post('/api/sheets/export', async (req, res) => {
+    try {
+      const { testData, spreadsheetId } = req.body;
+      const result = await googleSheetsService.exportTestResults(testData, spreadsheetId);
+      res.json({ success: true, result });
+    } catch (error) {
+      res.status(500).json({ 
+        error: 'Export failed', 
+        message: error instanceof Error ? error.message : 'Unknown error' 
+      });
+    }
+  });
+  
+  app.post('/api/sheets/auto-export', async (req, res) => {
+    try {
+      const { testData } = req.body;
+      const result = await googleSheetsService.autoExportResults(testData);
+      res.json({ success: true, result });
+    } catch (error) {
+      res.status(500).json({ 
+        error: 'Auto-export failed', 
+        message: error instanceof Error ? error.message : 'Unknown error' 
+      });
+    }
+  });
+  
+  app.get('/api/sheets/status', (req, res) => {
+    const status = googleSheetsService.getStatus();
+    res.json({ success: true, status });
+  });
+  
+  app.post('/api/sheets/test-connection', async (req, res) => {
+    try {
+      const result = await googleSheetsService.testConnection();
+      res.json({ success: true, result });
+    } catch (error) {
+      res.status(500).json({ 
+        error: 'Connection test failed', 
+        message: error instanceof Error ? error.message : 'Unknown error' 
+      });
+    }
+  });
+
+  app.get('/api/sheets/history/:spreadsheetId', async (req, res) => {
+    try {
+      const { spreadsheetId } = req.params;
+      const { limit = 10 } = req.query;
+      const history = await googleSheetsService.getTestHistory(spreadsheetId, Number(limit));
+      res.json({ success: true, history });
+    } catch (error) {
+      res.status(500).json({ 
+        error: 'Failed to get history', 
+        message: error instanceof Error ? error.message : 'Unknown error' 
+      });
+    }
   });
 
   const httpServer = createServer(app);

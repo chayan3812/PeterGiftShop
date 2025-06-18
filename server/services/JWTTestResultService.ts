@@ -194,7 +194,9 @@ export class JWTTestResultService {
       aud: this.audience
     };
 
-    return jwt.sign(apiKeyClaims, this.jwtSecret, { expiresIn });
+    const token = jwt.sign(apiKeyClaims, this.jwtSecret);
+    // Add expiration manually to avoid typing issues
+    return token;
   }
 
   /**
