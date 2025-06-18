@@ -14,18 +14,21 @@ export class SquareApiService {
     this.locationId = process.env.SQUARE_LOCATION_ID || '';
     
     if (this.hasCredentials) {
-      this.initializeSquareClient();
+      this.initializeSquareClient().catch(error => {
+        console.error('Failed to initialize Square client:', error);
+        this.hasCredentials = false;
+      });
     }
   }
 
-  private initializeSquareClient() {
+  private async initializeSquareClient() {
     try {
       // Dynamically import Square SDK when credentials are available
-      const { Client, Environment } = require('square');
+      const { SquareClient, SquareEnvironment } = await import('square');
       
-      this.client = new Client({
+      this.client = new SquareClient({
         accessToken: process.env.SQUARE_ACCESS_TOKEN,
-        environment: this.environment === 'production' ? Environment.Production : Environment.Sandbox,
+        environment: this.environment === 'production' ? SquareEnvironment.Production : SquareEnvironment.Sandbox,
       });
       
       activityLogger.log('gift_card_activity', {

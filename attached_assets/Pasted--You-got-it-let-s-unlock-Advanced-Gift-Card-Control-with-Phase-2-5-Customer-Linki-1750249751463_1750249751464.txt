@@ -1,0 +1,212 @@
+🔥 You got it — let’s unlock **Advanced Gift Card Control** with:
+
+> ✅ **Phase 2.5: Customer Linking, GAN/Nonce Tools, and Filtered Listing**
+
+This phase gives your **admin/superuser panel the power** to:
+
+* 🔁 Link/unlink customers to gift cards
+* 🧪 Lookup gift cards by GAN or nonce
+* 🧹 List all cards (with filters like `type`, `state`, `customer_id`)
+* 🖲 Issue **DIGITAL** or **PHYSICAL** gift cards from UI
+* 🎛️ Enable granular admin support, fraud tools, and search
+
+---
+
+# 🧠 PHASE 2.5 — Replit Master Prompt: Gift Card Admin Toolkit
+
+## 📁 New or Updated Files
+
+```
+client/
+├── src/pages/admin-gift-cards.tsx
+├── src/components/admin/GiftCardFilterPanel.tsx
+├── src/components/admin/GiftCardActions.tsx
+
+server/
+├── routes/giftCardAdmin.ts
+├── controllers/GiftCardAdminController.ts
+├── services/SquareGiftCardService.ts (extend)
+```
+
+---
+
+## 🔧 FULL REPLIT AI PROMPT — DROP THIS IN ⬇️
+
+````txt
+🟪 Implement Phase 2.5: Gift Card Admin Toolkit
+
+---
+
+1️⃣ Extend: `SquareGiftCardService.ts`
+
+Add these methods:
+```ts
+async listGiftCards(filters = {}) {
+  const { result } = await client.giftCardsApi.listGiftCards(filters);
+  return result.giftCards;
+}
+
+async retrieveFromGAN(gan: string) {
+  const { result } = await client.giftCardsApi.retrieveGiftCardFromGAN({ gan });
+  return result.giftCard;
+}
+
+async retrieveFromNonce(nonce: string) {
+  const { result } = await client.giftCardsApi.retrieveGiftCardFromNonce({ nonce });
+  return result.giftCard;
+}
+
+async linkCustomer(giftCardId: string, customerId: string) {
+  const { result } = await client.giftCardsApi.linkCustomerToGiftCard(giftCardId, { customerId });
+  return result.giftCard;
+}
+
+async unlinkCustomer(giftCardId: string, customerId: string) {
+  const { result } = await client.giftCardsApi.unlinkCustomerFromGiftCard(giftCardId, { customerId });
+  return result.giftCard;
+}
+
+async issuePhysicalOrDigital(type: "PHYSICAL" | "DIGITAL") {
+  const { result } = await client.giftCardsApi.createGiftCard({
+    idempotencyKey: uuidv4(),
+    locationId,
+    giftCard: {
+      type,
+      ganSource: "SQUARE",
+    },
+  });
+  return result.giftCard;
+}
+````
+
+---
+
+2️⃣ Create: `controllers/GiftCardAdminController.ts`
+
+```ts
+import { Request, Response } from 'express';
+import { SquareGiftCardService } from '../services/SquareGiftCardService';
+
+export const GiftCardAdminController = {
+  async list(req: Request, res: Response) {
+    const cards = await SquareGiftCardService.listGiftCards(req.query);
+    res.json(cards);
+  },
+  async gan(req: Request, res: Response) {
+    const card = await SquareGiftCardService.retrieveFromGAN(req.body.gan);
+    res.json(card);
+  },
+  async nonce(req: Request, res: Response) {
+    const card = await SquareGiftCardService.retrieveFromNonce(req.body.nonce);
+    res.json(card);
+  },
+  async link(req: Request, res: Response) {
+    const card = await SquareGiftCardService.linkCustomer(req.body.giftCardId, req.body.customerId);
+    res.json(card);
+  },
+  async unlink(req: Request, res: Response) {
+    const card = await SquareGiftCardService.unlinkCustomer(req.body.giftCardId, req.body.customerId);
+    res.json(card);
+  },
+  async issue(req: Request, res: Response) {
+    const card = await SquareGiftCardService.issuePhysicalOrDigital(req.body.type);
+    res.json(card);
+  },
+};
+```
+
+---
+
+3️⃣ Create: `routes/giftCardAdmin.ts`
+
+```ts
+import { Router } from 'express';
+import { GiftCardAdminController } from '../controllers/GiftCardAdminController';
+
+const router = Router();
+
+router.get('/list', GiftCardAdminController.list);
+router.post('/from-gan', GiftCardAdminController.gan);
+router.post('/from-nonce', GiftCardAdminController.nonce);
+router.post('/link', GiftCardAdminController.link);
+router.post('/unlink', GiftCardAdminController.unlink);
+router.post('/issue', GiftCardAdminController.issue);
+
+export default router;
+```
+
+In `server/index.ts`, mount:
+
+```ts
+import giftCardAdminRoutes from './routes/giftCardAdmin';
+app.use('/api/gift-card-admin', giftCardAdminRoutes);
+```
+
+---
+
+4️⃣ Create Frontend: `pages/admin-gift-cards.tsx`
+
+```tsx
+import { useState } from "react";
+import GlowCard from "../components/ui/GlowCard";
+
+export default function AdminGiftCardPage() {
+  const [type, setType] = useState("DIGITAL");
+  const [response, setResponse] = useState("");
+
+  const issue = async () => {
+    const res = await fetch("/api/gift-card-admin/issue", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type }),
+    });
+    const json = await res.json();
+    setResponse(JSON.stringify(json, null, 2));
+  };
+
+  return (
+    <div className="min-h-screen bg-black text-white flex flex-col items-center p-6">
+      <GlowCard>
+        <h1 className="text-xl font-bold mb-4">Gift Card Issuer</h1>
+        <select
+          className="p-2 bg-black border mb-4"
+          value={type}
+          onChange={(e) => setType(e.target.value)}
+        >
+          <option value="DIGITAL">Digital</option>
+          <option value="PHYSICAL">Physical</option>
+        </select>
+        <button onClick={issue} className="bg-blue-500 p-2 rounded w-full">Issue Gift Card</button>
+        <pre className="mt-4 text-xs">{response}</pre>
+      </GlowCard>
+    </div>
+  );
+}
+```
+
+---
+
+5️⃣ Add route to `App.tsx`:
+
+```tsx
+<Route path="/admin/gift-cards" element={<AdminGiftCardPage />} />
+```
+
+---
+
+## ✅ Done Right When:
+
+* You can issue PHYSICAL or DIGITAL cards from frontend
+* `/api/gift-card-admin/list` returns all cards
+* `/from-gan`, `/from-nonce` return results from Square
+* Link/unlink works with real customer ID
+* Frontend renders results cleanly
+
+---
+
+Say:
+
+> ✅ “Phase 2.5 Complete”
+> and I’ll drop **Phase 3: Webhook Dashboard + Gift Card Activity Feed + Real-Time Admin Analytics**
+
+You’ve now got **Square-level backdoor control**. Ready to use it?

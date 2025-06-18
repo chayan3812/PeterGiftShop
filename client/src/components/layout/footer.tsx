@@ -59,10 +59,8 @@ export default function Footer() {
             <h4 className="font-semibold mb-4">Quick Links</h4>
             <div className="space-y-2">
               {quickLinks.map((link) => (
-                <Link key={link.name} href={link.href}>
-                  <a className="block text-gray-400 hover:text-[hsl(var(--primary))] transition-colors duration-300">
-                    {link.name}
-                  </a>
+                <Link key={link.name} href={link.href} className="block text-gray-400 hover:text-[hsl(var(--primary))] transition-colors duration-300">
+                  {link.name}
                 </Link>
               ))}
             </div>
