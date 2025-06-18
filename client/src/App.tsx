@@ -16,6 +16,7 @@ import AdminDashboard from "@/pages/admin-dashboard";
 import AdminFraud from "@/pages/admin-fraud";
 import AdminThreatMap from "@/pages/admin-threat-map";
 import AdminAnalytics from "@/pages/admin-analytics";
+import AdminThreatReplay from "@/pages/AdminThreatReplay";
 import MerchantInbox from "@/pages/MerchantInbox";
 import Navigation from "@/components/layout/navigation";
 import Footer from "@/components/layout/footer";
@@ -37,6 +38,7 @@ function Router() {
           <Route path="/admin/fraud" component={AdminFraud} />
           <Route path="/admin/threat-map" component={AdminThreatMap} />
           <Route path="/admin/analytics" component={AdminAnalytics} />
+          <Route path="/admin/threat-replay" component={AdminThreatReplay} />
           <Route path="/merchant/inbox" component={MerchantInbox} />
           <Route component={NotFound} />
         </Switch>

@@ -291,6 +291,127 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Threat Replay Engine API Routes
+  app.post("/api/threats/replay", async (req, res) => {
+    try {
+      const { ThreatReplayEngine } = await import('./services/ThreatReplayEngine');
+      const { scenario, scenarioId, merchantId, simulateScore, geoLocation, transactionAmount, fraudType } = req.body;
+      
+      // Determine which scenario to execute
+      let targetScenarioId = scenarioId;
+      
+      if (scenario && !scenarioId) {
+        // Handle predefined scenario names
+        const scenarios = ThreatReplayEngine.getScenarios();
+        const matchedScenario = scenarios.find(s => 
+          s.name.toLowerCase().includes(scenario.toLowerCase()) ||
+          s.description.toLowerCase().includes(scenario.toLowerCase())
+        );
+        targetScenarioId = matchedScenario?.id;
+      }
+      
+      if (!targetScenarioId) {
+        // Create dynamic scenario from request parameters
+        const dynamicScenario = ThreatReplayEngine.addScenario({
+          name: `Dynamic Scenario: ${scenario || 'Custom'}`,
+          description: `Custom replay scenario: ${scenario || 'User-defined parameters'}`,
+          merchantId,
+          simulateScore,
+          geoLocation,
+          transactionAmount,
+          fraudType: fraudType || 'custom',
+          expectedOutcomes: ['Dynamic response based on parameters']
+        });
+        targetScenarioId = dynamicScenario.id;
+      }
+      
+      // Execute the replay
+      const execution = await ThreatReplayEngine.executeReplay(
+        targetScenarioId,
+        { merchantId, simulateScore, geoLocation, transactionAmount, fraudType },
+        true // Admin triggered
+      );
+      
+      res.json(execution);
+    } catch (error) {
+      console.error('Threat replay error:', error);
+      res.status(500).json({ error: 'Failed to execute threat replay' });
+    }
+  });
+
+  app.get("/api/threats/replay-history", async (req, res) => {
+    try {
+      const { ThreatReplayEngine } = await import('./services/ThreatReplayEngine');
+      const limit = parseInt(req.query.limit as string) || 20;
+      const executions = ThreatReplayEngine.getExecutions().slice(0, limit);
+      res.json(executions);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch replay history' });
+    }
+  });
+
+  app.get("/api/threats/replay-scenarios", async (req, res) => {
+    try {
+      const { ThreatReplayEngine } = await import('./services/ThreatReplayEngine');
+      const scenarios = ThreatReplayEngine.getScenarios();
+      res.json(scenarios);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch replay scenarios' });
+    }
+  });
+
+  app.get("/api/threats/replay-stats", async (req, res) => {
+    try {
+      const { ThreatReplayEngine } = await import('./services/ThreatReplayEngine');
+      const stats = ThreatReplayEngine.getStats();
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch replay stats' });
+    }
+  });
+
+  app.get("/api/threats/learning-updates", async (req, res) => {
+    try {
+      const { ThreatReplayEngine } = await import('./services/ThreatReplayEngine');
+      const updates = ThreatReplayEngine.getLearningUpdates();
+      res.json(updates);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch learning updates' });
+    }
+  });
+
+  app.get("/api/threats/audit-log", async (req, res) => {
+    try {
+      const { ThreatReplayEngine } = await import('./services/ThreatReplayEngine');
+      const auditLog = ThreatReplayEngine.getAuditLog();
+      res.json(auditLog);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch audit log' });
+    }
+  });
+
+  app.post("/api/threats/learning/toggle", async (req, res) => {
+    try {
+      const { ThreatReplayEngine } = await import('./services/ThreatReplayEngine');
+      const { enabled } = req.body;
+      ThreatReplayEngine.setLearningEnabled(enabled);
+      res.json({ success: true, learningEnabled: enabled });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to toggle learning mode' });
+    }
+  });
+
+  app.post("/api/threats/learning/threshold", async (req, res) => {
+    try {
+      const { ThreatReplayEngine } = await import('./services/ThreatReplayEngine');
+      const { thresholdType, value } = req.body;
+      ThreatReplayEngine.updateThreshold(thresholdType, value);
+      res.json({ success: true, message: `Threshold ${thresholdType} updated to ${value}` });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to update threshold' });
+    }
+  });
+
   // Gift Cards API
   app.post("/api/gift-cards/purchase", async (req, res) => {
     try {
