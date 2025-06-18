@@ -8,6 +8,10 @@
 import newman from 'newman';
 import fs from 'fs';
 import path from 'path';
+import { sendSlackAlert } from './slack-alert.js';
+import { sendMailgunAlert } from './mailgun-alert.js';
+import { sendTelegramAlert } from './telegram-alert.js';
+import { analyzeFailures } from './ai-failure-analyzer.js';
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
 const COLLECTION_PATH = '../docs/PeterDigitalAPI.postman_collection.json';
@@ -122,8 +126,8 @@ async function runEliteTests() {
   
   ensureReportsDirectory();
   
-  return new Promise((resolve, reject) => {
-    newman.run(testConfig, function (err, summary) {
+  return new Promise(async (resolve, reject) => {
+    newman.run(testConfig, async function (err, summary) {
       if (err) {
         console.error('❌ Test execution failed:', err);
         reject(err);
@@ -220,6 +224,53 @@ function generateRecommendations(performance, security) {
   }
   
   return recommendations;
+}
+
+/**
+ * Trigger alert systems based on test results
+ */
+async function triggerAlertSystems(summary) {
+  const successRate = parseFloat(summary.executionSummary.successRate);
+  const criticalAlerts = summary.executionSummary.criticalAlertsTriggered;
+  const avgResponseTime = parseFloat(summary.executionSummary.averageResponseTime);
+  
+  // Determine if alerts should be triggered
+  const shouldAlert = successRate < 100 || criticalAlerts > 0 || avgResponseTime > 100;
+  
+  if (!shouldAlert) {
+    console.log('✅ No alerts triggered - system performing optimally');
+    return;
+  }
+  
+  console.log('\n🚨 Alert Systems Activation');
+  console.log('============================');
+  
+  const alertPromises = [];
+  
+  // Trigger all alert systems in parallel
+  alertPromises.push(
+    sendSlackAlert().catch(error => console.warn(`Slack alert failed: ${error.message}`))
+  );
+  
+  alertPromises.push(
+    sendMailgunAlert().catch(error => console.warn(`Email alert failed: ${error.message}`))
+  );
+  
+  alertPromises.push(
+    sendTelegramAlert().catch(error => console.warn(`Telegram alert failed: ${error.message}`))
+  );
+  
+  alertPromises.push(
+    analyzeFailures().catch(error => console.warn(`AI analysis failed: ${error.message}`))
+  );
+  
+  try {
+    await Promise.allSettled(alertPromises);
+    console.log('📡 Alert systems processing completed');
+    console.log('📋 Check docs/failure-analysis-report.md for AI analysis');
+  } catch (error) {
+    console.warn(`Alert system error: ${error.message}`);
+  }
 }
 
 // Execute if run directly
