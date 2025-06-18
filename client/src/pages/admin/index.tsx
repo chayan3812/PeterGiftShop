@@ -13,6 +13,10 @@ import ThreatReplay from "./ThreatReplay";
 import MerchantInbox from "./MerchantInbox";
 import SystemLogs from "./SystemLogs";
 import UserManagement from "./UserManagement";
+import Balance from "./Balance";
+import Checkout from "./Checkout";
+import Success from "./Success";
+import OAuthCallback from "./OAuthCallback";
 
 export default function AdminRouter() {
   return (
@@ -29,6 +33,10 @@ export default function AdminRouter() {
           <Route path="/admin/merchant-inbox" component={MerchantInbox} />
           <Route path="/admin/system-logs" component={SystemLogs} />
           <Route path="/admin/user-management" component={UserManagement} />
+          <Route path="/admin/balance" component={Balance} />
+          <Route path="/admin/checkout" component={Checkout} />
+          <Route path="/admin/success" component={Success} />
+          <Route path="/admin/oauth-callback" component={OAuthCallback} />
           <Route path="/admin">
             <Redirect to="/admin/dashboard" />
           </Route>

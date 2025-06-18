@@ -29,11 +29,15 @@ All admin pages are correctly located under `/admin/` directory:
 ```
 client/src/pages/admin/
 ├── Analytics.tsx          ✅ Analytics dashboard
+├── Balance.tsx            ✅ Gift card balance checking (moved)
+├── Checkout.tsx           ✅ Gift card checkout system (moved)
 ├── Dashboard.tsx          ✅ Main admin dashboard  
 ├── Fraud.tsx             ✅ Fraud detection controls
 ├── GiftCards.tsx         ✅ Gift card management
 ├── MerchantInbox.tsx     ✅ AI digest reports
+├── OAuthCallback.tsx     ✅ Authentication callback (moved)
 ├── ReplayDashboard.tsx   ✅ Enhanced threat replay
+├── Success.tsx           ✅ Transaction success page (moved)
 ├── SystemLogs.tsx        ✅ System log monitoring
 ├── ThreatMap.tsx         ✅ Geographic threat visualization
 ├── ThreatReplay.tsx      ✅ Legacy threat replay

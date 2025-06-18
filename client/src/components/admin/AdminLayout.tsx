@@ -16,7 +16,8 @@ import {
   Menu,
   X,
   FileText,
-  Users
+  Users,
+  ShoppingCart
 } from "lucide-react";
 
 interface AdminLayoutProps {
@@ -34,6 +35,8 @@ const adminNavItems = [
   { path: "/admin/merchant-inbox", label: "Merchant Inbox", icon: Mail },
   { path: "/admin/system-logs", label: "System Logs", icon: FileText },
   { path: "/admin/user-management", label: "User Management", icon: Users },
+  { path: "/admin/balance", label: "Balance Check", icon: CreditCard },
+  { path: "/admin/checkout", label: "Gift Card Checkout", icon: ShoppingCart },
 ];
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
