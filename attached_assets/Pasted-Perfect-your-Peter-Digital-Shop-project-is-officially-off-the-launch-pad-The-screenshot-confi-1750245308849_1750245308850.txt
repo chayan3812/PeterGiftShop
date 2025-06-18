@@ -1,0 +1,78 @@
+Perfect — your **Peter Digital Shop** project is officially off the launch pad. The screenshot confirms the Replit AI Agent has acknowledged your brand and tech stack, and locked in the correct initial scope. Let’s lock in the first set of code **you need to manually feed** to Replit to ensure:
+
+* No duplicates
+* No broken routing
+* No half-baked scaffolding
+
+---
+
+## ✅ REPLIT LAUNCH SET: PHASE 0 (BOOT THE FULL STRUCTURE CLEANLY)
+
+Paste this into the Replit AI Agent to make it **build the exact structure and seed files** cleanly, with full premium setup.
+
+---
+
+### 🚀 **Prompt to Feed Replit AI Agent (Phase 0 - Bootstrap)**
+
+> 👇 Copy + Paste This Whole Prompt:
+
+```txt
+🟣 Project Name: Peter Digital Shop  
+🧱 Stack:
+- Frontend: React + Tailwind CSS + Framer Motion + Lucide Icons
+- Backend: Node.js + Express + TypeScript
+- DB: Replit Database (temp) — later upgradable to Supabase
+- Theme: Ultra Luxurious Dark Mode (Glassmorphism, Animated, Premium)
+
+📁 Required Directory Structure:
+
+/peter-digital-shop/
+├── client/                  ← React frontend
+│   ├── src/
+│   │   ├── components/      ← Shared components (Buttons, Cards)
+│   │   ├── pages/           ← Home, Checkout, Success
+│   │   ├── routes/          ← App routing
+│   │   ├── styles/          ← Tailwind + Glass effects
+│   │   └── index.tsx
+│   ├── tailwind.config.ts
+│   └── postcss.config.js
+├── server/                  ← Node backend
+│   ├── routes/              ← /gift-cards, /webhooks, /customers
+│   ├── controllers/
+│   ├── services/
+│   └── index.ts             ← Entry point (express)
+├── .env
+├── replit.nix
+└── README.md
+
+📦 Libraries to install:
+- client: `tailwindcss postcss autoprefixer framer-motion lucide-react react-router-dom`
+- server: `express dotenv @square/square uuid cors`
+
+⚙️ Also set up:
+- Tailwind dark mode + base styling in `client/src/styles/`
+- Basic home page: black glass background, large neon animated title "🎁 Peter Digital Shop"
+- Express server `/api/gift-cards/issue` route that returns `{ success: true }` to test
+
+✅ DO NOT add mock UI junk or placeholder projects.
+✅ DO NOT generate multiple conflicting files.
+✅ Name everything exactly as defined.
+✅ Confirm Tailwind and Framer Motion are working on the home page with a neon animated logo.
+
+Build this cleanly and stop. I will paste the next feature prompt afterward.
+```
+
+---
+
+## 🔥 Once Replit builds this:
+
+Reply back here with:
+
+1. ✅ “Phase 0 build complete”
+2. Any issues/errors Replit AI gave you
+
+Then I’ll hand you:
+
+> 🔜 **Phase 1 – Gift Card Issuance, Reload, Redeem with Real Square API Integration**
+
+Let’s build your empire pixel-perfect.
