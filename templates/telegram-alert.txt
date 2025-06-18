@@ -1,0 +1,8 @@
+🚨 Postman API Test Failure
+
+🔴 Failed Tests: {{FAIL_COUNT}}
+⏱️ Time: {{TIMESTAMP}}
+🧪 Example Fail: /api/{{ENDPOINT}} → {{STATUS_CODE}}
+
+📄 Report: elite-summary.json
+🧠 Analysis: failure-analysis-report.md

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f9f9f9; padding: 20px; }
+    .container { background: #fff; padding: 20px; border-radius: 8px; border: 1px solid #ddd; }
+    h2 { color: #d9534f; }
+    ul { list-style: none; padding: 0; }
+    li { margin-bottom: 10px; }
+    code { background: #f2f2f2; padding: 2px 4px; border-radius: 4px; }
+    .footer { margin-top: 20px; font-size: 12px; color: #888; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🚨 API Test Failure Detected</h2>
+    <p>The following issues were identified during automated Postman testing:</p>
+    <ul>
+      {{FAILURE_LIST}}
+    </ul>
+    <div class="footer">
+      Sent by PeterDigital AI Testing System — <i>{{TIMESTAMP}}</i>
+    </div>
+  </div>
+</body>
+</html>

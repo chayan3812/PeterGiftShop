@@ -1,0 +1,11 @@
+🚨 *API Test Failure Detected*
+
+*Failed Tests:* {{FAIL_COUNT}}
+*Time:* {{TIMESTAMP}}
+
+*Top Failing Endpoint:*
+`{{TOP_ENDPOINT}}` → *{{STATUS}}*
+
+_Please check the Postman report or failure analysis:_
+📄 docs/elite-summary.json  
+🧠 docs/failure-analysis-report.md
