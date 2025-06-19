@@ -67,7 +67,7 @@ export class TestResultController {
       }
 
       // Check if token has required permissions
-      if (decoded.type !== 'test_result_access' && decoded.scope !== 'read_reports') {
+      if (decoded.type !== 'test_result_access' || decoded.scope !== 'read_reports') {
         res.status(403).json({ 
           error: 'Token does not have required permissions',
           code: 'INSUFFICIENT_PERMISSIONS'

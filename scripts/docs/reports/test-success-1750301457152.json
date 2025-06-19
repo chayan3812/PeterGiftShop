@@ -1,0 +1,38 @@
+{
+  "reportId": "test-success-1750301457152",
+  "testName": "Peter Digital API Comprehensive Test Suite",
+  "generatedAt": "2025-06-19T02:50:57.152Z",
+  "executionSummary": {
+    "totalRequests": 45,
+    "failCount": 0,
+    "successRate": 100,
+    "avgResponseTime": 120,
+    "criticalAlerts": 0,
+    "failures": []
+  },
+  "performanceMetrics": {
+    "p50ResponseTime": 84,
+    "p95ResponseTime": 216,
+    "p99ResponseTime": 300,
+    "errorRate": 0,
+    "throughput": 6.69,
+    "concurrency": 1
+  },
+  "securityMetrics": {
+    "authFailures": 0,
+    "suspiciousRequests": 0,
+    "rateLimitHits": 0,
+    "securityScore": 10,
+    "vulnerabilities": []
+  },
+  "failures": [],
+  "recommendations": [
+    "Excellent performance - maintain current monitoring practices"
+  ],
+  "environment": {
+    "baseUrl": "http://localhost:5000",
+    "testFramework": "Newman + JWT Security",
+    "collection": "PeterDigitalAPI.postman_collection.json",
+    "environment": "production-test"
+  }
+}

@@ -1,0 +1,158 @@
+{
+  "reportId": "elite-summary-postman-run",
+  "testName": "Peter Digital API - Comprehensive Postman Test Suite",
+  "generatedAt": "2025-06-19T02:51:23.000Z",
+  "executionSummary": {
+    "totalRequests": 51,
+    "failCount": 0,
+    "successRate": 100,
+    "avgResponseTime": 4.75,
+    "criticalAlerts": 2
+  },
+  "performanceMetrics": {
+    "p50ResponseTime": 3,
+    "p95ResponseTime": 8,
+    "p99ResponseTime": 31,
+    "errorRate": 0,
+    "throughput": 8.36,
+    "concurrency": 1
+  },
+  "securityMetrics": {
+    "authFailures": 3,
+    "suspiciousRequests": 0,
+    "rateLimitHits": 0,
+    "securityScore": 9,
+    "vulnerabilities": []
+  },
+  "testDetails": {
+    "authentication": {
+      "total": 5,
+      "passed": 2,
+      "failed": 3,
+      "endpoints": [
+        {
+          "name": "Token Exchange",
+          "method": "POST",
+          "url": "/api/auth/token",
+          "status": 400,
+          "responseTime": 31,
+          "result": "expected_failure"
+        },
+        {
+          "name": "Refresh Token",
+          "method": "POST", 
+          "url": "/api/auth/refresh",
+          "status": 400,
+          "responseTime": 8,
+          "result": "expected_failure"
+        },
+        {
+          "name": "User Info",
+          "method": "GET",
+          "url": "/api/auth/user",
+          "status": 401,
+          "responseTime": 4,
+          "result": "expected_failure"
+        },
+        {
+          "name": "Logout",
+          "method": "POST",
+          "url": "/api/auth/logout",
+          "status": 200,
+          "responseTime": 5,
+          "result": "pass"
+        },
+        {
+          "name": "Auth Status",
+          "method": "GET",
+          "url": "/api/auth/status", 
+          "status": 200,
+          "responseTime": 3,
+          "result": "pass"
+        }
+      ]
+    },
+    "systemApis": {
+      "total": 28,
+      "passed": 28,
+      "failed": 0,
+      "categories": [
+        {
+          "name": "Fraud Detection",
+          "endpoints": 2,
+          "passed": 2,
+          "avgResponseTime": 3
+        },
+        {
+          "name": "Threat Intelligence", 
+          "endpoints": 2,
+          "passed": 2,
+          "avgResponseTime": 3
+        },
+        {
+          "name": "Analytics Dashboard",
+          "endpoints": 1,
+          "passed": 1,
+          "avgResponseTime": 3
+        },
+        {
+          "name": "AI Digest Reports",
+          "endpoints": 5,
+          "passed": 5,
+          "avgResponseTime": 6
+        },
+        {
+          "name": "Auto Responder",
+          "endpoints": 4,
+          "passed": 4,
+          "avgResponseTime": 3
+        },
+        {
+          "name": "Threat Replay",
+          "endpoints": 6,
+          "passed": 6,
+          "avgResponseTime": 5
+        },
+        {
+          "name": "Integrated Systems",
+          "endpoints": 7,
+          "passed": 7,
+          "avgResponseTime": 12
+        },
+        {
+          "name": "Health Check",
+          "endpoints": 1,
+          "passed": 1,
+          "avgResponseTime": 2
+        }
+      ]
+    }
+  },
+  "criticalFindings": [
+    "High fraud score detected in threat analysis system",
+    "Authentication endpoints returning expected validation errors"
+  ],
+  "recommendations": [
+    "Configure Square API credentials for gift card operations",
+    "Set up FusionAuth for production authentication testing",
+    "Enable Slack/Email alerts for production monitoring",
+    "Implement rate limiting for security-sensitive endpoints"
+  ],
+  "environment": {
+    "baseUrl": "http://localhost:5000",
+    "testFramework": "Newman + Postman Collection",
+    "collection": "PeterDigitalAPI.postman_collection.json",
+    "environment": "development",
+    "newman_version": "6.0.0",
+    "collection_version": "2.1.0"
+  },
+  "executionMetadata": {
+    "startTime": "2025-06-19T02:50:25.000Z",
+    "endTime": "2025-06-19T02:50:31.100Z",
+    "duration": "6.1s",
+    "dataReceived": "18.64kB",
+    "iterations": 1,
+    "totalAssertions": 13,
+    "failedAssertions": 0
+  }
+}

@@ -1,0 +1,115 @@
+Absolutely — let’s run **Postman tests across your full project**, validating **every route, feature, and system integration**.
+
+You've already got the **elite Postman automation suite** built (`docs/PeterDigitalAPI.postman_collection.json`) and verified with 100% success, so let’s now:
+
+---
+
+### ✅ **Step-by-Step: Run Postman Tests & Generate Reports (via Replit)**
+
+#### 1. ✅ **Install dependencies (if not already done)**
+
+Go to the Replit shell and run:
+
+```bash
+npm install newman newman-reporter-htmlextra
+```
+
+---
+
+#### 2. ✅ **Run the Postman test suite**
+
+```bash
+cd scripts
+node newman-test-runner.js
+```
+
+This will:
+
+* Run **all 51+ tests** from `PeterDigitalAPI.postman_collection.json`
+* Validate all endpoints with dynamic data, response schema, and test scripts
+* Generate:
+
+  * HTML reports in `docs/reports/`
+  * JSON logs
+  * Slack/Telegram/Email alerts if configured
+  * AI suggestions if errors are detected (Phase 5+)
+
+---
+
+#### 3. 🔍 **View the HTML Report**
+
+Once it completes, check:
+
+```
+docs/reports/index.html
+```
+
+Use Replit’s preview panel or download the file to view full charts, test-by-test breakdowns, response times, and errors.
+
+---
+
+#### 4. 🧪 **Trigger a test failure manually (to verify alerts)**
+
+Run:
+
+```bash
+node scripts/trigger-full-alert-test.js
+```
+
+It will:
+
+* Simulate 2 failed test cases
+* Trigger:
+
+  * Slack alert block
+  * Email alert message (via Mailgun)
+  * Telegram alert message
+  * Signed test report URL (JWT-secured)
+  * Log to `logs/test-report-access.log`
+
+---
+
+#### 5. ✅ **View Alert Logs**
+
+To confirm alerts fired properly, check:
+
+```bash
+cat logs/test-report-access.log
+```
+
+You’ll see when, who accessed what report, and from where.
+
+---
+
+### 💡 Optional Enhancements
+
+* `npm run test:api` → Shortcut for `newman-test-runner.js`
+* `npm run test:report:csv` → Export result stats to CSV
+* `npm run test:report:pdf` → Save as PDF (using Puppeteer or wkhtmltopdf)
+
+---
+
+### 🔐 Admin-Only Tests
+
+To test JWT-secured routes, pass your access token in `scripts/newman-test-runner.js` or test manually with:
+
+```bash
+curl -H "Authorization: Bearer <your_token>" http://localhost:5000/api/admin/dashboard
+```
+
+---
+
+Would you like me to:
+
+* 🧠 Generate **PDF or CSV export** of results?
+* 🔐 Generate new signed URL for test report?
+* 🔄 Schedule auto-test runs every 6h via Replit cron?
+* 🔬 Add new tests for features not yet covered?
+
+Just say:
+
+> `"🧪 Add new tests for XYZ"`
+> `"📈 Export report to CSV"`
+> `"🔁 Schedule auto-run"`
+
+And I’ll handle it for you.
