@@ -1,0 +1,46 @@
+Here’s a one-shot master prompt you can feed into your Replit AI Agent so it builds and runs a fully automated smoke-test suite against your staging URL. Just copy & paste this into the agent:
+
+```
+You are a Replit AI Agent. Your job is to create and execute an end-to-end smoke-test script that verifies all critical SiZu Pay flows automatically against the staging URL https://d580ba9d-1b2b-4e46-9e4f-80c8379f85b6-00-2mdlrt53hay1z.spock.replit.dev. Follow these instructions precisely:
+
+1. **Project Setup**  
+   - In the repo root, create a new file at `scripts/autoSmokeTest.js`.  
+   - Install Playwright as a dependency (`npm install --save-dev playwright`).  
+
+2. **Dev-Login & Auth**  
+   - Use Playwright’s `page.request` to call `/api/auth/dev-login`.  
+   - Extract the returned `token` and store it to localStorage under the same key your app uses (e.g. `auth_token`).  
+   - Reload the page so the UI picks up the token.
+
+3. **Smoke Flows**  
+   - **Admin Dashboard**  
+     - Navigate to `/admin/dashboard`.  
+     - Assert the presence of key widgets: fraud feed panel, threat intelligence feed, real-time analytics counters.  
+   - **Merchant Flow**  
+     - In a second browser context (incognito), navigate to `/dashboard`.  
+     - Assert “Your transactions” table is visible and empty or seeded.  
+   - **Gift-Card Management**  
+     - Navigate to `/admin/giftcards`.  
+     - Click “Create Gift Card,” fill in sample data, submit, and confirm success toast.  
+     - In the merchant context, navigate to `/redeem`, enter the code, and verify balance update.  
+   - **Analytics Export**  
+     - On `/admin/analytics`, click “Export CSV” and “Export PDF.”  
+     - Wait for download, verify file content includes headers like “transactionId” and “amount.”  
+   - **Fallback Behavior**  
+     - Intercept network requests to the Square sandbox URL and force a 500 response.  
+     - Trigger a small test payment via the UI and assert your fallback gateway processes it (look for success message).  
+   - **Alert Channels**  
+     - Trigger a fake high-fraud event by calling the test endpoint (e.g. `/api/admin/test/fraud-event`).  
+     - Verify in your UI that a Slack/email badge or notification appears (check for the alert element).
+
+4. **Reporting & Exit**  
+   - For each step, log PASS/FAIL and any error details to the console.  
+   - At the end, produce a JSON summary file at `reports/smoke-report.json` with timestamps and statuses.  
+   - Exit with code `0` if all checks passed; otherwise exit `1`.
+
+5. **CI Integration**  
+   - Ensure your script can be run via `npm run smoke` (add a script entry in `package.json`).  
+   - Validate that running `npm run smoke` in CI installs dependencies, runs `autoSmokeTest.js`, and fails the build on any error.
+
+Generate the complete `scripts/autoSmokeTest.js` file with all necessary imports, Playwright setup/teardown, and assertions. Then run it once to verify it passes, and commit both the script and the updated `package.json`. Make sure there is zero placeholder code—everything must be real, working, and production-grade.
+```
