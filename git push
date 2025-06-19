@@ -1,0 +1,5 @@
+git add .
+git commit -m "Initial commit: Complete SiZu Pay Platform with CI/CD"
+git remote add origin https://github.com/chayan3812/PeterGiftShop.git
+git branch -M main
+git push -u origin main
