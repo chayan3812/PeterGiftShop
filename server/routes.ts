@@ -12,6 +12,7 @@ import { IntegratedSystemsController } from "./controllers/IntegratedSystemsCont
 import { jwtTestResultService } from "./services/JWTTestResultService";
 import { automatedRecoveryService } from "./services/AutomatedRecoveryService";
 import { googleSheetsService } from "./services/GoogleSheetsService";
+import { TestResultController } from "./controllers/TestResultController";
 
 const purchaseSchema = insertGiftCardSchema.extend({
   deliveryType: z.enum(["instant", "scheduled"]),
@@ -817,6 +818,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     }
   });
+
+  // JWT-Signed Test Result API Routes
+  app.get('/api/test-results/secure/:reportId', TestResultController.getSecureReport);
+  app.get('/api/test-results/list', TestResultController.listReports);
 
   const httpServer = createServer(app);
   return httpServer;

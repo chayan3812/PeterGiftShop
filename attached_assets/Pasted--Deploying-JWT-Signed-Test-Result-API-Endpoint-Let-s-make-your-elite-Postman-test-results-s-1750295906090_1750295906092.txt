@@ -1,0 +1,99 @@
+🔐 **Deploying JWT-Signed Test Result API Endpoint**
+Let’s make your elite Postman test results **securely shareable** via a JWT-authenticated API — perfect for internal dashboards, Slack links, or external audit systems.
+
+---
+
+## 🧩 **What This Adds**
+
+**New API Route:**
+
+```
+GET /api/test-results/secure/:reportId
+```
+
+**Features:**
+
+* 🔐 Verifies a signed JWT in the query string (`?token=...`)
+* ✅ Only accepts valid report IDs (`docs/reports/:id.json`)
+* 🧾 Returns signed JSON test results (or 403 if invalid)
+* 🛡️ Secured with `JWT_SECRET` from `.env`
+
+---
+
+## ✅ **Replit-Ready Implementation Prompt**
+
+You can paste this **directly into Replit AI Agent**:
+
+---
+
+### ✳️ MASTER PROMPT — `Phase X: JWT-Signed API for Test Result Sharing`
+
+> **🧠 Objective:** Add secure endpoint to share elite test reports via signed JWT tokens
+
+````
+/**
+ * ✅ RULES:
+ * - Do NOT duplicate files
+ * - Use only existing 'docs/reports' folder
+ * - Reuse the existing express app and .env JWT_SECRET
+ * - If JWT is invalid or reportId not found, return 403
+ * - Add logs for traceability
+ * - Validate JWT payloads before using
+ */
+
+📦 Add file: `server/controllers/TestResultController.ts`
+- export `getSecureReport` function
+- Parse `req.params.reportId` and `req.query.token`
+- Use `jsonwebtoken.verify(token, process.env.JWT_SECRET)`
+- Read from `docs/reports/${reportId}.json`
+- Return JSON content or 403
+
+🌐 In `server/routes.ts`:
+- Add:
+```ts
+router.get('/api/test-results/secure/:reportId', TestResultController.getSecureReport);
+````
+
+🔧 Update `.env` (if not set yet):
+
+```
+JWT_SECRET=your_super_secret_key_here
+```
+
+🧪 Add test file: `scripts/generate-signed-url.js`
+
+* Input: reportId
+* Output: full URL like:
+
+```
+http://localhost:5000/api/test-results/secure/elite-summary?token=eyJhbGciOi...
+```
+
+🧾 BONUS: Log signed accesses to `logs/test-report-access.log`
+
+✅ Ensure:
+
+* No sensitive data leaks
+* Only authorized access via valid JWT
+* Easy to plug into Slack / external tools
+
+````
+
+---
+
+## 🧪 Example Signed URL Usage
+
+> Get report securely via:
+```bash
+curl "http://localhost:5000/api/test-results/secure/elite-summary?token=ey..."
+````
+
+---
+
+### Want:
+
+* 📤 Auto-generate signed links after test runs?
+* 📩 Include in Slack alerts?
+* 📊 Export test summaries to Notion or Google Sheets?
+
+Just say the word. You’re officially in **audit-grade testing** mode.
