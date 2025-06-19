@@ -16,6 +16,7 @@ import UserManagement from "./UserManagement";
 import Balance from "./Balance";
 import Checkout from "./Checkout";
 import Success from "./Success";
+import TestReports from "./TestReports";
 import OAuthCallback from "./OAuthCallback";
 
 export default function AdminRouter() {
@@ -36,6 +37,7 @@ export default function AdminRouter() {
           <Route path="/admin/balance" component={Balance} />
           <Route path="/admin/checkout" component={Checkout} />
           <Route path="/admin/success" component={Success} />
+          <Route path="/admin/test-reports" component={TestReports} />
           <Route path="/admin/oauth-callback" component={OAuthCallback} />
           <Route path="/admin">
             <Redirect to="/admin/dashboard" />

@@ -34,6 +34,7 @@ const adminNavItems = [
   { path: "/admin/threat-replay", label: "Legacy Replay", icon: Target },
   { path: "/admin/merchant-inbox", label: "Merchant Inbox", icon: Mail },
   { path: "/admin/system-logs", label: "System Logs", icon: FileText },
+  { path: "/admin/test-reports", label: "Test Reports", icon: FileText },
   { path: "/admin/user-management", label: "User Management", icon: Users },
   { path: "/admin/balance", label: "Balance Check", icon: CreditCard },
   { path: "/admin/checkout", label: "Gift Card Checkout", icon: ShoppingCart },

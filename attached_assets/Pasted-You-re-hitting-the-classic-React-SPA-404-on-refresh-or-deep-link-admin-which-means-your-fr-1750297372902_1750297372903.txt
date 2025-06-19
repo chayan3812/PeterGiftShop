@@ -1,0 +1,95 @@
+You're hitting the classic **React SPA 404 on refresh or deep-link (`/admin`)**, which means your frontend routing is correct inside the React app, **but the Replit server (or Vite dev server)** isn't configured to serve `index.html` for unknown paths.
+
+---
+
+### 🧩 What's Happening
+
+* You typed or navigated to `yourdomain.dev/admin`
+* Server looks for a physical `/admin` file or directory → doesn’t find it → returns 404
+* But `/admin` **is meant to be handled by React Router**, not the server
+
+---
+
+## ✅ Fix: Configure SPA Fallback Routing
+
+Depending on your setup, **you need to configure the dev server or Replit backend to fallback all routes to `index.html`**.
+
+---
+
+### ✅ For **Vite**
+
+Edit your `vite.config.ts`:
+
+```ts
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    historyApiFallback: true, // add this
+  },
+});
+```
+
+---
+
+### ✅ For **Express backend (Node.js + React hybrid)**
+
+If you’re using Express to serve your React build:
+
+```ts
+// server/index.ts or server.js
+
+import express from 'express';
+import path from 'path';
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+// Serve static frontend
+app.use(express.static(path.join(__dirname, '..', 'client', 'dist')));
+
+// Catch-all fallback (SPA routing fix)
+app.get('*', (_req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'client', 'dist', 'index.html'));
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+```
+
+---
+
+### ✅ For **Replit-only React Project** (no Node backend)
+
+You must add a `replit.nix` or `.replit` file override or make sure Vite config includes fallback:
+
+* Confirm your `vite.config.ts` includes:
+
+```ts
+server: {
+  historyApiFallback: true
+}
+```
+
+---
+
+## 🔁 After Fixing:
+
+1. Restart the server
+2. Rebuild frontend if needed
+3. Navigate to `/admin` — should now render the React component
+
+---
+
+Let me know if you’re using:
+
+* `Vite + React only`
+* `Express backend + React frontend`
+* `Replit dev server only`
+
+And I’ll give you the **exact fix line** for your setup.
+
+Then we can proceed with deploying the **JWT viewer dashboard or CI alert integration.**
