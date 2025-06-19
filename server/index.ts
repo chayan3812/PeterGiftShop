@@ -1,14 +1,33 @@
 import express, { type Request, Response, NextFunction } from "express";
-import { config } from "dotenv";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { EnvironmentService } from "./services/EnvironmentService";
+import { RedisService } from "./services/RedisService";
+import { TaskSchedulerService } from "./services/TaskSchedulerService";
 
-// Load environment variables from .env file
-config();
+// Initialize environment configuration
+EnvironmentService.initialize();
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// Initialize enterprise services
+async function initializeServices() {
+  try {
+    // Initialize Redis if configured
+    if (EnvironmentService.isServiceConfigured('Redis')) {
+      await RedisService.initialize();
+    }
+
+    // Initialize task scheduler
+    await TaskSchedulerService.initialize();
+
+    console.log('[SERVICES] Enterprise services initialized successfully');
+  } catch (error) {
+    console.error('[SERVICES] Service initialization error:', error);
+  }
+}
 
 app.use((req, res, next) => {
   const start = Date.now();
