@@ -14,6 +14,7 @@ import { automatedRecoveryService } from "./services/AutomatedRecoveryService";
 import { googleSheetsService } from "./services/GoogleSheetsService";
 import { TestResultController } from "./controllers/TestResultController";
 import { EnhancedAuthController } from "./controllers/EnhancedAuthController";
+import { SystemStatusController } from "./controllers/SystemStatusController";
 import { enhancedAuthenticateJWT, requireAdmin } from "./middleware/enhancedAuth";
 
 const purchaseSchema = insertGiftCardSchema.extend({
