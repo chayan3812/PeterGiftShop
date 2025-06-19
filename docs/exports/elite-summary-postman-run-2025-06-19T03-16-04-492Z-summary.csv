@@ -1,0 +1,2 @@
+Report ID,Test Name,Generated At,Total Requests,Failed Tests,Success Rate (%),Average Response Time (ms),Critical Alerts,Security Score,P50 Response Time (ms),P95 Response Time (ms),P99 Response Time (ms),Error Rate (%),Throughput (req/min),Auth Failures,Vulnerabilities
+elite-summary-postman-run,Peter Digital API - Comprehensive Postman Test Suite,2025-06-19T02:51:23.000Z,51,0,100,4.75,2,9,3,8,31,0,8.36,3,0

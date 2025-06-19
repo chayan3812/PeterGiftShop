@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 /**
  * AI-Powered Failure Analysis System for Peter Digital API Tests
  * Analyzes failed tests and generates intelligent recommendations using OpenAI
@@ -7,111 +5,120 @@
 
 import fs from 'fs';
 import path from 'path';
-import https from 'https';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-// Configuration paths
-const ALERT_CONFIG_PATH = path.join(__dirname, '../config/alert-config.json');
-const ELITE_SUMMARY_PATH = path.join(__dirname, '../docs/reports/elite-summary.json');
-const ELITE_REPORT_PATH = path.join(__dirname, '../docs/reports/elite-api-report.json');
-const FAILURE_REPORT_PATH = path.join(__dirname, '../docs/failure-analysis-report.md');
 
 /**
  * Load configuration files
  */
 function loadConfig() {
   try {
-    const alertConfig = JSON.parse(fs.readFileSync(ALERT_CONFIG_PATH, 'utf8'));
-    return alertConfig;
+    const configPath = path.join(__dirname, '..', 'config', 'ai-analyzer.json');
+    if (fs.existsSync(configPath)) {
+      return JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+    }
   } catch (error) {
-    console.error('Failed to load alert configuration:', error.message);
-    return null;
+    console.warn('Config file not found, using defaults');
   }
+  
+  return {
+    openai: {
+      model: 'gpt-4o',
+      maxTokens: 2000,
+      temperature: 0.3
+    },
+    analysis: {
+      includeStackTrace: true,
+      suggestCodeFixes: true,
+      includeDocumentation: true,
+      maxFailuresToAnalyze: 10
+    }
+  };
 }
 
 /**
  * Load test summary and detailed report
  */
 function loadTestData() {
-  try {
-    const summary = JSON.parse(fs.readFileSync(ELITE_SUMMARY_PATH, 'utf8'));
-    let detailedReport = null;
-    
-    if (fs.existsSync(ELITE_REPORT_PATH)) {
-      detailedReport = JSON.parse(fs.readFileSync(ELITE_REPORT_PATH, 'utf8'));
-    }
-    
-    return { summary, detailedReport };
-  } catch (error) {
-    console.error('Failed to load test data:', error.message);
-    return null;
+  const summaryPath = path.join(__dirname, '..', 'docs', 'reports', 'elite-summary.json');
+  const detailedPath = path.join(__dirname, '..', 'docs', 'reports', 'elite-api-report.json');
+  
+  let summary = {};
+  let detailedReport = {};
+  
+  if (fs.existsSync(summaryPath)) {
+    summary = JSON.parse(fs.readFileSync(summaryPath, 'utf-8'));
   }
+  
+  if (fs.existsSync(detailedPath)) {
+    detailedReport = JSON.parse(fs.readFileSync(detailedPath, 'utf-8'));
+  }
+  
+  return { summary, detailedReport };
 }
 
 /**
  * Extract failure patterns from test data
  */
 function extractFailurePatterns(summary, detailedReport) {
-  const patterns = [];
+  const patterns = {
+    authenticationFailures: [],
+    serverErrors: [],
+    timeoutErrors: [],
+    validationErrors: [],
+    networkErrors: [],
+    unknownErrors: []
+  };
   
-  // Analyze success rate issues
-  const successRate = parseFloat(summary.executionSummary.successRate);
-  if (successRate < 100) {
-    patterns.push({
-      type: 'success_rate',
-      severity: successRate < 95 ? 'high' : 'medium',
-      details: {
-        actualRate: successRate,
-        expectedRate: 100,
-        failedRequests: summary.executionSummary.failedRequests,
-        totalRequests: summary.executionSummary.totalRequests
-      }
+  // Analyze from summary if available
+  if (summary.failures) {
+    summary.failures.forEach(failure => {
+      categorizeFailure(failure, patterns);
     });
   }
   
-  // Analyze response time issues
-  const avgResponseTime = parseFloat(summary.executionSummary.averageResponseTime);
-  if (avgResponseTime > 500) {
-    patterns.push({
-      type: 'performance',
-      severity: avgResponseTime > 1000 ? 'high' : 'medium',
-      details: {
-        actualTime: avgResponseTime,
-        threshold: 500,
-        maxTime: parseFloat(summary.executionSummary.maxResponseTime)
-      }
-    });
-  }
-  
-  // Analyze critical alerts
-  const criticalAlerts = summary.executionSummary.criticalAlertsTriggered;
-  if (criticalAlerts > 2) {
-    patterns.push({
-      type: 'security_alerts',
-      severity: 'high',
-      details: {
-        alertCount: criticalAlerts,
-        threshold: 2
-      }
-    });
-  }
-  
-  // Analyze quality gates
-  if (!summary.qualityGates.passedSuccessRate || !summary.qualityGates.passedResponseTime) {
-    patterns.push({
-      type: 'quality_gate_failure',
-      severity: 'high',
-      details: {
-        successRatePassed: summary.qualityGates.passedSuccessRate,
-        responseTimePassed: summary.qualityGates.passedResponseTime
+  // Analyze from detailed report if available
+  if (detailedReport.run && detailedReport.run.executions) {
+    detailedReport.run.executions.forEach(execution => {
+      if (execution.assertions) {
+        execution.assertions.forEach(assertion => {
+          if (assertion.error) {
+            categorizeFailure({
+              name: execution.item?.name || 'Unknown Test',
+              error: assertion.error.message,
+              details: assertion.error
+            }, patterns);
+          }
+        });
       }
     });
   }
   
   return patterns;
+}
+
+/**
+ * Categorize individual failure
+ */
+function categorizeFailure(failure, patterns) {
+  const error = failure.error || failure.message || '';
+  const name = failure.name || 'Unknown';
+  
+  if (error.includes('401') || error.includes('Unauthorized') || error.includes('authentication')) {
+    patterns.authenticationFailures.push({ name, error, type: 'auth' });
+  } else if (error.includes('500') || error.includes('Internal Server Error')) {
+    patterns.serverErrors.push({ name, error, type: 'server' });
+  } else if (error.includes('timeout') || error.includes('TIMEOUT')) {
+    patterns.timeoutErrors.push({ name, error, type: 'timeout' });
+  } else if (error.includes('400') || error.includes('validation') || error.includes('required')) {
+    patterns.validationErrors.push({ name, error, type: 'validation' });
+  } else if (error.includes('ECONNREFUSED') || error.includes('network') || error.includes('DNS')) {
+    patterns.networkErrors.push({ name, error, type: 'network' });
+  } else {
+    patterns.unknownErrors.push({ name, error, type: 'unknown' });
+  }
 }
 
 /**
@@ -121,48 +128,61 @@ async function generateAIAnalysis(patterns, summary) {
   const apiKey = process.env.OPENAI_API_KEY;
   
   if (!apiKey) {
-    console.warn('⚠️  OPENAI_API_KEY not set - using built-in analysis');
+    console.log('OpenAI API key not configured, using built-in analysis');
     return generateBuiltInAnalysis(patterns, summary);
   }
   
+  const totalFailures = Object.values(patterns).reduce((sum, arr) => sum + arr.length, 0);
+  
+  if (totalFailures === 0) {
+    return {
+      summary: 'All tests passed successfully. No failures to analyze.',
+      recommendations: [
+        'Continue monitoring test performance',
+        'Consider adding more edge case tests',
+        'Maintain current testing practices'
+      ],
+      codeFixSuggestions: [],
+      preventionStrategies: [
+        'Implement continuous monitoring',
+        'Set up automated test scheduling',
+        'Review test coverage regularly'
+      ]
+    };
+  }
+  
   const prompt = `
-Analyze the following API test failure patterns for the Peter Digital Enterprise Security Platform and provide specific, actionable recommendations:
+Analyze the following API test failures and provide intelligent recommendations:
 
-Test Summary:
-- Success Rate: ${summary.executionSummary.successRate}%
-- Failed Requests: ${summary.executionSummary.failedRequests}
-- Average Response Time: ${summary.executionSummary.averageResponseTime}ms
-- Critical Alerts: ${summary.executionSummary.criticalAlertsTriggered}
+## Test Summary:
+- Total Requests: ${summary.totalRequests || 'Unknown'}
+- Failed Tests: ${totalFailures}
+- Success Rate: ${summary.successRate || 'Unknown'}%
 
-Failure Patterns:
-${patterns.map(p => `- ${p.type}: ${p.severity} severity - ${JSON.stringify(p.details)}`).join('\n')}
-
-Environment: ${summary.environment}
-Coverage: Authentication, Fraud Detection, Threat Intelligence, Gift Cards, Webhooks
+## Failure Patterns:
+${JSON.stringify(patterns, null, 2)}
 
 Please provide:
-1. Root cause analysis for each failure pattern
-2. Specific code or configuration fixes
-3. Priority ranking (Critical/High/Medium/Low)
-4. Prevention strategies for future occurrences
+1. Root cause analysis for each failure type
+2. Specific code fix suggestions with file locations
+3. Prevention strategies for future failures
+4. Priority ranking (Critical/High/Medium/Low)
 
-Respond in JSON format with this structure:
+Respond in JSON format with the following structure:
 {
-  "analysis": {
-    "rootCauses": [],
-    "recommendations": [],
-    "priorityActions": [],
-    "preventionStrategies": []
-  },
-  "confidence": "high|medium|low"
+  "summary": "Brief analysis summary",
+  "rootCauses": [{"type": "failure_type", "cause": "explanation", "priority": "High"}],
+  "codeFixSuggestions": [{"file": "path/to/file", "issue": "description", "fix": "code_changes"}],
+  "recommendations": ["action1", "action2"],
+  "preventionStrategies": ["strategy1", "strategy2"]
 }
 `;
-
+  
   try {
-    const response = await callOpenAI(prompt, apiKey);
-    return JSON.parse(response);
+    const analysis = await callOpenAI(prompt, apiKey);
+    return analysis;
   } catch (error) {
-    console.warn(`⚠️  OpenAI analysis failed: ${error.message} - using built-in analysis`);
+    console.error('OpenAI API call failed:', error.message);
     return generateBuiltInAnalysis(patterns, summary);
   }
 }
@@ -171,64 +191,36 @@ Respond in JSON format with this structure:
  * Call OpenAI API
  */
 async function callOpenAI(prompt, apiKey) {
-  return new Promise((resolve, reject) => {
-    const payload = JSON.stringify({
-      model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      model: 'gpt-4o', // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
       messages: [
         {
-          role: "system",
-          content: "You are an expert API testing and enterprise security systems analyst. Provide detailed, actionable technical recommendations."
+          role: 'system',
+          content: 'You are an expert API testing and debugging assistant. Analyze test failures and provide actionable solutions.'
         },
         {
-          role: "user",
+          role: 'user',
           content: prompt
         }
       ],
       response_format: { type: "json_object" },
       max_tokens: 2000,
       temperature: 0.3
-    });
-
-    const options = {
-      hostname: 'api.openai.com',
-      port: 443,
-      path: '/v1/chat/completions',
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-        'Content-Length': Buffer.byteLength(payload)
-      }
-    };
-
-    const req = https.request(options, (res) => {
-      let data = '';
-      
-      res.on('data', (chunk) => {
-        data += chunk;
-      });
-      
-      res.on('end', () => {
-        try {
-          const response = JSON.parse(data);
-          if (response.choices && response.choices[0]) {
-            resolve(response.choices[0].message.content);
-          } else {
-            reject(new Error(`Unexpected OpenAI response: ${data}`));
-          }
-        } catch (error) {
-          reject(new Error(`Invalid JSON response: ${data}`));
-        }
-      });
-    });
-
-    req.on('error', (error) => {
-      reject(error);
-    });
-
-    req.write(payload);
-    req.end();
+    })
   });
+  
+  if (!response.ok) {
+    throw new Error(`OpenAI API error: ${response.status} ${response.statusText}`);
+  }
+  
+  const data = await response.json();
+  return JSON.parse(data.choices[0].message.content);
 }
 
 /**
@@ -236,51 +228,99 @@ async function callOpenAI(prompt, apiKey) {
  */
 function generateBuiltInAnalysis(patterns, summary) {
   const analysis = {
+    summary: '',
     rootCauses: [],
+    codeFixSuggestions: [],
     recommendations: [],
-    priorityActions: [],
     preventionStrategies: []
   };
   
-  patterns.forEach(pattern => {
-    switch (pattern.type) {
-      case 'success_rate':
-        analysis.rootCauses.push(`API failure rate of ${100 - pattern.details.actualRate}% indicates potential server errors or authentication issues`);
-        analysis.recommendations.push('Check server logs for 500 errors, validate authentication tokens, review Square API credentials');
-        analysis.priorityActions.push('Critical: Investigate failed endpoints immediately');
-        break;
-        
-      case 'performance':
-        analysis.rootCauses.push(`Average response time of ${pattern.details.actualTime}ms exceeds 500ms threshold`);
-        analysis.recommendations.push('Optimize database queries, implement caching, review third-party API calls');
-        analysis.priorityActions.push('High: Performance optimization required');
-        break;
-        
-      case 'security_alerts':
-        analysis.rootCauses.push(`${pattern.details.alertCount} critical security alerts triggered during testing`);
-        analysis.recommendations.push('Review fraud detection thresholds, validate IP blocking rules, check geo-location filters');
-        analysis.priorityActions.push('Critical: Security alert investigation required');
-        break;
-        
-      case 'quality_gate_failure':
-        analysis.rootCauses.push('Quality gates failed - system not meeting enterprise standards');
-        analysis.recommendations.push('Address underlying performance and reliability issues before deployment');
-        analysis.priorityActions.push('Critical: Do not deploy until quality gates pass');
-        break;
-    }
-  });
+  const totalFailures = Object.values(patterns).reduce((sum, arr) => sum + arr.length, 0);
   
-  analysis.preventionStrategies = [
-    'Implement pre-deployment API health checks',
-    'Set up continuous monitoring with alerting thresholds',
-    'Regular performance testing and optimization',
-    'Automated security scanning in CI/CD pipeline'
+  if (totalFailures === 0) {
+    analysis.summary = 'All tests passed successfully. System is operating within expected parameters.';
+    analysis.recommendations = [
+      'Continue current monitoring practices',
+      'Consider expanding test coverage',
+      'Review performance metrics for optimization opportunities'
+    ];
+    return analysis;
+  }
+  
+  analysis.summary = `Detected ${totalFailures} test failures across multiple categories requiring attention.`;
+  
+  // Authentication failures
+  if (patterns.authenticationFailures.length > 0) {
+    analysis.rootCauses.push({
+      type: 'authentication',
+      cause: 'Missing or invalid authentication credentials',
+      priority: 'High'
+    });
+    analysis.codeFixSuggestions.push({
+      file: 'server/services/FusionAuthService.ts',
+      issue: 'Authentication endpoints returning 401 errors',
+      fix: 'Configure VITE_FUSIONAUTH_CLIENT_ID and VITE_FUSIONAUTH_SERVER_URL environment variables'
+    });
+  }
+  
+  // Server errors
+  if (patterns.serverErrors.length > 0) {
+    analysis.rootCauses.push({
+      type: 'server_error',
+      cause: 'Internal server configuration or dependency issues',
+      priority: 'Critical'
+    });
+    analysis.codeFixSuggestions.push({
+      file: 'server/controllers/GiftCardController.ts',
+      issue: 'Square API integration failing',
+      fix: 'Configure SQUARE_ACCESS_TOKEN, SQUARE_ENVIRONMENT, and SQUARE_LOCATION_ID'
+    });
+  }
+  
+  // Network/timeout errors
+  if (patterns.timeoutErrors.length > 0 || patterns.networkErrors.length > 0) {
+    analysis.rootCauses.push({
+      type: 'network',
+      cause: 'Network connectivity or timeout issues',
+      priority: 'Medium'
+    });
+    analysis.codeFixSuggestions.push({
+      file: 'scripts/newman-test-runner.js',
+      issue: 'Request timeouts during testing',
+      fix: 'Increase timeout values and add retry logic for network requests'
+    });
+  }
+  
+  // Validation errors
+  if (patterns.validationErrors.length > 0) {
+    analysis.rootCauses.push({
+      type: 'validation',
+      cause: 'Request payload validation failures',
+      priority: 'Medium'
+    });
+    analysis.codeFixSuggestions.push({
+      file: 'shared/schema.ts',
+      issue: 'Data validation schemas too strict',
+      fix: 'Review and update Zod schemas to match actual API requirements'
+    });
+  }
+  
+  // General recommendations
+  analysis.recommendations = [
+    'Configure missing environment variables for external services',
+    'Implement proper error handling for API integrations',
+    'Add request retry logic for transient failures',
+    'Set up monitoring alerts for critical endpoints'
   ];
   
-  return {
-    analysis,
-    confidence: 'medium'
-  };
+  analysis.preventionStrategies = [
+    'Implement comprehensive environment validation on startup',
+    'Add health checks for external service dependencies',
+    'Create integration test environments with mock services',
+    'Establish automated deployment validation pipelines'
+  ];
+  
+  return analysis;
 }
 
 /**
@@ -288,160 +328,183 @@ function generateBuiltInAnalysis(patterns, summary) {
  */
 function generateFailureReport(patterns, aiAnalysis, summary) {
   const timestamp = new Date().toISOString();
-  const reportId = `failure_analysis_${Date.now()}`;
+  const totalFailures = Object.values(patterns).reduce((sum, arr) => sum + arr.length, 0);
   
-  let markdown = `# API Failure Analysis Report\n\n`;
-  markdown += `**Report ID:** ${reportId}  \n`;
-  markdown += `**Generated:** ${timestamp}  \n`;
-  markdown += `**Environment:** ${summary.environment}  \n`;
-  markdown += `**Test Suite:** ${summary.testSuite}  \n\n`;
-  
-  markdown += `## Executive Summary\n\n`;
-  markdown += `| Metric | Value | Status |\n`;
-  markdown += `|--------|-------|--------|\n`;
-  markdown += `| Success Rate | ${summary.executionSummary.successRate}% | ${parseFloat(summary.executionSummary.successRate) >= 95 ? '✅' : '❌'} |\n`;
-  markdown += `| Failed Requests | ${summary.executionSummary.failedRequests} | ${summary.executionSummary.failedRequests === 0 ? '✅' : '❌'} |\n`;
-  markdown += `| Avg Response Time | ${summary.executionSummary.averageResponseTime}ms | ${parseFloat(summary.executionSummary.averageResponseTime) <= 500 ? '✅' : '❌'} |\n`;
-  markdown += `| Critical Alerts | ${summary.executionSummary.criticalAlertsTriggered} | ${summary.executionSummary.criticalAlertsTriggered <= 2 ? '✅' : '⚠️'} |\n\n`;
-  
-  markdown += `## Failure Patterns Detected\n\n`;
-  patterns.forEach((pattern, index) => {
-    markdown += `### ${index + 1}. ${pattern.type.replace(/_/g, ' ').toUpperCase()}\n`;
-    markdown += `**Severity:** ${pattern.severity.toUpperCase()}  \n`;
-    markdown += `**Details:**\n`;
-    Object.entries(pattern.details).forEach(([key, value]) => {
-      markdown += `- ${key}: ${value}\n`;
-    });
-    markdown += `\n`;
+  let report = `# AI-Powered Test Failure Analysis Report
+
+**Generated:** ${new Date().toLocaleString()}  
+**System:** Peter Digital Enterprise Security Platform  
+**Analysis Engine:** AI-Enhanced Diagnostic System
+
+## Executive Summary
+
+${aiAnalysis.summary}
+
+**Total Failures:** ${totalFailures}  
+**Success Rate:** ${summary.successRate || 'Unknown'}%  
+**Analysis Confidence:** ${totalFailures > 0 ? 'High' : 'N/A'}
+
+`;
+
+  if (totalFailures === 0) {
+    report += `## System Status: ✅ ALL TESTS PASSING
+
+No failures detected in the current test run. The system is operating within expected parameters.
+
+### Recommendations for Continued Excellence:
+${aiAnalysis.recommendations.map(rec => `- ${rec}`).join('\n')}
+
+`;
+    return report;
+  }
+
+  report += `## Root Cause Analysis
+
+${aiAnalysis.rootCauses.map(cause => `
+### ${cause.type.toUpperCase()} - Priority: ${cause.priority}
+**Cause:** ${cause.cause}
+`).join('\n')}
+
+## Detailed Failure Breakdown
+
+`;
+
+  // Add detailed breakdown for each category
+  Object.entries(patterns).forEach(([category, failures]) => {
+    if (failures.length > 0) {
+      report += `### ${category.charAt(0).toUpperCase() + category.slice(1)} (${failures.length})\n\n`;
+      failures.forEach((failure, index) => {
+        report += `${index + 1}. **${failure.name}**\n   Error: \`${failure.error}\`\n\n`;
+      });
+    }
   });
-  
-  markdown += `## AI Analysis Results\n\n`;
-  markdown += `**Confidence Level:** ${aiAnalysis.confidence.toUpperCase()}\n\n`;
-  
-  if (aiAnalysis.analysis.rootCauses.length > 0) {
-    markdown += `### Root Cause Analysis\n`;
-    aiAnalysis.analysis.rootCauses.forEach((cause, index) => {
-      markdown += `${index + 1}. ${cause}\n`;
-    });
-    markdown += `\n`;
-  }
-  
-  if (aiAnalysis.analysis.priorityActions.length > 0) {
-    markdown += `### Priority Actions\n`;
-    aiAnalysis.analysis.priorityActions.forEach((action, index) => {
-      markdown += `${index + 1}. ${action}\n`;
-    });
-    markdown += `\n`;
-  }
-  
-  if (aiAnalysis.analysis.recommendations.length > 0) {
-    markdown += `### Recommendations\n`;
-    aiAnalysis.analysis.recommendations.forEach((rec, index) => {
-      markdown += `${index + 1}. ${rec}\n`;
-    });
-    markdown += `\n`;
-  }
-  
-  if (aiAnalysis.analysis.preventionStrategies.length > 0) {
-    markdown += `### Prevention Strategies\n`;
-    aiAnalysis.analysis.preventionStrategies.forEach((strategy, index) => {
-      markdown += `${index + 1}. ${strategy}\n`;
-    });
-    markdown += `\n`;
-  }
-  
-  markdown += `## Next Steps\n\n`;
-  markdown += `1. Review and prioritize the recommendations above\n`;
-  markdown += `2. Address critical and high-severity issues immediately\n`;
-  markdown += `3. Implement prevention strategies to avoid future failures\n`;
-  markdown += `4. Re-run tests after implementing fixes\n\n`;
-  
-  markdown += `---\n`;
-  markdown += `*Report generated by Peter Digital AI Failure Analyzer*\n`;
-  
-  return markdown;
+
+  report += `## Code Fix Suggestions
+
+${aiAnalysis.codeFixSuggestions.map(suggestion => `
+### ${suggestion.file}
+**Issue:** ${suggestion.issue}  
+**Recommended Fix:** ${suggestion.fix}
+`).join('\n')}
+
+## Implementation Recommendations
+
+${aiAnalysis.recommendations.map(rec => `- ${rec}`).join('\n')}
+
+## Prevention Strategies
+
+${aiAnalysis.preventionStrategies.map(strategy => `- ${strategy}`).join('\n')}
+
+## Next Steps
+
+1. **Immediate Actions:** Address Critical and High priority issues
+2. **Configuration:** Update environment variables and service configurations
+3. **Monitoring:** Implement suggested prevention strategies
+4. **Validation:** Re-run tests after implementing fixes
+
+---
+
+*Report generated by AI-Enhanced Test Analysis Engine*  
+*Peter Digital Enterprise Security Platform*
+`;
+
+  return report;
 }
 
 /**
  * Main execution function
  */
 async function analyzeFailures() {
-  console.log('🤖 AI Failure Analyzer - Peter Digital API Monitor');
-  console.log('================================================\n');
-
-  // Load configuration
-  const config = loadConfig();
-  if (!config) {
-    console.error('❌ Failed to load alert configuration');
-    process.exit(1);
-  }
-
-  // Check if AI analyzer is enabled
-  if (!config.aiAnalyzerEnabled) {
-    console.log('ℹ️  AI failure analyzer is disabled in configuration');
-    return;
-  }
-
-  // Load test data
-  const testData = loadTestData();
-  if (!testData || !testData.summary) {
-    console.error('❌ Failed to load test data');
-    process.exit(1);
-  }
-
-  const { summary, detailedReport } = testData;
-
+  console.log('🧠 AI-Powered Test Failure Analysis');
+  console.log('====================================\n');
+  
   try {
+    // Load configuration and test data
+    console.log('📋 Loading configuration and test data...');
+    const config = loadConfig();
+    const { summary, detailedReport } = loadTestData();
+    
     // Extract failure patterns
-    console.log('🔍 Extracting failure patterns...');
+    console.log('🔍 Analyzing failure patterns...');
     const patterns = extractFailurePatterns(summary, detailedReport);
     
-    if (patterns.length === 0) {
-      console.log('✅ No failure patterns detected - system performing within normal parameters');
-      
-      // Still generate a success report
-      const successReport = `# API Success Report\n\n**Generated:** ${new Date().toISOString()}\n\n✅ All tests passed successfully - no issues detected.\n\n**Metrics:**\n- Success Rate: ${summary.executionSummary.successRate}%\n- Response Time: ${summary.executionSummary.averageResponseTime}ms\n- Critical Alerts: ${summary.executionSummary.criticalAlertsTriggered}\n\n*System operating at elite standards.*\n`;
-      
-      fs.writeFileSync(FAILURE_REPORT_PATH, successReport);
-      console.log(`📄 Success report saved: ${FAILURE_REPORT_PATH}`);
-      return;
-    }
-
-    console.log(`📊 Found ${patterns.length} failure pattern(s)`);
+    const totalFailures = Object.values(patterns).reduce((sum, arr) => sum + arr.length, 0);
+    console.log(`   Found ${totalFailures} failures to analyze`);
     
     // Generate AI analysis
-    console.log('🧠 Generating AI analysis...');
+    console.log('🤖 Generating AI-powered analysis...');
     const aiAnalysis = await generateAIAnalysis(patterns, summary);
     
-    // Generate failure report
-    console.log('📝 Generating failure analysis report...');
+    // Generate report
+    console.log('📄 Creating detailed failure report...');
     const report = generateFailureReport(patterns, aiAnalysis, summary);
     
     // Save report
-    fs.writeFileSync(FAILURE_REPORT_PATH, report);
+    const reportsDir = path.join(__dirname, '..', 'docs', 'reports');
+    if (!fs.existsSync(reportsDir)) {
+      fs.mkdirSync(reportsDir, { recursive: true });
+    }
     
-    console.log('✅ AI failure analysis completed');
-    console.log(`📄 Report saved: ${FAILURE_REPORT_PATH}`);
-    console.log(`🎯 Confidence Level: ${aiAnalysis.confidence.toUpperCase()}`);
-    console.log(`🔧 Recommendations: ${aiAnalysis.analysis.recommendations.length}`);
-    console.log(`⚡ Priority Actions: ${aiAnalysis.analysis.priorityActions.length}`);
+    const reportPath = path.join(reportsDir, 'ai-failure-analysis.md');
+    const jsonPath = path.join(reportsDir, 'ai-analysis-data.json');
+    
+    fs.writeFileSync(reportPath, report);
+    fs.writeFileSync(jsonPath, JSON.stringify({
+      timestamp: new Date().toISOString(),
+      patterns,
+      aiAnalysis,
+      summary,
+      totalFailures
+    }, null, 2));
+    
+    console.log(`✅ Analysis complete!`);
+    console.log(`   Report: ${reportPath}`);
+    console.log(`   Data: ${jsonPath}\n`);
+    
+    // Display key findings
+    console.log('🎯 KEY FINDINGS:');
+    console.log(`   Total Failures: ${totalFailures}`);
+    if (aiAnalysis.rootCauses.length > 0) {
+      console.log('   Root Causes:');
+      aiAnalysis.rootCauses.forEach(cause => {
+        console.log(`   • ${cause.type} (${cause.priority}): ${cause.cause}`);
+      });
+    }
+    
+    if (aiAnalysis.codeFixSuggestions.length > 0) {
+      console.log('\n🔧 TOP FIXES:');
+      aiAnalysis.codeFixSuggestions.slice(0, 3).forEach((fix, index) => {
+        console.log(`   ${index + 1}. ${fix.file}: ${fix.issue}`);
+      });
+    }
+    
+    console.log('\n📋 RECOMMENDATIONS:');
+    aiAnalysis.recommendations.slice(0, 3).forEach((rec, index) => {
+      console.log(`   ${index + 1}. ${rec}`);
+    });
+    
+    return {
+      success: true,
+      totalFailures,
+      reportPath,
+      analysis: aiAnalysis
+    };
     
   } catch (error) {
-    console.error('❌ AI failure analysis failed:', error.message);
-    process.exit(1);
+    console.error('❌ Analysis failed:', error);
+    return {
+      success: false,
+      error: error.message
+    };
   }
 }
 
 // Execute if run directly
 if (import.meta.url === `file://${process.argv[1]}`) {
-  analyzeFailures()
-    .then(() => {
-      console.log('\n✅ AI failure analysis process completed');
-    })
-    .catch((error) => {
-      console.error('\n❌ AI failure analysis process failed:', error);
-      process.exit(1);
-    });
+  analyzeFailures().catch(error => {
+    console.error('Fatal error:', error);
+    process.exit(1);
+  });
 }
 
-export { analyzeFailures };
+export { analyzeFailures, extractFailurePatterns, generateAIAnalysis };

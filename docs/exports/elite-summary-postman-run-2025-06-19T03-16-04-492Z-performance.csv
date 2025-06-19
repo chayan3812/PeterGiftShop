@@ -1,0 +1,11 @@
+Metric,Value,Unit,Threshold,Status
+Average Response Time,4.75,ms,500,Good
+P50 Response Time,3,ms,200,Good
+P95 Response Time,8,ms,1000,Good
+P99 Response Time,31,ms,2000,Good
+Success Rate,100,%,95,Good
+Error Rate,0,%,5,Good
+Throughput,8.36,req/min,60,Warning
+Total Requests,51,count,1,Good
+Failed Tests,0,count,0,Good
+Critical Alerts,2,count,0,Critical
