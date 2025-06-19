@@ -1,0 +1,64 @@
+{
+  "reportId": "test-mixed-1750296493579",
+  "testName": "Peter Digital API Comprehensive Test Suite",
+  "generatedAt": "2025-06-19T01:28:13.579Z",
+  "executionSummary": {
+    "totalRequests": 47,
+    "failCount": 2,
+    "successRate": 95.74,
+    "avgResponseTime": 143,
+    "criticalAlerts": 0,
+    "failures": [
+      {
+        "name": "GET /api/gift-cards/balance/invalid",
+        "error": "Gift card not found",
+        "statusCode": 404,
+        "responseTime": 89
+      },
+      {
+        "name": "GET /api/admin/analytics",
+        "error": "Database connection timeout",
+        "statusCode": 500,
+        "responseTime": 1200
+      }
+    ]
+  },
+  "performanceMetrics": {
+    "p50ResponseTime": 100,
+    "p95ResponseTime": 257,
+    "p99ResponseTime": 357,
+    "errorRate": 4.26,
+    "throughput": 6.98,
+    "concurrency": 1
+  },
+  "securityMetrics": {
+    "authFailures": 0,
+    "suspiciousRequests": 0,
+    "rateLimitHits": 0,
+    "securityScore": 10,
+    "vulnerabilities": []
+  },
+  "failures": [
+    {
+      "name": "GET /api/gift-cards/balance/invalid",
+      "error": "Gift card not found",
+      "statusCode": 404,
+      "responseTime": 89
+    },
+    {
+      "name": "GET /api/admin/analytics",
+      "error": "Database connection timeout",
+      "statusCode": 500,
+      "responseTime": 1200
+    }
+  ],
+  "recommendations": [
+    "Review server error logs for infrastructure issues"
+  ],
+  "environment": {
+    "baseUrl": "http://localhost:5000",
+    "testFramework": "Newman + JWT Security",
+    "collection": "PeterDigitalAPI.postman_collection.json",
+    "environment": "production-test"
+  }
+}

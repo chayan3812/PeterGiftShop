@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Report Access Logs - Peter Digital Security Platform</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f5f5; color: #333; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 10px; margin-bottom: 30px; }
+        .header h1 { font-size: 2.5em; margin-bottom: 10px; }
+        .header p { font-size: 1.1em; opacity: 0.9; }
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .metric-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center; }
+        .metric-value { font-size: 2.5em; font-weight: bold; color: #667eea; margin-bottom: 5px; }
+        .metric-label { color: #666; font-size: 0.9em; }
+        .dashboard-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; margin-bottom: 30px; }
+        .panel { background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); overflow: hidden; }
+        .panel-header { background: #f8f9fa; padding: 15px 20px; border-bottom: 1px solid #e9ecef; font-weight: bold; color: #495057; }
+        .panel-content { padding: 20px; }
+        .log-table { width: 100%; border-collapse: collapse; }
+        .log-table th, .log-table td { text-align: left; padding: 12px 8px; border-bottom: 1px solid #e9ecef; }
+        .log-table th { background: #f8f9fa; font-weight: 600; color: #495057; }
+        .log-table tr:hover { background: #f8f9fa; }
+        .status-success { color: #28a745; font-weight: bold; }
+        .status-failed { color: #dc3545; font-weight: bold; }
+        .user-badge { background: #e3f2fd; color: #1976d2; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; }
+        .report-badge { background: #f3e5f5; color: #7b1fa2; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; }
+        .chart-container { margin: 20px 0; }
+        .bar { background: #667eea; margin: 5px 0; border-radius: 3px; color: white; padding: 5px 10px; }
+        .security-alert { background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 5px; padding: 15px; margin: 10px 0; }
+        .security-alert.high { background: #f8d7da; border-color: #f5c6cb; }
+        .timestamp { color: #666; font-size: 0.9em; }
+        .access-method { padding: 2px 6px; border-radius: 10px; font-size: 0.75em; }
+        .method-slack { background: #4a154b; color: white; }
+        .method-api { background: #28a745; color: white; }
+        .method-script { background: #fd7e14; color: white; }
+        .method-browser { background: #6f42c1; color: white; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Test Report Access Logs</h1>
+            <p>JWT-Authenticated Security Audit Trail - Real-time access monitoring and analysis</p>
+        </div>
+        
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-value">25</div>
+                <div class="metric-label">Total Accesses</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">5</div>
+                <div class="metric-label">Unique Users</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">4</div>
+                <div class="metric-label">Reports Accessed</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">96.0%</div>
+                <div class="metric-label">Success Rate</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">277ms</div>
+                <div class="metric-label">Avg Response Time</div>
+            </div>
+        </div>
+        
+        <div class="dashboard-grid">
+            <div class="panel">
+                <div class="panel-header">Recent Access Log Entries</div>
+                <div class="panel-content">
+                    <table class="log-table">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>User</th>
+                                <th>Report</th>
+                                <th>Method</th>
+                                <th>IP Address</th>
+                                <th>Status</th>
+                                <th>Response</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                            <tr>
+                                <td class="timestamp">6/19/2025, 1:22:45 AM</td>
+                                <td><span class="user-badge">manager</span></td>
+                                <td><span class="report-badge">performance-test</span></td>
+                                <td><span class="access-method method-script">script automation</span></td>
+                                <td>192.168.1.23</td>
+                                <td class="status-success">Success</td>
+                                <td>464ms</td>
+                            </tr>
+                            
+                            <tr>
+                                <td class="timestamp">6/19/2025, 12:12:18 AM</td>
+                                <td><span class="user-badge">admin</span></td>
+                                <td><span class="report-badge">performance-test</span></td>
+                                <td><span class="access-method method-script">script automation</span></td>
+                                <td>192.168.1.236</td>
+                                <td class="status-success">Success</td>
+                                <td>307ms</td>
+                            </tr>
+                            
+                            <tr>
+                                <td class="timestamp">6/18/2025, 11:23:50 PM</td>
+                                <td><span class="user-badge">auditor</span></td>
+                                <td><span class="report-badge">performance-test</span></td>
+                                <td><span class="access-method method-web">web browser</span></td>
+                                <td>192.168.1.67</td>
+                                <td class="status-success">Success</td>
+                                <td>518ms</td>
+                            </tr>
+                            
+                            <tr>
+                                <td class="timestamp">6/18/2025, 9:33:50 PM</td>
+                                <td><span class="user-badge">manager</span></td>
+                                <td><span class="report-badge">fraud-analysis</span></td>
+                                <td><span class="access-method method-api">api direct</span></td>
+                                <td>192.168.1.52</td>
+                                <td class="status-success">Success</td>
+                                <td>80ms</td>
+                            </tr>
+                            
+                            <tr>
+                                <td class="timestamp">6/18/2025, 8:56:39 PM</td>
+                                <td><span class="user-badge">admin</span></td>
+                                <td><span class="report-badge">performance-test</span></td>
+                                <td><span class="access-method method-script">script automation</span></td>
+                                <td>192.168.1.205</td>
+                                <td class="status-success">Success</td>
+                                <td>380ms</td>
+                            </tr>
+                            
+                            <tr>
+                                <td class="timestamp">6/18/2025, 8:16:56 PM</td>
+                                <td><span class="user-badge">developer</span></td>
+                                <td><span class="report-badge">security-audit</span></td>
+                                <td><span class="access-method method-api">api direct</span></td>
+                                <td>192.168.1.232</td>
+                                <td class="status-success">Success</td>
+                                <td>182ms</td>
+                            </tr>
+                            
+                            <tr>
+                                <td class="timestamp">6/18/2025, 7:28:11 PM</td>
+                                <td><span class="user-badge">manager</span></td>
+                                <td><span class="report-badge">fraud-analysis</span></td>
+                                <td><span class="access-method method-script">script automation</span></td>
+                                <td>192.168.1.191</td>
+                                <td class="status-success">Success</td>
+                                <td>472ms</td>
+                            </tr>
+                            
+                            <tr>
+                                <td class="timestamp">6/18/2025, 5:55:47 PM</td>
+                                <td><span class="user-badge">auditor</span></td>
+                                <td><span class="report-badge">performance-test</span></td>
+                                <td><span class="access-method method-web">web browser</span></td>
+                                <td>192.168.1.247</td>
+                                <td class="status-success">Success</td>
+                                <td>333ms</td>
+                            </tr>
+                            
+                            <tr>
+                                <td class="timestamp">6/18/2025, 5:02:19 PM</td>
+                                <td><span class="user-badge">developer</span></td>
+                                <td><span class="report-badge">elite-summary</span></td>
+                                <td><span class="access-method method-script">script automation</span></td>
+                                <td>192.168.1.91</td>
+                                <td class="status-success">Success</td>
+                                <td>225ms</td>
+                            </tr>
+                            
+                            <tr>
+                                <td class="timestamp">6/18/2025, 4:29:17 PM</td>
+                                <td><span class="user-badge">manager</span></td>
+                                <td><span class="report-badge">fraud-analysis</span></td>
+                                <td><span class="access-method method-web">web browser</span></td>
+                                <td>192.168.1.188</td>
+                                <td class="status-success">Success</td>
+                                <td>346ms</td>
+                            </tr>
+                            
+                            <tr>
+                                <td class="timestamp">6/18/2025, 3:10:22 PM</td>
+                                <td><span class="user-badge">developer</span></td>
+                                <td><span class="report-badge">fraud-analysis</span></td>
+                                <td><span class="access-method method-script">script automation</span></td>
+                                <td>192.168.1.115</td>
+                                <td class="status-success">Success</td>
+                                <td>245ms</td>
+                            </tr>
+                            
+                            <tr>
+                                <td class="timestamp">6/18/2025, 2:17:39 PM</td>
+                                <td><span class="user-badge">manager</span></td>
+                                <td><span class="report-badge">security-audit</span></td>
+                                <td><span class="access-method method-web">web browser</span></td>
+                                <td>192.168.1.85</td>
+                                <td class="status-success">Success</td>
+                                <td>142ms</td>
+                            </tr>
+                            
+                            <tr>
+                                <td class="timestamp">6/18/2025, 1:22:05 PM</td>
+                                <td><span class="user-badge">admin</span></td>
+                                <td><span class="report-badge">fraud-analysis</span></td>
+                                <td><span class="access-method method-web">web browser</span></td>
+                                <td>192.168.1.63</td>
+                                <td class="status-success">Success</td>
+                                <td>408ms</td>
+                            </tr>
+                            
+                            <tr>
+                                <td class="timestamp">6/18/2025, 11:37:02 AM</td>
+                                <td><span class="user-badge">security_team</span></td>
+                                <td><span class="report-badge">security-audit</span></td>
+                                <td><span class="access-method method-api">api direct</span></td>
+                                <td>192.168.1.247</td>
+                                <td class="status-success">Success</td>
+                                <td>419ms</td>
+                            </tr>
+                            
+                            <tr>
+                                <td class="timestamp">6/18/2025, 11:15:36 AM</td>
+                                <td><span class="user-badge">admin</span></td>
+                                <td><span class="report-badge">fraud-analysis</span></td>
+                                <td><span class="access-method method-web">web browser</span></td>
+                                <td>192.168.1.74</td>
+                                <td class="status-failed">Failed</td>
+                                <td>73ms</td>
+                            </tr>
+                            
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div>
+                <div class="panel">
+                    <div class="panel-header">Access Methods</div>
+                    <div class="panel-content">
+                        <div class="chart-container">
+                            <div class="bar" style="width: 32%">script automation: 8 (32.0%)</div><div class="bar" style="width: 40%">web browser: 10 (40.0%)</div><div class="bar" style="width: 20%">api direct: 5 (20.0%)</div><div class="bar" style="width: 8%">slack integration: 2 (8.0%)</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="panel" style="margin-top: 20px;">
+                    <div class="panel-header">User Activity</div>
+                    <div class="panel-content">
+                        <div class="chart-container">
+                            <div class="bar" style="width: 64%">manager: 8</div><div class="bar" style="width: 56%">admin: 7</div><div class="bar" style="width: 32%">auditor: 4</div><div class="bar" style="width: 32%">developer: 4</div><div class="bar" style="width: 16%">security_team: 2</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="panel" style="margin-top: 20px;">
+                    <div class="panel-header">Report Popularity</div>
+                    <div class="panel-content">
+                        <div class="chart-container">
+                            <div class="bar" style="width: 48%">performance-test: 6</div><div class="bar" style="width: 64%">fraud-analysis: 8</div><div class="bar" style="width: 40%">security-audit: 5</div><div class="bar" style="width: 48%">elite-summary: 6</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+        <div style="text-align: center; margin-top: 30px; color: #666; font-size: 0.9em;">
+            <p>JWT-Authenticated Test Report Access Monitoring | Generated: 6/19/2025, 1:29:59 AM</p>
+            <p>Peter Digital Security Platform - Enterprise Grade Audit Trail</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,164 @@
+{
+  "reportTitle": "Test Report Access Analytics",
+  "generatedAt": "2025-06-19T01:29:59.781Z",
+  "summary": {
+    "totalAccesses": 25,
+    "uniqueUsers": 5,
+    "uniqueReports": 4,
+    "successRate": 96,
+    "avgResponseTime": 277,
+    "timeRange": {
+      "from": "2025-06-18T01:20:58.204Z",
+      "to": "2025-06-19T01:22:45.696Z"
+    }
+  },
+  "topUsers": [
+    {
+      "user": "manager",
+      "accessCount": 8
+    },
+    {
+      "user": "admin",
+      "accessCount": 7
+    },
+    {
+      "user": "auditor",
+      "accessCount": 4
+    },
+    {
+      "user": "developer",
+      "accessCount": 4
+    },
+    {
+      "user": "security_team",
+      "accessCount": 2
+    }
+  ],
+  "popularReports": [
+    {
+      "reportId": "fraud-analysis",
+      "accessCount": 8
+    },
+    {
+      "reportId": "performance-test",
+      "accessCount": 6
+    },
+    {
+      "reportId": "elite-summary",
+      "accessCount": 6
+    },
+    {
+      "reportId": "security-audit",
+      "accessCount": 5
+    }
+  ],
+  "accessMethods": [
+    {
+      "method": "script automation",
+      "count": 8,
+      "percentage": "32.0"
+    },
+    {
+      "method": "web browser",
+      "count": 10,
+      "percentage": "40.0"
+    },
+    {
+      "method": "api direct",
+      "count": 5,
+      "percentage": "20.0"
+    },
+    {
+      "method": "slack integration",
+      "count": 2,
+      "percentage": "8.0"
+    }
+  ],
+  "securityEvents": {
+    "suspiciousIPs": [],
+    "multipleFailures": [],
+    "totalFailures": 1
+  },
+  "recentActivity": [
+    {
+      "timestamp": "2025-06-19T01:22:45.696Z",
+      "user": "manager",
+      "report": "performance-test",
+      "method": "script_automation",
+      "success": true,
+      "responseTime": 464
+    },
+    {
+      "timestamp": "2025-06-19T00:12:18.226Z",
+      "user": "admin",
+      "report": "performance-test",
+      "method": "script_automation",
+      "success": true,
+      "responseTime": 307
+    },
+    {
+      "timestamp": "2025-06-18T23:23:50.933Z",
+      "user": "auditor",
+      "report": "performance-test",
+      "method": "web_browser",
+      "success": true,
+      "responseTime": 518
+    },
+    {
+      "timestamp": "2025-06-18T21:33:50.832Z",
+      "user": "manager",
+      "report": "fraud-analysis",
+      "method": "api_direct",
+      "success": true,
+      "responseTime": 80
+    },
+    {
+      "timestamp": "2025-06-18T20:56:39.617Z",
+      "user": "admin",
+      "report": "performance-test",
+      "method": "script_automation",
+      "success": true,
+      "responseTime": 380
+    },
+    {
+      "timestamp": "2025-06-18T20:16:56.547Z",
+      "user": "developer",
+      "report": "security-audit",
+      "method": "api_direct",
+      "success": true,
+      "responseTime": 182
+    },
+    {
+      "timestamp": "2025-06-18T19:28:11.005Z",
+      "user": "manager",
+      "report": "fraud-analysis",
+      "method": "script_automation",
+      "success": true,
+      "responseTime": 472
+    },
+    {
+      "timestamp": "2025-06-18T17:55:47.271Z",
+      "user": "auditor",
+      "report": "performance-test",
+      "method": "web_browser",
+      "success": true,
+      "responseTime": 333
+    },
+    {
+      "timestamp": "2025-06-18T17:02:19.805Z",
+      "user": "developer",
+      "report": "elite-summary",
+      "method": "script_automation",
+      "success": true,
+      "responseTime": 225
+    },
+    {
+      "timestamp": "2025-06-18T16:29:17.583Z",
+      "user": "manager",
+      "report": "fraud-analysis",
+      "method": "web_browser",
+      "success": true,
+      "responseTime": 346
+    }
+  ]
+}

@@ -1,0 +1,161 @@
+{
+  "slack": {
+    "test_success": {
+      "type": "blocks",
+      "blocks": [
+        {
+          "type": "section",
+          "text": {
+            "type": "mrkdwn",
+            "text": "✅ *API Test Suite Completed Successfully*\n• Success Rate: {{successRate}}%\n• Total Requests: {{totalRequests}}\n• Average Response Time: {{avgResponseTime}}ms"
+          },
+          "accessory": {
+            "type": "button",
+            "text": {
+              "type": "plain_text",
+              "text": "View Secure Report"
+            },
+            "url": "{{signedUrl}}",
+            "action_id": "view_test_report"
+          }
+        },
+        {
+          "type": "context",
+          "elements": [
+            {
+              "type": "mrkdwn",
+              "text": "🔒 Secure access expires in 24h | Generated: {{timestamp}}"
+            }
+          ]
+        }
+      ]
+    },
+    "test_failure": {
+      "type": "blocks",
+      "blocks": [
+        {
+          "type": "section",
+          "text": {
+            "type": "mrkdwn",
+            "text": "🚨 *API Test Failures Detected*\n• Failed Tests: {{failCount}}\n• Success Rate: {{successRate}}%\n• Critical Issues: {{criticalAlerts}}"
+          }
+        },
+        {
+          "type": "section",
+          "text": {
+            "type": "mrkdwn",
+            "text": "*Top Failures:*\n{{#each failures}}• {{name}}: {{error}}\n{{/each}}"
+          },
+          "accessory": {
+            "type": "button",
+            "text": {
+              "type": "plain_text",
+              "text": "View Full Report"
+            },
+            "url": "{{signedUrl}}",
+            "style": "danger",
+            "action_id": "view_failure_report"
+          }
+        },
+        {
+          "type": "context",
+          "elements": [
+            {
+              "type": "mrkdwn",
+              "text": "🔒 Secure analysis available | Report ID: {{reportId}}"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "email": {
+    "test_success": {
+      "subject": "✅ API Test Suite - {{successRate}}% Success Rate",
+      "html": "<!DOCTYPE html><html><head><style>body{font-family:Arial,sans-serif;margin:0;padding:20px;background-color:#f5f5f5}.container{max-width:600px;margin:0 auto;background:#fff;padding:30px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.1)}.header{background:#28a745;color:white;padding:20px;border-radius:8px 8px 0 0;text-align:center}.metric{display:inline-block;margin:10px;padding:15px;background:#f8f9fa;border-radius:6px;text-align:center}.metric-value{font-size:24px;font-weight:bold;color:#28a745}.metric-label{font-size:12px;color:#666;margin-top:5px}.button{display:inline-block;background:#007bff;color:white;padding:12px 24px;text-decoration:none;border-radius:5px;margin:20px 0}.footer{font-size:12px;color:#666;margin-top:30px;text-align:center}</style></head><body><div class='container'><div class='header'><h1>API Test Results</h1><p>Test execution completed successfully</p></div><div style='padding:20px'><div class='metric'><div class='metric-value'>{{successRate}}%</div><div class='metric-label'>Success Rate</div></div><div class='metric'><div class='metric-value'>{{totalRequests}}</div><div class='metric-label'>Total Requests</div></div><div class='metric'><div class='metric-value'>{{avgResponseTime}}ms</div><div class='metric-label'>Avg Response</div></div><p style='margin:20px 0'>Your API test suite has completed with excellent results. All critical endpoints are performing within expected parameters.</p><a href='{{signedUrl}}' class='button'>View Detailed Report</a></div><div class='footer'>This secure link expires in 24 hours<br>Generated: {{timestamp}}</div></div></body></html>"
+    },
+    "test_failure": {
+      "subject": "🚨 API Test Failures - {{failCount}} Issues Detected",
+      "html": "<!DOCTYPE html><html><head><style>body{font-family:Arial,sans-serif;margin:0;padding:20px;background-color:#f5f5f5}.container{max-width:600px;margin:0 auto;background:#fff;padding:30px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.1)}.header{background:#dc3545;color:white;padding:20px;border-radius:8px 8px 0 0;text-align:center}.metric{display:inline-block;margin:10px;padding:15px;background:#f8f9fa;border-radius:6px;text-align:center}.metric-value{font-size:24px;font-weight:bold}.success{color:#28a745}.warning{color:#ffc107}.danger{color:#dc3545}.metric-label{font-size:12px;color:#666;margin-top:5px}.failure-list{background:#fff3cd;border:1px solid #ffeaa7;border-radius:5px;padding:15px;margin:20px 0}.failure-item{margin:10px 0;padding:10px;background:white;border-left:4px solid #dc3545}.button{display:inline-block;background:#dc3545;color:white;padding:12px 24px;text-decoration:none;border-radius:5px;margin:20px 0}.footer{font-size:12px;color:#666;margin-top:30px;text-align:center}</style></head><body><div class='container'><div class='header'><h1>API Test Failures</h1><p>Immediate attention required</p></div><div style='padding:20px'><div class='metric'><div class='metric-value danger'>{{failCount}}</div><div class='metric-label'>Failed Tests</div></div><div class='metric'><div class='metric-value {{#if (gt successRate 80)}}success{{else}}{{#if (gt successRate 60)}}warning{{else}}danger{{/if}}{{/if}}'>{{successRate}}%</div><div class='metric-label'>Success Rate</div></div><div class='metric'><div class='metric-value danger'>{{criticalAlerts}}</div><div class='metric-label'>Critical Issues</div></div><div class='failure-list'><h3>Top Failures:</h3>{{#each failures}}<div class='failure-item'><strong>{{name}}</strong><br>Error: {{error}}<br>Status: {{statusCode}} | Response Time: {{responseTime}}ms</div>{{/each}}</div><a href='{{signedUrl}}' class='button'>View Full Analysis</a></div><div class='footer'>Secure diagnostic link expires in 24 hours<br>Report ID: {{reportId}} | Generated: {{timestamp}}</div></div></body></html>"
+    }
+  },
+  "telegram": {
+    "test_success": {
+      "parse_mode": "HTML",
+      "text": "✅ <b>API Test Success</b>\n\n📊 <b>Results Summary:</b>\n• Success Rate: {{successRate}}%\n• Total Requests: {{totalRequests}}\n• Avg Response: {{avgResponseTime}}ms\n• Failures: {{failCount}}\n\n🔒 <a href=\"{{signedUrl}}\">View Secure Report</a>\n\n<i>Report expires in 24h | {{timestamp}}</i>"
+    },
+    "test_failure": {
+      "parse_mode": "HTML",
+      "text": "🚨 <b>API Test Failures Detected</b>\n\n⚠️ <b>Critical Issues:</b>\n• Failed Tests: {{failCount}}\n• Success Rate: {{successRate}}%\n• Critical Alerts: {{criticalAlerts}}\n\n🔍 <b>Top Failures:</b>\n{{#each failures}}• <code>{{name}}</code>: {{error}}\n{{/each}}\n\n🔒 <a href=\"{{signedUrl}}\">View Full Diagnostic Report</a>\n\n<i>Secure analysis | Report ID: {{reportId}}</i>"
+    }
+  },
+  "webhook": {
+    "test_results": {
+      "method": "POST",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{webhookToken}}",
+        "X-Report-Source": "peter-digital-security-platform"
+      },
+      "payload": {
+        "event": "test_completed",
+        "timestamp": "{{timestamp}}",
+        "reportId": "{{reportId}}",
+        "secureUrl": "{{signedUrl}}",
+        "summary": {
+          "totalRequests": "{{totalRequests}}",
+          "successRate": "{{successRate}}",
+          "failCount": "{{failCount}}",
+          "avgResponseTime": "{{avgResponseTime}}",
+          "criticalAlerts": "{{criticalAlerts}}"
+        },
+        "status": "{{#if (eq failCount 0)}}success{{else}}failure{{/if}}",
+        "priority": "{{#if (gt criticalAlerts 0)}}high{{else}}{{#if (gt failCount 5)}}medium{{else}}low{{/if}}{{/if}}"
+      }
+    }
+  },
+  "dashboard": {
+    "widget_data": {
+      "type": "test_results_widget",
+      "title": "API Test Results",
+      "data": {
+        "reportId": "{{reportId}}",
+        "timestamp": "{{timestamp}}",
+        "secureUrl": "{{signedUrl}}",
+        "metrics": {
+          "successRate": {
+            "value": "{{successRate}}",
+            "unit": "%",
+            "status": "{{#if (gt successRate 95)}}excellent{{else}}{{#if (gt successRate 80)}}good{{else}}needs_attention{{/if}}{{/if}}"
+          },
+          "totalRequests": {
+            "value": "{{totalRequests}}",
+            "unit": "requests"
+          },
+          "avgResponseTime": {
+            "value": "{{avgResponseTime}}",
+            "unit": "ms",
+            "status": "{{#if (lt avgResponseTime 200)}}fast{{else}}{{#if (lt avgResponseTime 500)}}acceptable{{else}}slow{{/if}}{{/if}}"
+          },
+          "failCount": {
+            "value": "{{failCount}}",
+            "unit": "failures",
+            "status": "{{#if (eq failCount 0)}}success{{else}}warning{{/if}}"
+          }
+        },
+        "actions": [
+          {
+            "label": "View Report",
+            "url": "{{signedUrl}}",
+            "type": "primary"
+          },
+          {
+            "label": "Download JSON",
+            "url": "{{signedUrl}}&format=json",
+            "type": "secondary"
+          }
+        ]
+      }
+    }
+  }
+}
