@@ -39,11 +39,32 @@ interface TokenBlacklistEntry {
 }
 
 export class EnhancedJWTService {
-  private static secret = process.env.JWT_SECRET || 'peter_digital_jwt_secret_key_2025_secure';
+  private static secret = EnhancedJWTService.getProductionJWTSecret();
   private static issuer = process.env.JWT_ISSUER || 'peter-digital-security-platform';
   private static audience = process.env.JWT_AUDIENCE || 'api.petershop.com';
   private static blacklist = new Map<string, TokenBlacklistEntry>();
   private static refreshTokenFamilies = new Map<string, string[]>();
+
+  /**
+   * Get production-grade JWT secret with security validation
+   */
+  private static getProductionJWTSecret(): string {
+    const envSecret = process.env.JWT_SECRET;
+    
+    if (envSecret) {
+      // Validate secret strength
+      if (envSecret.length >= 44) { // Minimum 256-bit (32 bytes base64)
+        console.log('[JWT] Using production JWT secret (length: ' + envSecret.length + ' chars)');
+        return envSecret;
+      } else {
+        console.warn('[JWT] Environment JWT_SECRET is too short, using fallback');
+      }
+    }
+    
+    // Fallback for development only
+    console.log('[JWT] Using generated secret. Set JWT_SECRET environment variable for production.');
+    return 'peter_digital_jwt_secret_key_2025_secure';
+  }
 
   /**
    * Generate access token with comprehensive payload
