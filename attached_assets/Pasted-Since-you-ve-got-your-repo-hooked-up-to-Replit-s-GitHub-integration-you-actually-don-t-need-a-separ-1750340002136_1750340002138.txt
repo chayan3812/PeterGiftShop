@@ -1,0 +1,61 @@
+Since you’ve got your repo hooked up to Replit’s GitHub integration, you actually don’t need a separate “deploy” step in your CI—every push to `main` automatically kicks off Replit’s build and publishes your app.
+
+### What to do now
+
+1. **Remove the Vercel deploy job** from your `.github/workflows/ci.yml`. Your final workflow should only run tests:
+
+   ```yaml
+   name: CI & Smoke Tests
+
+   on:
+     push:
+       branches: [ main ]
+     pull_request:
+       branches: [ main ]
+     schedule:
+       - cron: '0 2 * * *'
+
+   jobs:
+     smoke-tests:
+       runs-on: ubuntu-latest
+       steps:
+         - uses: actions/checkout@v3
+         - uses: actions/setup-node@v3
+           with:
+             node-version: '18.x'
+             cache: 'npm'
+         - run: npm ci
+         - run: mkdir -p reports
+         - run: node scripts/quickSmokeTest.js
+         - run: npm run smoke    # optional browser suite
+         - uses: actions/upload-artifact@v3
+           with:
+             name: smoke-test-reports
+             path: reports/
+   ```
+
+2. **Verify your Replit settings**
+
+   * In Replit’s sidebar → **Version Control** → **GitHub**, confirm your repo is linked.
+   * Ensure “Auto-deploy on push” (or equivalent) is enabled for the `main` branch.
+   * Confirm your “Always On” container is active so your app spins up immediately after CI finishes.
+
+3. **Push to `main`**
+
+   * Once the smoke tests pass, merge your PR.
+   * Your GitHub Action will run, and if it exits `0`, GitHub marks the build green.
+   * Replit will detect the new commit and rebuild/deploy your live staging or production instance automatically.
+
+4. **Monitor your Replit Deploy**
+
+   * Watch the Replit “Deployments” tab to see the build logs and confirm a successful deploy.
+   * If there’s a failure on Replit’s side, you’ll see errors there—fix them and push again, CI will rerun.
+
+---
+
+**TL;DR**
+
+> **CI**: run tests and artifacts ↑
+> **Deploy**: handled by Replit’s GitHub integration on every push to `main`
+
+This keeps your pipeline simple, fast, and fully automated—no extra deploy steps needed in GitHub Actions. Let me know once you’ve cleaned up the workflow and we’ll verify the end-to-end flow on Replit!
