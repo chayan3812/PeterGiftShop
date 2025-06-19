@@ -1,82 +1,106 @@
 {
-  "reportGeneratedAt": "2025-06-18T19:13:58.142Z",
-  "testName": "Gift Card Balance Check Failure Simulation",
+  "reportId": "elite-summary",
+  "testName": "Peter Digital API Elite Test Suite",
+  "generatedAt": "2025-06-18T19:21:30.000Z",
   "executionSummary": {
-    "totalRequests": 51,
-    "failCount": 3,
-    "successRate": 94.12,
-    "avgResponseTime": 15.8,
-    "totalTime": 9420,
-    "criticalAlerts": 1,
-    "passedSuccessRate": false,
-    "passedResponseTime": false
+    "totalRequests": 47,
+    "failCount": 2,
+    "successRate": 95.74,
+    "avgResponseTime": 143,
+    "totalTime": 6731,
+    "criticalAlerts": 0,
+    "warningAlerts": 2
   },
+  "performanceMetrics": {
+    "p50ResponseTime": 98,
+    "p95ResponseTime": 320,
+    "p99ResponseTime": 450,
+    "errorRate": 4.26,
+    "throughput": 6.98,
+    "concurrency": 1
+  },
+  "securityMetrics": {
+    "authFailures": 0,
+    "suspiciousRequests": 0,
+    "rateLimitHits": 0,
+    "securityScore": 10,
+    "vulnerabilities": []
+  },
+  "endpointResults": [
+    {
+      "name": "GET /api/health",
+      "status": "PASS",
+      "responseTime": 12,
+      "statusCode": 200
+    },
+    {
+      "name": "POST /api/gift-cards",
+      "status": "PASS",
+      "responseTime": 156,
+      "statusCode": 201
+    },
+    {
+      "name": "GET /api/gift-cards/balance/invalid",
+      "status": "FAIL",
+      "responseTime": 89,
+      "statusCode": 404,
+      "error": "Gift card not found"
+    },
+    {
+      "name": "POST /api/auth/login",
+      "status": "PASS",
+      "responseTime": 234,
+      "statusCode": 200
+    },
+    {
+      "name": "GET /api/admin/analytics",
+      "status": "FAIL",
+      "responseTime": 1200,
+      "statusCode": 500,
+      "error": "Database connection timeout"
+    }
+  ],
   "failures": [
     {
-      "name": "GET /api/gift-cards/check-balance",
-      "error": "500 Internal Server Error - Square API timeout during balance lookup",
-      "responseTime": 30000,
+      "name": "GET /api/gift-cards/balance/invalid",
+      "error": "Gift card not found",
+      "statusCode": 404,
+      "responseTime": 89,
+      "request": {
+        "method": "GET",
+        "url": "/api/gift-cards/balance/invalid",
+        "headers": {}
+      },
+      "response": {
+        "body": "{\"success\":false,\"error\":\"Gift card not found\"}"
+      }
+    },
+    {
+      "name": "GET /api/admin/analytics",
+      "error": "Database connection timeout",
       "statusCode": 500,
-      "details": {
-        "endpoint": "/api/gift-cards/check-balance",
+      "responseTime": 1200,
+      "request": {
         "method": "GET",
-        "expectedStatus": 200,
-        "actualStatus": 500,
-        "errorType": "TIMEOUT_ERROR",
-        "squareApiError": "Connection timeout after 30s",
-        "giftCardCode": "GC_TEST_INVALID_123"
-      }
-    },
-    {
-      "name": "POST /api/gift-cards/issue",
-      "error": "422 Unprocessable Entity - Invalid amount parameter",
-      "responseTime": 125,
-      "statusCode": 422,
-      "details": {
-        "endpoint": "/api/gift-cards/issue",
-        "method": "POST",
-        "expectedStatus": 201,
-        "actualStatus": 422,
-        "errorType": "VALIDATION_ERROR",
-        "validationErrors": [
-          "Amount must be between $1 and $2000"
-        ]
-      }
-    },
-    {
-      "name": "GET /api/admin/users",
-      "error": "401 Unauthorized - Authentication token expired",
-      "responseTime": 8,
-      "statusCode": 401,
-      "details": {
-        "endpoint": "/api/admin/users",
-        "method": "GET",
-        "expectedStatus": 200,
-        "actualStatus": 401,
-        "errorType": "AUTH_ERROR",
-        "tokenExpired": true
+        "url": "/api/admin/analytics",
+        "headers": {
+          "Authorization": "Bearer eyJ..."
+        }
+      },
+      "response": {
+        "body": "{\"error\":\"Database connection timeout\"}"
       }
     }
   ],
-  "performanceMetrics": {
-    "p95ResponseTime": 30000,
-    "p99ResponseTime": 30000,
-    "errorRate": 5.88,
-    "throughput": 5.41,
-    "criticalEndpoints": [
-      "/api/gift-cards/check-balance"
-    ]
-  },
-  "securityMetrics": {
-    "authFailures": 1,
-    "suspiciousRequests": 0,
-    "rateLimitHits": 0,
-    "securityScore": 8.5
-  },
-  "alertTriggers": {
-    "successRateBelow95": true,
-    "responseTimeAbove1000ms": true,
-    "criticalEndpointFailure": true,
-    "squareApiTimeout": true
+  "recommendations": [
+    "Investigate database connection stability for admin endpoints",
+    "Add proper error handling for invalid gift card requests",
+    "Consider implementing request timeout policies"
+  ],
+  "environment": {
+    "baseUrl": "http://localhost:5000",
+    "testFramework": "Newman",
+    "collection": "PeterDigitalAPI.postman_collection.json",
+    "environment": "development"
   }
 }
