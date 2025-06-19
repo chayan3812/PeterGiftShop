@@ -1,0 +1,77 @@
+Below is a sample GitHub Actions workflow that will:
+
+* Run on every push and pull-request to **main**
+* Execute your fast API smoke tests (`scripts/quickSmokeTest.js`)
+* Optionally run the full Playwright suite (`npm run smoke`)
+* Upload the JSON/text reports as build artifacts
+* Schedule a nightly run at 2 AM UTC against staging
+
+Create a file at `.github/workflows/ci.yml` in your repo with this content:
+
+```yaml
+name: CI & Smoke Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Runs nightly at 02:00 UTC
+    - cron:  '0 2 * * *'
+
+jobs:
+  smoke-tests:
+    name: Run Smoke Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: ['18.x']
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Quick API Smoke Tests
+        run: |
+          mkdir -p reports
+          node scripts/quickSmokeTest.js
+
+      - name: Run Full Playwright Smoke Suite
+        if: success()    # only if quick tests passed
+        run: npm run smoke
+
+      - name: Upload smoke-test reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: smoke-test-reports
+          path: reports/
+
+      - name: Post success notice
+        if: success()
+        run: echo "✅ Smoke tests passed!"
+
+      - name: Post failure notice
+        if: failure()
+        run: echo "❌ Smoke tests failed — check reports/artifacts for details."
+
+```
+
+---
+
+### What to do next
+
+1. **Commit & push** this file to your `main` branch.
+2. **Verify** in your repo’s **Actions** tab that the workflow kicks off.
+3. **Inspect** the uploaded artifacts under each run to see `reports/quick-smoke-report.json` and `.txt`.
+4. If you want Slack/email alerts on failure, add another step using [actions-slack](https://github.com/8398a7/action-slack) or SMTP.
+
+Once that’s green on your first push, every subsequent PR will auto-run your smoke tests and block merge on red. 🚀

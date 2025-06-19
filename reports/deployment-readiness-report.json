@@ -1,0 +1,235 @@
+{
+  "timestamp": "2025-06-19T13:25:50.175Z",
+  "duration": "1s",
+  "totalChecks": 27,
+  "passed": 23,
+  "warnings": 1,
+  "failed": 3,
+  "criticalIssues": [
+    "Infrastructure: Database Connectivity - Database connection failed",
+    "Business APIs: Payment Processing - Status: 400",
+    "Business APIs: Fraud Detection - Status: 400"
+  ],
+  "warningsList": [
+    "Environment: Environment Detection - Environment not specified"
+  ],
+  "deploymentReady": false,
+  "checks": [
+    {
+      "category": "Infrastructure",
+      "name": "System Health",
+      "status": "PASS",
+      "details": "Service operational",
+      "severity": "info",
+      "timestamp": "2025-06-19T13:25:49.917Z"
+    },
+    {
+      "category": "Infrastructure",
+      "name": "Database Connectivity",
+      "status": "FAIL",
+      "details": "Database connection failed",
+      "severity": "critical",
+      "timestamp": "2025-06-19T13:25:50.020Z"
+    },
+    {
+      "category": "Infrastructure",
+      "name": "Static Assets",
+      "status": "PASS",
+      "details": "Frontend accessible",
+      "severity": "info",
+      "timestamp": "2025-06-19T13:25:50.042Z"
+    },
+    {
+      "category": "Business APIs",
+      "name": "Payment Processing",
+      "status": "FAIL",
+      "details": "Status: 400",
+      "severity": "critical",
+      "timestamp": "2025-06-19T13:25:50.055Z"
+    },
+    {
+      "category": "Business APIs",
+      "name": "Fraud Detection",
+      "status": "FAIL",
+      "details": "Status: 400",
+      "severity": "critical",
+      "timestamp": "2025-06-19T13:25:50.062Z"
+    },
+    {
+      "category": "Business APIs",
+      "name": "Dashboard Metrics",
+      "status": "PASS",
+      "details": "GET 200",
+      "severity": "info",
+      "timestamp": "2025-06-19T13:25:50.072Z"
+    },
+    {
+      "category": "Business APIs",
+      "name": "Threat Intelligence",
+      "status": "PASS",
+      "details": "GET 200",
+      "severity": "info",
+      "timestamp": "2025-06-19T13:25:50.077Z"
+    },
+    {
+      "category": "Business APIs",
+      "name": "Analytics Engine",
+      "status": "PASS",
+      "details": "GET 200",
+      "severity": "info",
+      "timestamp": "2025-06-19T13:25:50.090Z"
+    },
+    {
+      "category": "Security",
+      "name": "Authentication System",
+      "status": "PASS",
+      "details": "Auth endpoints accessible",
+      "severity": "info",
+      "timestamp": "2025-06-19T13:25:50.113Z"
+    },
+    {
+      "category": "Security",
+      "name": "Admin Access Controls",
+      "status": "PASS",
+      "details": "Admin endpoints secured",
+      "severity": "info",
+      "timestamp": "2025-06-19T13:25:50.122Z"
+    },
+    {
+      "category": "Security",
+      "name": "HTTPS Configuration",
+      "status": "PASS",
+      "details": "SSL/TLS enabled",
+      "severity": "info",
+      "timestamp": "2025-06-19T13:25:50.122Z"
+    },
+    {
+      "category": "Performance",
+      "name": "Dashboard Load Time",
+      "status": "PASS",
+      "details": "4ms response time",
+      "severity": "info",
+      "timestamp": "2025-06-19T13:25:50.127Z"
+    },
+    {
+      "category": "Performance",
+      "name": "Analytics Response Time",
+      "status": "PASS",
+      "details": "6ms response time",
+      "severity": "info",
+      "timestamp": "2025-06-19T13:25:50.134Z"
+    },
+    {
+      "category": "Performance",
+      "name": "Security Data Load Time",
+      "status": "PASS",
+      "details": "11ms response time",
+      "severity": "info",
+      "timestamp": "2025-06-19T13:25:50.148Z"
+    },
+    {
+      "category": "Data Integrity",
+      "name": "Transaction Data",
+      "status": "PASS",
+      "details": "transactionCount field present",
+      "severity": "info",
+      "timestamp": "2025-06-19T13:25:50.153Z"
+    },
+    {
+      "category": "Data Integrity",
+      "name": "Analytics Data",
+      "status": "PASS",
+      "details": "revenueForecasts field present",
+      "severity": "info",
+      "timestamp": "2025-06-19T13:25:50.157Z"
+    },
+    {
+      "category": "Data Integrity",
+      "name": "Security Data",
+      "status": "PASS",
+      "details": "totalPatterns field present",
+      "severity": "info",
+      "timestamp": "2025-06-19T13:25:50.162Z"
+    },
+    {
+      "category": "Data Integrity",
+      "name": "Heatmap Data",
+      "status": "PASS",
+      "details": "data field present",
+      "severity": "info",
+      "timestamp": "2025-06-19T13:25:50.166Z"
+    },
+    {
+      "category": "File System",
+      "name": "Package Configuration",
+      "status": "PASS",
+      "details": "package.json exists",
+      "severity": "info",
+      "timestamp": "2025-06-19T13:25:50.168Z"
+    },
+    {
+      "category": "File System",
+      "name": "Build Configuration",
+      "status": "PASS",
+      "details": "vite.config.ts exists",
+      "severity": "info",
+      "timestamp": "2025-06-19T13:25:50.168Z"
+    },
+    {
+      "category": "File System",
+      "name": "Environment Template",
+      "status": "PASS",
+      "details": ".env.example exists",
+      "severity": "info",
+      "timestamp": "2025-06-19T13:25:50.169Z"
+    },
+    {
+      "category": "File System",
+      "name": "Frontend Entry Point",
+      "status": "PASS",
+      "details": "client/src/App.tsx exists",
+      "severity": "info",
+      "timestamp": "2025-06-19T13:25:50.169Z"
+    },
+    {
+      "category": "File System",
+      "name": "Backend Entry Point",
+      "status": "PASS",
+      "details": "server/index.ts exists",
+      "severity": "info",
+      "timestamp": "2025-06-19T13:25:50.169Z"
+    },
+    {
+      "category": "File System",
+      "name": "CI/CD Configuration",
+      "status": "PASS",
+      "details": ".github/workflows/ci.yml exists",
+      "severity": "info",
+      "timestamp": "2025-06-19T13:25:50.169Z"
+    },
+    {
+      "category": "File System",
+      "name": "Reports Directory",
+      "status": "PASS",
+      "details": "Logging infrastructure ready",
+      "severity": "info",
+      "timestamp": "2025-06-19T13:25:50.169Z"
+    },
+    {
+      "category": "Environment",
+      "name": "Configuration File",
+      "status": "PASS",
+      "details": ".env file present",
+      "severity": "info",
+      "timestamp": "2025-06-19T13:25:50.170Z"
+    },
+    {
+      "category": "Environment",
+      "name": "Environment Detection",
+      "status": "WARN",
+      "details": "Environment not specified",
+      "severity": "info",
+      "timestamp": "2025-06-19T13:25:50.174Z"
+    }
+  ]
+}

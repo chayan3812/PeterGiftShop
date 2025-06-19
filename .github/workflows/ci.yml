@@ -1,0 +1,53 @@
+name: CI & Smoke Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Runs nightly at 02:00 UTC
+    - cron:  '0 2 * * *'
+
+jobs:
+  smoke-tests:
+    name: Run Smoke Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: ['18.x']
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Quick API Smoke Tests
+        run: |
+          mkdir -p reports
+          node scripts/quickSmokeTest.js
+
+      - name: Run Full Playwright Smoke Suite
+        if: success()    # only if quick tests passed
+        run: node scripts/autoSmokeTest.js
+
+      - name: Upload smoke-test reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: smoke-test-reports
+          path: reports/
+
+      - name: Post success notice
+        if: success()
+        run: echo "✅ Smoke tests passed!"
+
+      - name: Post failure notice
+        if: failure()
+        run: echo "❌ Smoke tests failed — check reports/artifacts for details."
