@@ -1,0 +1,136 @@
+{
+  "startTime": "2025-06-19T13:14:03.819Z",
+  "endTime": "2025-06-19T13:14:04.164Z",
+  "duration": "0s",
+  "totalTests": 18,
+  "passed": 18,
+  "failed": 0,
+  "results": [
+    {
+      "test": "System Health",
+      "status": "PASS",
+      "timestamp": "2025-06-19T13:14:03.999Z",
+      "details": "Status: ok, Uptime: N/A",
+      "error": null
+    },
+    {
+      "test": "Authentication",
+      "status": "PASS",
+      "timestamp": "2025-06-19T13:14:04.050Z",
+      "details": "Auth endpoint accessible",
+      "error": null
+    },
+    {
+      "test": "Static Assets",
+      "status": "PASS",
+      "timestamp": "2025-06-19T13:14:04.061Z",
+      "details": "Home page accessible",
+      "error": null
+    },
+    {
+      "test": "Admin Users",
+      "status": "PASS",
+      "timestamp": "2025-06-19T13:14:04.072Z",
+      "details": "Status: 200",
+      "error": null
+    },
+    {
+      "test": "Admin Config",
+      "status": "PASS",
+      "timestamp": "2025-06-19T13:14:04.078Z",
+      "details": "Status: 200",
+      "error": null
+    },
+    {
+      "test": "Admin Logs",
+      "status": "PASS",
+      "timestamp": "2025-06-19T13:14:04.085Z",
+      "details": "Status: 200",
+      "error": null
+    },
+    {
+      "test": "User Stats",
+      "status": "PASS",
+      "timestamp": "2025-06-19T13:14:04.093Z",
+      "details": "Status: 200",
+      "error": null
+    },
+    {
+      "test": "Dashboard Metrics",
+      "status": "PASS",
+      "timestamp": "2025-06-19T13:14:04.100Z",
+      "details": "Status: 200",
+      "error": null
+    },
+    {
+      "test": "Analytics Insights",
+      "status": "PASS",
+      "timestamp": "2025-06-19T13:14:04.105Z",
+      "details": "Status: 200",
+      "error": null
+    },
+    {
+      "test": "Security Threats",
+      "status": "PASS",
+      "timestamp": "2025-06-19T13:14:04.109Z",
+      "details": "Status: 200",
+      "error": null
+    },
+    {
+      "test": "ML Models Status",
+      "status": "PASS",
+      "timestamp": "2025-06-19T13:14:04.117Z",
+      "details": "Status: 200",
+      "error": null
+    },
+    {
+      "test": "Gateway Capabilities",
+      "status": "PASS",
+      "timestamp": "2025-06-19T13:14:04.122Z",
+      "details": "Status: 200",
+      "error": null
+    },
+    {
+      "test": "Dashboard Metrics Structure",
+      "status": "PASS",
+      "timestamp": "2025-06-19T13:14:04.127Z",
+      "details": "Required field \"transactionCount\" present",
+      "error": null
+    },
+    {
+      "test": "Predictive Analytics Structure",
+      "status": "PASS",
+      "timestamp": "2025-06-19T13:14:04.135Z",
+      "details": "Required field \"revenueForecasts\" present",
+      "error": null
+    },
+    {
+      "test": "Security Patterns Structure",
+      "status": "PASS",
+      "timestamp": "2025-06-19T13:14:04.139Z",
+      "details": "Required field \"totalPatterns\" present",
+      "error": null
+    },
+    {
+      "test": "Transaction Heatmap Structure",
+      "status": "PASS",
+      "timestamp": "2025-06-19T13:14:04.144Z",
+      "details": "Required field \"data\" present",
+      "error": null
+    },
+    {
+      "test": "Payment Processing",
+      "status": "PASS",
+      "timestamp": "2025-06-19T13:14:04.157Z",
+      "details": "Transaction ID: txn_1750338844155",
+      "error": null
+    },
+    {
+      "test": "Fraud Detection",
+      "status": "PASS",
+      "timestamp": "2025-06-19T13:14:04.163Z",
+      "details": "Risk Score: 94",
+      "error": null
+    }
+  ]
+}

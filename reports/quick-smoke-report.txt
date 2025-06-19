@@ -1,0 +1,65 @@
+SiZu Pay Quick Smoke Test Report
+==============================
+
+Duration: 0s
+Total Tests: 18
+Passed: 18
+Failed: 0
+Success Rate: 100%
+
+Detailed Results:
+-----------------
+✅ System Health
+   Status: ok, Uptime: N/A
+
+✅ Authentication
+   Auth endpoint accessible
+
+✅ Static Assets
+   Home page accessible
+
+✅ Admin Users
+   Status: 200
+
+✅ Admin Config
+   Status: 200
+
+✅ Admin Logs
+   Status: 200
+
+✅ User Stats
+   Status: 200
+
+✅ Dashboard Metrics
+   Status: 200
+
+✅ Analytics Insights
+   Status: 200
+
+✅ Security Threats
+   Status: 200
+
+✅ ML Models Status
+   Status: 200
+
+✅ Gateway Capabilities
+   Status: 200
+
+✅ Dashboard Metrics Structure
+   Required field "transactionCount" present
+
+✅ Predictive Analytics Structure
+   Required field "revenueForecasts" present
+
+✅ Security Patterns Structure
+   Required field "totalPatterns" present
+
+✅ Transaction Heatmap Structure
+   Required field "data" present
+
+✅ Payment Processing
+   Transaction ID: txn_1750338844155
+
+✅ Fraud Detection
+   Risk Score: 94
+
