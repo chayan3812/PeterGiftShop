@@ -1,0 +1,181 @@
+{
+  "totalTests": 19,
+  "passedTests": 19,
+  "failedTests": 0,
+  "successRate": 100,
+  "totalDuration": 143,
+  "timestamp": "2025-06-19T05:46:33.647Z",
+  "results": [
+    {
+      "name": "Auth Status",
+      "method": "GET",
+      "url": "/api/auth/status",
+      "status": 200,
+      "success": true,
+      "responseTime": 51,
+      "timestamp": "2025-06-19T05:46:33.558Z"
+    },
+    {
+      "name": "List Users",
+      "method": "GET",
+      "url": "/api/admin/users",
+      "status": 200,
+      "success": true,
+      "responseTime": 5,
+      "timestamp": "2025-06-19T05:46:33.566Z"
+    },
+    {
+      "name": "User Statistics",
+      "method": "GET",
+      "url": "/api/admin/users/stats",
+      "status": 200,
+      "success": true,
+      "responseTime": 2,
+      "timestamp": "2025-06-19T05:46:33.568Z"
+    },
+    {
+      "name": "Admin Config",
+      "method": "GET",
+      "url": "/api/admin/config",
+      "status": 200,
+      "success": true,
+      "responseTime": 3,
+      "timestamp": "2025-06-19T05:46:33.571Z"
+    },
+    {
+      "name": "Admin Audit Logs",
+      "method": "GET",
+      "url": "/api/admin/audit-logs",
+      "status": 200,
+      "success": true,
+      "responseTime": 2,
+      "timestamp": "2025-06-19T05:46:33.574Z"
+    },
+    {
+      "name": "System Logs",
+      "method": "GET",
+      "url": "/api/admin/logs",
+      "status": 200,
+      "success": true,
+      "responseTime": 2,
+      "timestamp": "2025-06-19T05:46:33.576Z"
+    },
+    {
+      "name": "Payment Process",
+      "method": "POST",
+      "url": "/api/payments/process",
+      "status": 200,
+      "success": true,
+      "responseTime": 33,
+      "timestamp": "2025-06-19T05:46:33.610Z"
+    },
+    {
+      "name": "Fraud Assessment",
+      "method": "POST",
+      "url": "/api/fraud/assess",
+      "status": 200,
+      "success": true,
+      "responseTime": 6,
+      "timestamp": "2025-06-19T05:46:33.616Z"
+    },
+    {
+      "name": "Gateway Capabilities",
+      "method": "GET",
+      "url": "/api/gateways/capabilities",
+      "status": 200,
+      "success": true,
+      "responseTime": 5,
+      "timestamp": "2025-06-19T05:46:33.621Z"
+    },
+    {
+      "name": "Subscription Create",
+      "method": "POST",
+      "url": "/api/subscriptions/create",
+      "status": 200,
+      "success": true,
+      "responseTime": 3,
+      "timestamp": "2025-06-19T05:46:33.624Z"
+    },
+    {
+      "name": "Fraud Risk Score",
+      "method": "POST",
+      "url": "/api/fraud/risk-score",
+      "status": 200,
+      "success": true,
+      "responseTime": 3,
+      "timestamp": "2025-06-19T05:46:33.627Z"
+    },
+    {
+      "name": "ML Models Status",
+      "method": "GET",
+      "url": "/api/ml/models/status",
+      "status": 200,
+      "success": true,
+      "responseTime": 2,
+      "timestamp": "2025-06-19T05:46:33.629Z"
+    },
+    {
+      "name": "Security Threats",
+      "method": "GET",
+      "url": "/api/security/threats",
+      "status": 200,
+      "success": true,
+      "responseTime": 2,
+      "timestamp": "2025-06-19T05:46:33.631Z"
+    },
+    {
+      "name": "Reports Generate",
+      "method": "POST",
+      "url": "/api/reports/generate",
+      "status": 200,
+      "success": true,
+      "responseTime": 2,
+      "timestamp": "2025-06-19T05:46:33.634Z"
+    },
+    {
+      "name": "Analytics Insights",
+      "method": "GET",
+      "url": "/api/analytics/insights",
+      "status": 200,
+      "success": true,
+      "responseTime": 1,
+      "timestamp": "2025-06-19T05:46:33.636Z"
+    },
+    {
+      "name": "Dashboard Metrics (transactionCount)",
+      "method": "GET",
+      "url": "/api/dashboard/metrics",
+      "status": 200,
+      "success": true,
+      "responseTime": 2,
+      "timestamp": "2025-06-19T05:46:33.638Z"
+    },
+    {
+      "name": "Predictive Analytics (revenueForecasts)",
+      "method": "GET",
+      "url": "/api/analytics/predictive",
+      "status": 200,
+      "success": true,
+      "responseTime": 5,
+      "timestamp": "2025-06-19T05:46:33.643Z"
+    },
+    {
+      "name": "Security Patterns (totalPatterns)",
+      "method": "GET",
+      "url": "/api/security/patterns",
+      "status": 200,
+      "success": true,
+      "responseTime": 2,
+      "timestamp": "2025-06-19T05:46:33.645Z"
+    },
+    {
+      "name": "Transaction Heatmap (object)",
+      "method": "GET",
+      "url": "/api/transactions/heatmap",
+      "status": 200,
+      "success": true,
+      "responseTime": 1,
+      "timestamp": "2025-06-19T05:46:33.647Z"
+    }
+  ]
+}
