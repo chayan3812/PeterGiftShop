@@ -13,6 +13,8 @@ import { jwtTestResultService } from "./services/JWTTestResultService";
 import { automatedRecoveryService } from "./services/AutomatedRecoveryService";
 import { googleSheetsService } from "./services/GoogleSheetsService";
 import { TestResultController } from "./controllers/TestResultController";
+import { EnhancedAuthController } from "./controllers/EnhancedAuthController";
+import { enhancedAuthenticateJWT, requireAdmin } from "./middleware/enhancedAuth";
 
 const purchaseSchema = insertGiftCardSchema.extend({
   deliveryType: z.enum(["instant", "scheduled"]),
@@ -29,12 +31,18 @@ const balanceCheckSchema = z.object({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Authentication Routes
+  // Enhanced Authentication Routes
+  app.post("/api/auth/login", EnhancedAuthController.login);
+  app.post("/api/auth/refresh", EnhancedAuthController.refresh);
+  app.post("/api/auth/logout", enhancedAuthenticateJWT, EnhancedAuthController.logout);
+  app.get("/api/auth/me", enhancedAuthenticateJWT, EnhancedAuthController.getCurrentUser);
+  app.post("/api/auth/api-key", enhancedAuthenticateJWT, requireAdmin, EnhancedAuthController.generateApiKey);
+  app.post("/api/auth/revoke", enhancedAuthenticateJWT, requireAdmin, EnhancedAuthController.revokeTokens);
+  app.get("/api/auth/status", EnhancedAuthController.getAuthStatus);
+  
+  // Legacy Authentication Routes (backwards compatibility)
   app.post("/api/auth/token", AuthController.tokenExchange);
-  app.post("/api/auth/refresh", AuthController.refreshToken);
   app.get("/api/auth/user", AuthController.userInfo);
-  app.post("/api/auth/logout", AuthController.logout);
-  app.get("/api/auth/status", AuthController.status);
 
   // Admin API Routes (require admin authentication)
   app.get("/api/admin/users", fusionAuthService.requireAdmin(), async (req, res) => {
