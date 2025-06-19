@@ -822,6 +822,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // JWT-Signed Test Result API Routes
   app.get('/api/test-results/secure/:reportId', TestResultController.getSecureReport);
   app.get('/api/test-results/list', TestResultController.listReports);
+  app.post('/api/generate-signed-url', TestResultController.generateSignedUrl);
 
   const httpServer = createServer(app);
   return httpServer;

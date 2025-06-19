@@ -151,8 +151,7 @@ export class TestResultController {
       iss: 'peter-digital-security-platform'
     };
 
-    const options: jwt.SignOptions = { expiresIn };
-    return jwt.sign(payload, jwtSecret, options);
+    return jwt.sign(payload, jwtSecret, { expiresIn });
   }
 
   /**
@@ -238,6 +237,58 @@ export class TestResultController {
       console.log(`[TEST_RESULTS] Access logged: ${reportId} by ${logEntry.userId}`);
     } catch (logError) {
       console.error('[TEST_RESULTS] Failed to log access:', logError);
+    }
+  }
+
+  /**
+   * API endpoint to generate signed URL for test reports
+   */
+  static async generateSignedUrl(req: Request, res: Response): Promise<void> {
+    try {
+      const { reportId, userId = 'system', expiresIn = '24h' } = req.body;
+
+      if (!reportId) {
+        res.status(400).json({ 
+          error: 'Report ID is required',
+          code: 'MISSING_REPORT_ID'
+        });
+        return;
+      }
+
+      // Verify report exists
+      const reportsDir = path.join(process.cwd(), 'docs', 'reports');
+      const reportPath = path.join(reportsDir, `${reportId}.json`);
+
+      if (!fs.existsSync(reportPath)) {
+        res.status(404).json({ 
+          error: 'Report not found',
+          code: 'REPORT_NOT_FOUND',
+          reportId
+        });
+        return;
+      }
+
+      // Generate signed URL
+      const signedUrl = this.generateSignedUrl(reportId, userId, expiresIn);
+
+      // Log the URL generation
+      console.log(`[TEST_RESULTS] Generated signed URL for report ${reportId} by user ${userId}`);
+
+      res.json({
+        success: true,
+        reportId,
+        userId,
+        signedUrl,
+        expiresIn,
+        generatedAt: new Date().toISOString()
+      });
+
+    } catch (error) {
+      console.error('[TEST_RESULTS] Error generating signed URL:', error);
+      res.status(500).json({ 
+        error: 'Failed to generate signed URL',
+        code: 'URL_GENERATION_ERROR'
+      });
     }
   }
 }
